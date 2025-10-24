@@ -16,7 +16,8 @@
 }
 
 .btn-primary {
-  @apply btn bg-modern text-white hover:brightness-110 active:scale-[.99];
+  @apply btn text-white hover:brightness-110 active:scale-[.99];
+  background-color: #10B981;
 }
 
 .btn-ghost {
