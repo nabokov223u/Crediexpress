@@ -10,8 +10,7 @@ export default function Step1Identity({ onNext }:{ onNext:()=>void }){
     resolver: zodResolver(identitySchema as any),
     defaultValues: { idNumber: data.applicant.idNumber, fullName: data.applicant.fullName, maritalStatus: data.applicant.maritalStatus, spouseId: data.applicant.spouseId }
   });
-  const marital = watch("maritalStatus");
-  const needsSpouse = marital === "married";
+  const marital = watch("maritalStatus"); const needsSpouse = marital === "married";
   const onSubmit = (v:any)=>{ setData({ ...data, applicant:{ idNumber:v.idNumber, fullName:v.fullName, maritalStatus:v.maritalStatus, spouseId:v.spouseId }}); onNext(); };
   return (<form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
     <Input label="Cédula" register={register("idNumber")} error={errors.idNumber} />

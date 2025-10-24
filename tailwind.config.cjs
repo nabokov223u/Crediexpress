@@ -1,13 +1,10 @@
 module.exports = {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  content: ["./index.html", "./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
-      colors: {
-        origen: "#1a0f50",
-        moderno: "#0763fd",
-        confianza: "#e7eaf1",
-      },
-    },
+      colors: { origin: "#1A0F50", modern: "#0763FD", trust: "#E7EAF1" },
+      borderRadius: { "2xl": "1rem" }
+    }
   },
-  plugins: [],
+  plugins: []
 };
