@@ -37,6 +37,13 @@
 	.error { @apply text-xs text-red-600 mt-1; }
 }
 
+	/* Inverted theme for wizard */
+	.wizard-invert { color: #fff; }
+	.wizard-invert .card { background-color: var(--cx-brand); border-color: rgba(255,255,255,0.12); }
+	.wizard-invert .label { color: #fff; }
+	.wizard-invert .helper { color: rgba(255,255,255,0.8); }
+	.wizard-invert .error { color: #fecaca; }
+
 /* Focus ring refinement outside apply (browser-native) */
 .input:focus { box-shadow: 0 0 0 2px color-mix(in oklab, var(--cx-brand) 30%, transparent); border-color: color-mix(in oklab, var(--cx-brand) 40%, transparent); }
 

@@ -5,7 +5,6 @@ import Step1Identity from "./pages/Step1Identity";
 import Step2Vehicle from "./pages/Step2Vehicle";
 import Step3Review from "./pages/Step3Review";
 import Result from "./pages/Result";
-import Stepper from "./components/Stepper";
 import HeroLayout from "./layouts/HeroLayout";
 
 export type ResultStatus = "approved" | "review" | "denied" | null;
@@ -48,16 +47,15 @@ export default function App() {
         <HeroLayout>
           <div className="relative">
             <header className="mb-6">
-              <h1 className="text-3xl font-semibold tracking-tight text-origin">
+              <h1 className="text-3xl font-semibold tracking-tight text-white">
                 CrediExpress
               </h1>
-              <p className="text-slate-600 mt-1">
+              <p className="mt-1 text-modern">
                 Precalificación rápida para tu crédito automotriz
               </p>
             </header>
 
-            <div className="card p-6 overflow-hidden">
-              <Stepper current={result ? 3 : step} total={3} />
+            <div className="card p-6 overflow-hidden wizard-invert">
               <div className="min-h-[420px]">
                 <AnimatePresence mode="wait">
                   {!result && step === 1 && (

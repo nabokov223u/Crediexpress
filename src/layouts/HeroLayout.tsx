@@ -48,7 +48,7 @@ export default function HeroLayout({ children }: { children: ReactNode }) {
       </motion.div>
 
       {/* Right Side: Form Wizard */}
-      <div className="flex-1 flex items-center justify-center p-6 md:p-10 bg-white">
+      <div className="flex-1 flex items-center justify-center p-6 md:p-10 bg-origin text-white">
         <div className="w-full max-w-xl">{children}</div>
       </div>
     </div>

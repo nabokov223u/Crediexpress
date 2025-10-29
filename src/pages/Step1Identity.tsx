@@ -10,6 +10,7 @@ import { useFormData } from "../context/FormContext";
 export default function Step1Identity({ onNext }: { onNext: () => void }) {
   const { data, setData } = useFormData();
   const [showDetails, setShowDetails] = useState<boolean>(Boolean(data.applicant.fullName));
+  const [loading, setLoading] = useState<boolean>(false);
 
   const {
     register,
@@ -39,6 +40,7 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
       lastIdRef.current = idNumberValue;
 
       try {
+        setLoading(true);
         console.log("Consultando API de cédula...", idNumberValue);
         const data = await getDatosPorCedula(idNumberValue);
         console.log("Respuesta API:", data);
@@ -60,7 +62,7 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
         console.error("Error al autocompletar cédula:", e.message || e);
         setShowDetails(false);
         alert("Hubo un problema al consultar el servicio. Por favor, inténtalo nuevamente más tarde.");
-      }
+      } finally { setLoading(false); }
     };
     run();
   }, [idNumberValue, setValue]);
@@ -85,8 +87,15 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
 
   // 🧠 Render del formulario
   return (
-    <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
-      <Input label="Cédula" register={register("idNumber")} error={errors.idNumber} />
+    <form className="space-y-5 max-w-lg mx-auto" onSubmit={handleSubmit(onSubmit)}>
+      <Input label="Cédula" register={register("idNumber")} error={errors.idNumber} className="text-xl py-4" />
+
+      {loading && (
+        <div className="flex items-center gap-3 text-white/90">
+          <img src="/logo_icon.png" alt="Cargando" className="h-8 w-8 animate-pulse" />
+          <span className="text-sm">Buscando datos…</span>
+        </div>
+      )}
 
       {showDetails && (
         <>
@@ -118,7 +127,7 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
           )}
 
           <div className="flex justify-end">
-            <button type="submit" className="btn-primary">
+            <button type="submit" className="btn-primary" disabled={loading}>
               Confirmo que estos datos son correctos
             </button>
           </div>
