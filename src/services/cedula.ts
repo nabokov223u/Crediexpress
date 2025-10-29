@@ -43,20 +43,25 @@ export async function getDatosPorCedula(cedula: string): Promise<CedulaResponse>
     throw new Error(`Error ${res.status}: ${data?.error || res.statusText}`);
   }
 
-  // 🧠 Normalización: detecta los formatos posibles de respuesta
+    // 🧠 Normalización: detecta los formatos posibles de respuesta
   const payload =
     data.response || // formato actual (contiene los datos reales)
     data.data ||
     data.result ||
     data ||
     {};
-
+  
+  // 🔧 Combina los datos del payload en la raíz
+  const nombres = payload.nombres ?? data.nombres ?? "";
+  const apellidos = payload.apellidos ?? data.apellidos ?? "";
+  const nombreCompleto =
+    payload.nombreCompleto ??
+    `${payload.apellidos ?? ""} ${payload.nombres ?? ""}`.trim();
+  
   return {
-    nombres: payload.nombres ?? data.nombres ?? "",
-    apellidos: payload.apellidos ?? data.apellidos ?? "",
-    nombreCompleto:
-      payload.nombreCompleto ??
-      `${payload.apellidos ?? ""} ${payload.nombres ?? ""}`.trim(),
+    nombres,
+    apellidos,
+    nombreCompleto,
     ...payload,
   };
 }
