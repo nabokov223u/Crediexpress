@@ -1,0 +1,37 @@
+# dependencias
+node_modules/
+.pnp/
+.pnp.js
+
+# next.js / builds
+.next/
+out/
+.vercel/
+
+# build / cache
+dist/
+build/
+.turbo/
+.cache/
+*.log
+
+# playwright
+playwright-report/
+test-results/
+.playwright/
+
+# coverage
+coverage/
+
+# env
+.env
+.env*.local
+
+# editor / sistema
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
