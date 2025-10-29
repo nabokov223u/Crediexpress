@@ -1,5 +1,6 @@
 // src/services/cedula.ts
-// Servicio actualizado para manejar correctamente la estructura actual del web service.
+// Servicio para consultar datos por cédula ecuatoriana desde el frontend.
+// Maneja los distintos formatos que devuelve el webservice.
 
 export interface CedulaResponse {
   nombres?: string;
@@ -12,8 +13,13 @@ export async function getDatosPorCedula(cedula: string): Promise<CedulaResponse>
   const base = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") || "";
   const token = import.meta.env.VITE_API_TOKEN;
 
-  if (!/^\d{10}$/.test(cedula)) throw new Error("Número de cédula inválido");
-  if (!base || !token) throw new Error("Configuración faltante: defina VITE_API_BASE_URL y VITE_API_TOKEN");
+  if (!/^\d{10}$/.test(cedula)) {
+    throw new Error("Número de cédula inválido");
+  }
+
+  if (!base || !token) {
+    throw new Error("Configuración faltante: defina VITE_API_BASE_URL y VITE_API_TOKEN");
+  }
 
   const url = `${base}/${cedula}`.replace(/([^:]\/)\/+/, "$1/");
 
@@ -37,14 +43,14 @@ export async function getDatosPorCedula(cedula: string): Promise<CedulaResponse>
     throw new Error(`Error ${res.status}: ${data?.error || res.statusText}`);
   }
 
-  // 🧠 Normalización: priorizamos los campos según el formato actual
+  // 🧠 Normalización: detecta los formatos posibles de respuesta
   const payload =
-    data.response || // formato actual
+    data.response || // formato actual (contiene los datos reales)
     data.data ||
     data.result ||
     data ||
     {};
-  
+
   return {
     nombres: payload.nombres ?? data.nombres ?? "",
     apellidos: payload.apellidos ?? data.apellidos ?? "",
@@ -52,4 +58,6 @@ export async function getDatosPorCedula(cedula: string): Promise<CedulaResponse>
       payload.nombreCompleto ??
       `${payload.apellidos ?? ""} ${payload.nombres ?? ""}`.trim(),
     ...payload,
-  }
+  };
+}
+
