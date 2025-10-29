@@ -1,4 +1,7 @@
 // src/services/cedula.ts
+// Servicio robusto para consultar datos por cédula ecuatoriana
+// Compatible con múltiples estructuras de respuesta del proveedor
+
 export interface CedulaResponse {
   nombres?: string;
   apellidos?: string;
@@ -23,7 +26,7 @@ export async function getDatosPorCedula(cedula: string): Promise<CedulaResponse>
     },
   });
 
-  let data: any;
+  let data: any = null;
   try {
     data = await res.json();
   } catch {
@@ -35,20 +38,26 @@ export async function getDatosPorCedula(cedula: string): Promise<CedulaResponse>
     throw new Error(`Error ${res.status}: ${data?.error || res.statusText}`);
   }
 
-  // 🧠 APLANA: toma 'response' si existe; si no, usa 'data' tal cual
-  const payload = data?.response ?? data ?? {};
+  // 🧠 Detección jerárquica — busca datos en varios niveles
+  const payload =
+    data?.data?.response || // caso actual
+    data?.response ||
+    data?.data ||
+    data?.result ||
+    data ||
+    {};
 
-  // 💡 Normaliza y garantiza estos campos
+  // 💡 Normaliza nombres y apellidos
   const nombres = payload.nombres ?? "";
   const apellidos = payload.apellidos ?? "";
   const nombreCompleto = payload.nombreCompleto ?? `${apellidos} ${nombres}`.trim();
 
-  // 🔄 Devuelve SOLO los campos útiles (sin el 'response' anidado ni raíz vacía)
+  // 🔁 Devuelve objeto limpio y plano
   return {
-    ...payload,
     nombres,
     apellidos,
     nombreCompleto,
+    ...payload,
   };
 }
 
