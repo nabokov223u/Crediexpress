@@ -1,7 +1,10 @@
 // src/services/cedula.ts
+// Servicio actualizado para manejar correctamente la estructura actual del web service.
+
 export interface CedulaResponse {
   nombres?: string;
   apellidos?: string;
+  nombreCompleto?: string;
   [key: string]: any;
 }
 
@@ -34,11 +37,18 @@ export async function getDatosPorCedula(cedula: string): Promise<CedulaResponse>
     throw new Error(`Error ${res.status}: ${data?.error || res.statusText}`);
   }
 
-  // 🧠 Normaliza estructuras diferentes del proveedor
-  const payload = data.data || data.result || data || {};
+  // 🧠 Normalización: priorizamos los campos según el formato actual
+  const payload =
+    data.response || // formato actual
+    data.data ||
+    data.result ||
+    data ||
+    {};
+
   return {
-    nombres: payload.nombres ?? payload.nombresCompletos ?? "",
-    apellidos: payload.apellidos ?? payload.apellidoPaterno ?? "",
+    nombres: payload.nombres ?? "",
+    apellidos: payload.apellidos ?? "",
+    nombreCompleto: payload.nombreCompleto ?? `${payload.apellidos ?? ""} ${payload.nombres ?? ""}`.trim(),
     ...payload,
   };
 }
