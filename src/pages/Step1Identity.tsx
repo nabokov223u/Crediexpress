@@ -42,7 +42,9 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
         const data = await getDatosPorCedula(idNumberValue);
         console.log("Respuesta API:", data);
 
-        const full = [data.nombres, data.apellidos].filter(Boolean).join(" ").trim();
+        const full =
+          data.nombreCompleto?.trim() ||
+          [data.nombres, data.apellidos].filter(Boolean).join(" ").trim();
 
         if (full) {
           setValue("fullName", full, { shouldValidate: true, shouldDirty: true });
