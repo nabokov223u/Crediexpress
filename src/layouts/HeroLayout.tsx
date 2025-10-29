@@ -37,11 +37,11 @@ export default function HeroLayout({ children }: { children: ReactNode }) {
           className="absolute inset-y-0 left-8 flex items-center text-white max-w-md"
         >
           <div>
-            <h1 className="text-4xl md:text-5xl font-extrabold uppercase tracking-wider drop-shadow-lg mb-4 leading-tight">
-              CREDIEXPRESS: TU SUEÑO ESPERA
+            <h1 className="text-4xl md:text-5xl font-extrabold uppercase tracking-wider drop-shadow-lg mb-2 leading-tight">
+              CREDIEXPRESS
             </h1>
             <p className="text-lg md:text-xl font-light drop-shadow-md">
-              Aprobado en menos de 24 horas
+              Tu sueño espera
             </p>
           </div>
         </motion.div>
