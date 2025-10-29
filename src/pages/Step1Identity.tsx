@@ -1,5 +1,6 @@
 // src/pages/Step1Identity.tsx
 import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { identitySchema } from "../utils/validators";
@@ -87,8 +88,13 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
 
   // 🧠 Render del formulario
   return (
-    <form className="space-y-5 max-w-lg mx-auto" onSubmit={handleSubmit(onSubmit)}>
-      <Input label="Cédula" register={register("idNumber")} error={errors.idNumber} className="text-xl py-4" />
+    <form className="space-y-6 max-w-xl mx-auto" onSubmit={handleSubmit(onSubmit)}>
+      <Input
+        label="Cédula"
+        register={register("idNumber")}
+        error={errors.idNumber}
+        className={`${showDetails ? "text-xl py-4" : "text-2xl py-5"}`}
+      />
 
       {loading && (
         <div className="flex items-center gap-3 text-white/90">
@@ -97,8 +103,15 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
         </div>
       )}
 
-      {showDetails && (
-        <>
+      <AnimatePresence initial={false}>
+        {showDetails && (
+          <motion.div
+            key="details"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.18, ease: "easeInOut" }}
+          >
           <Input label="Nombre completo" register={register("fullName")} error={errors.fullName} />
 
           <div>
@@ -131,8 +144,9 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
               Confirmo que estos datos son correctos
             </button>
           </div>
-        </>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </form>
   );
 }
