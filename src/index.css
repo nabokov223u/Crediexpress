@@ -4,7 +4,7 @@
 
 /* Design tokens (CSS variables) */
 :root {
-	--cx-brand: #16a34a; /* verde fintech (equiv. tailwind green-600) */
+	--cx-brand: #1A0F50; /* azul origen (acento principal) */
 	--cx-accent: #0763FD; /* azul secundario */
 	--cx-ink: #0f172a;   /* texto principal */
 	--cx-muted: #64748b; /* texto secundario */
