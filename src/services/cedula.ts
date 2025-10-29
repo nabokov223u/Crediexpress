@@ -44,11 +44,12 @@ export async function getDatosPorCedula(cedula: string): Promise<CedulaResponse>
     data.result ||
     data ||
     {};
-
+  
   return {
-    nombres: payload.nombres ?? "",
-    apellidos: payload.apellidos ?? "",
-    nombreCompleto: payload.nombreCompleto ?? `${payload.apellidos ?? ""} ${payload.nombres ?? ""}`.trim(),
+    nombres: payload.nombres ?? data.nombres ?? "",
+    apellidos: payload.apellidos ?? data.apellidos ?? "",
+    nombreCompleto:
+      payload.nombreCompleto ??
+      `${payload.apellidos ?? ""} ${payload.nombres ?? ""}`.trim(),
     ...payload,
   };
-}
