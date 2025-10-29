@@ -19,7 +19,16 @@ export default function Step3Review({ onBack, onResult }:{ onBack:()=>void; onRe
     {error && <p className="error">{error}</p>}
     <div className="flex justify-between">
       <button type="button" className="btn-ghost" onClick={onBack}>Atrás</button>
-      <button type="button" className="btn-primary" onClick={handleSubmit} disabled={loading}>{loading?"Evaluando…":"Calificar para crédito"}</button>
+      <button type="button" className="btn-primary" onClick={handleSubmit} disabled={loading}>
+        {loading ? (
+          <span className="inline-flex items-center gap-2">
+            <span className="spinner" />
+            Evaluando…
+          </span>
+        ) : (
+          "Calificar para crédito"
+        )}
+      </button>
     </div>
   </div>);
 }
