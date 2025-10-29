@@ -52,4 +52,4 @@ export async function getDatosPorCedula(cedula: string): Promise<CedulaResponse>
       payload.nombreCompleto ??
       `${payload.apellidos ?? ""} ${payload.nombres ?? ""}`.trim(),
     ...payload,
-  };
+  }
