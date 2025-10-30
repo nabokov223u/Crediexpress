@@ -176,10 +176,14 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
             <Input label="Cédula del cónyuge" labelHidden placeholder="Cédula del cónyuge" register={register("spouseId")} error={errors.spouseId} className="h-12" />
           )}
 
-          {/* Nuevos campos: teléfono y correo */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input label="Teléfono" labelHidden placeholder="Teléfono" type="tel" register={register("phone")} error={errors.phone} className="h-12" />
-            <Input label="Correo electrónico" labelHidden placeholder="Correo electrónico" type="email" register={register("email")} error={errors.email} className="h-12" />
+          {/* Datos de contacto */}
+          <div className="pt-4">
+            <h3 className="label mb-2">Datos de contacto</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input label="Teléfono" placeholder="Ingresa tu teléfono" type="tel" register={register("phone") } error={errors.phone} className="h-12" required />
+              <Input label="Correo electrónico" placeholder="Ingresa tu correo" type="email" register={register("email")} error={errors.email} className="h-12" required />
+            </div>
+            <p className="helper mt-2">Usaremos estos datos para informarte sobre tu precalificación. Nunca compartiremos tu información.</p>
           </div>
 
           <div className="pt-2">
