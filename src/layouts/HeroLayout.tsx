@@ -39,7 +39,7 @@ export default function HeroLayout({ children }: { children: ReactNode }) {
         <img
           src="/hero.jpg"
           alt="Hero"
-          className="absolute inset-0 w-full h-full object-cover transform scale-x-[-1]"
+          className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-l from-[#1a0f50]/60 via-[#1a0f50]/40 to-transparent" />
 
