@@ -36,43 +36,50 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
   const idNumberValue = watch("idNumber");
   const lastIdRef = useRef<string | null>(null);
 
+  // Reinicia visualización y aceptación cuando cambia la cédula
   useEffect(() => {
-    const run = async () => {
-      // Evita consultas duplicadas o incompletas
-      if (!idNumberValue || !/^\d{10}$/.test(idNumberValue)) { setShowDetails(false); setDataReady(false); return; }
-      if (idNumberValue === lastIdRef.current) return;
+    if (!idNumberValue || !/^\d{10}$/.test(idNumberValue)) {
+      setShowDetails(false);
+      setDataReady(false);
+      setAcceptedPolicy(false);
+      return;
+    }
+    if (idNumberValue !== lastIdRef.current) {
       lastIdRef.current = idNumberValue;
+      setShowDetails(false);
+      setDataReady(false);
+      setAcceptedPolicy(false);
+    }
+  }, [idNumberValue]);
 
-      try {
-        setLoading(true);
-        console.log("Consultando API de cédula...", idNumberValue);
-        const data = await getDatosPorCedula(idNumberValue);
-        console.log("Respuesta API:", data);
-
-        const full =
-          data.nombreCompleto?.trim() ||
-          [data.nombres, data.apellidos].filter(Boolean).join(" ").trim();
-
-        if (full) {
-          setValue("fullName", full, { shouldValidate: false, shouldDirty: true });
-          if (!watch("maritalStatus")) setValue("maritalStatus", "single", { shouldDirty: true });
-          setDataReady(true);
-          if (acceptedPolicy) setShowDetails(true);
-        } else {
-          console.warn("No se encontraron nombres válidos en la respuesta:", data);
-          setShowDetails(false);
-          setDataReady(false);
-          alert("No se pudieron obtener los datos de la cédula. Intenta nuevamente más tarde.");
-        }
-      } catch (e: any) {
-        console.error("Error al autocompletar cédula:", e.message || e);
-        setShowDetails(false);
+  // Lógica para consultar datos solo tras aceptar política
+  const fetchAndReveal = async () => {
+    if (!idNumberValue || !/^\d{10}$/.test(idNumberValue)) {
+      alert("Ingresa una cédula válida (10 dígitos)");
+      return;
+    }
+    try {
+      setLoading(true);
+      const resp = await getDatosPorCedula(idNumberValue);
+      const full = resp.nombreCompleto?.trim() || [resp.nombres, resp.apellidos].filter(Boolean).join(" ").trim();
+      if (full) {
+        setValue("fullName", full, { shouldValidate: false, shouldDirty: true });
+        if (!watch("maritalStatus")) setValue("maritalStatus", "single", { shouldDirty: true });
+        setDataReady(true);
+        setShowDetails(true);
+      } else {
         setDataReady(false);
-        alert("Hubo un problema al consultar el servicio. Por favor, inténtalo nuevamente más tarde.");
-      } finally { setLoading(false); }
-    };
-    run();
-  }, [idNumberValue, setValue]);
+        setShowDetails(false);
+        alert("No se pudieron obtener los datos de la cédula. Intenta nuevamente más tarde.");
+      }
+    } catch (e: any) {
+      setDataReady(false);
+      setShowDetails(false);
+      alert("Hubo un problema al consultar el servicio. Por favor, inténtalo nuevamente más tarde.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // ⚙️ Campos dependientes
   const marital = watch("maritalStatus");
@@ -231,7 +238,7 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
               <button
                 type="button"
                 className="btn-primary"
-                onClick={() => { setAcceptedPolicy(true); setPolicyOpen(false); if (dataReady) setShowDetails(true); }}
+                onClick={() => { setAcceptedPolicy(true); setPolicyOpen(false); fetchAndReveal(); }}
               >
                 Aceptar y continuar
               </button>
