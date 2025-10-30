@@ -34,7 +34,7 @@ export default function HeroLayout({ children }: { children: ReactNode }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative hidden sm:block w-full md:w-7/12 h-48 md:h-auto order-none"
+        className="relative hidden sm:block w-full md:w-7/12 h-48 md:h-auto order-none rounded-l-3xl overflow-hidden"
       >
         <img
           src="/hero.jpg"
@@ -43,14 +43,14 @@ export default function HeroLayout({ children }: { children: ReactNode }) {
         />
         <div className="absolute inset-0 bg-gradient-to-l from-[#1a0f50]/60 via-[#1a0f50]/40 to-transparent" />
 
-        {/* Logo (mirrored position to right side) */}
+        {/* Logo (now on the top-left) */}
         <motion.img
           src="/logo_light.png"
           alt="Logo"
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.6 }}
-          className="absolute top-6 right-6 h-9 md:h-10"
+          className="absolute top-6 left-6 h-10 md:h-12"
         />
 
         {/* Minimal marketing copy */}
