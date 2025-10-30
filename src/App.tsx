@@ -44,7 +44,7 @@ export default function App() {
       </AnimatePresence>
 
       {!loadingIntro && (
-        <HeroLayout>
+        <HeroLayout imageSide={step === 2 ? "left" : "right"}>
           <div className="relative">
             <header className="mb-6">
               <h1 className="text-3xl font-semibold tracking-tight text-origin">

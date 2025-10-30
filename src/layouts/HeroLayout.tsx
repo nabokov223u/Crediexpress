@@ -2,11 +2,12 @@ import { ReactNode, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import "../index.css";
 
-export default function HeroLayout({ children }: { children: ReactNode }) {
+export default function HeroLayout({ children, imageSide = "right" }: { children: ReactNode; imageSide?: "left" | "right" }) {
+  const isImageLeft = imageSide === "left";
   return (
-    <div className="min-h-screen flex flex-col md:flex-row overflow-hidden bg-background">
+    <div className={`min-h-screen flex flex-col md:flex-row ${isImageLeft ? "md:flex-row" : "md:flex-row"} overflow-hidden bg-background`}>
       {/* Left: Minimal form column (now on the left) */}
-  <div className="relative flex-1 bg-white text-ink order-1 md:order-none">
+      <div className={`relative flex-1 bg-white text-ink ${isImageLeft ? "md:order-2" : "md:order-1"} order-2`}>
         {/* Top-right support */}
         <div className="absolute top-6 right-6 text-sm text-slate-500">
           ¿Ya eres cliente? <a href="#" className="text-modern font-medium hover:underline">Soporte</a>
@@ -28,16 +29,16 @@ export default function HeroLayout({ children }: { children: ReactNode }) {
           <a href="#" className="underline hover:text-slate-700">Términos de Servicio</a>.
         </div>
 
-        {/* Sombra sutil en el borde derecho del formulario para unir con la foto */}
-        <div className="pointer-events-none absolute top-0 right-0 h-full w-16 bg-gradient-to-l from-slate-900/10 via-slate-900/5 to-transparent hidden sm:block" />
+        {/* Sombra sutil en el borde del formulario para unir con la foto */}
+        <div className={`pointer-events-none absolute top-0 ${isImageLeft ? "left-0 bg-gradient-to-r" : "right-0 bg-gradient-to-l"} h-full w-16 from-slate-900/10 via-slate-900/5 to-transparent hidden sm:block`} />
       </div>
 
-      {/* Right: Photo (now on the right, larger ~60%) */}
+      {/* Photo column */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative hidden sm:block w-full md:w-7/12 h-48 md:h-auto order-none rounded-l-3xl overflow-hidden"
+        className={`relative hidden sm:block w-full md:w-7/12 h-48 md:h-auto ${isImageLeft ? "md:order-1 rounded-r-3xl" : "md:order-2 rounded-l-3xl"} overflow-hidden`}
       >
         {/* Ken Burns effect on hero image */}
         <motion.img
@@ -47,12 +48,12 @@ export default function HeroLayout({ children }: { children: ReactNode }) {
           animate={{ scale: [1.06, 1.12], x: [-12, 8], y: [-4, 6] }}
           transition={{ duration: 28, ease: "linear", repeat: Infinity, repeatType: "mirror" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-l from-[#1a0f50]/60 via-[#1a0f50]/40 to-transparent" />
+        <div className={`absolute inset-0 ${isImageLeft ? "bg-gradient-to-r" : "bg-gradient-to-l"} from-[#1a0f50]/60 via-[#1a0f50]/40 to-transparent`} />
 
   {/* Soft left edge shadow to blend with the form */}
-  <div className="pointer-events-none absolute left-0 top-0 h-full w-16 bg-gradient-to-r from-black/15 via-black/8 to-transparent" />
+        <div className={`pointer-events-none absolute top-0 ${isImageLeft ? "right-0 bg-gradient-to-l" : "left-0 bg-gradient-to-r"} h-full w-16 from-black/15 via-black/8 to-transparent`} />
 
-        {/* Logo (now on the top-left) */}
+        {/* Logo (now on the top-left of photo) */}
         <motion.img
           src="/logo_light.png"
           alt="Logo"
