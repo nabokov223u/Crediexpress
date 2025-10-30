@@ -43,6 +43,9 @@ export default function HeroLayout({ children }: { children: ReactNode }) {
         />
         <div className="absolute inset-0 bg-gradient-to-l from-[#1a0f50]/60 via-[#1a0f50]/40 to-transparent" />
 
+  {/* Soft left edge shadow to blend with the form */}
+  <div className="pointer-events-none absolute left-0 top-0 h-full w-16 bg-gradient-to-r from-black/15 via-black/8 to-transparent" />
+
         {/* Logo (now on the top-left) */}
         <motion.img
           src="/logo_light.png"

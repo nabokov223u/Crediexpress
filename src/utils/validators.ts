@@ -2,6 +2,8 @@ import { z } from "zod";
 export const identitySchema = z.object({
   idNumber: z.string().min(8, "Cédula inválida"),
   fullName: z.string().min(3, "Nombre requerido"),
+  phone: z.string().min(7, "Teléfono inválido").regex(/^\+?\d{7,15}$/,{ message:"Teléfono inválido" }),
+  email: z.string().email("Correo inválido"),
   maritalStatus: z.enum(["single","married"]),
   spouseId: z.string().optional(),
 }).refine((d)=> d.maritalStatus !== "married" || (!!d.spouseId && d.spouseId.length>=8), { message:"Ingresa la cédula del cónyuge", path:["spouseId"]});

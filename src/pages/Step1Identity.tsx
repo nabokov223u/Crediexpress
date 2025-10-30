@@ -27,6 +27,8 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
     defaultValues: {
       idNumber: data.applicant.idNumber,
       fullName: data.applicant.fullName,
+      phone: (data.applicant as any).phone || "",
+      email: (data.applicant as any).email || "",
       maritalStatus: data.applicant.maritalStatus,
       spouseId: data.applicant.spouseId,
     },
@@ -92,6 +94,8 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
       applicant: {
         idNumber: v.idNumber,
         fullName: v.fullName,
+        phone: v.phone,
+        email: v.email,
         maritalStatus: v.maritalStatus,
         spouseId: v.spouseId,
       },
@@ -119,6 +123,7 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
         register={register("idNumber")}
         error={errors.idNumber}
         className={`h-12 ${showDetails ? "text-base" : "text-xl"}`}
+        readOnly={!!showDetails}
       />
 
       {/* Aceptación de política de uso de datos */}
@@ -144,7 +149,7 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.18, ease: "easeInOut" }}
           >
-          <Input label="Nombre completo" labelHidden placeholder="Nombre completo" register={register("fullName")} error={errors.fullName} className="h-12" />
+          <Input label="Nombre completo" labelHidden placeholder="Nombre completo" register={register("fullName")} error={errors.fullName} className="h-12" readOnly={!!showDetails} />
 
           <div>
             <label className="label">Estado civil</label>
@@ -170,6 +175,12 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
           {needsSpouse && (
             <Input label="Cédula del cónyuge" labelHidden placeholder="Cédula del cónyuge" register={register("spouseId")} error={errors.spouseId} className="h-12" />
           )}
+
+          {/* Nuevos campos: teléfono y correo */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input label="Teléfono" labelHidden placeholder="Teléfono" type="tel" register={register("phone")} error={errors.phone} className="h-12" />
+            <Input label="Correo electrónico" labelHidden placeholder="Correo electrónico" type="email" register={register("email")} error={errors.email} className="h-12" />
+          </div>
 
           <div className="pt-2">
             <button type="submit" className="btn-primary w-full" disabled={loading}>
