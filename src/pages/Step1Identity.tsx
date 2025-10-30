@@ -62,7 +62,11 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
     }
     try {
       setLoading(true);
-      const resp = await getDatosPorCedula(idNumberValue);
+      // Espera mínima de 2s o lo que dure la consulta real, lo que sea mayor
+      const minDelay = new Promise((resolve) => setTimeout(resolve, 2000));
+      const respPromise = getDatosPorCedula(idNumberValue);
+      await Promise.all([respPromise, minDelay]);
+      const resp = await respPromise;
       const full = resp.nombreCompleto?.trim() || [resp.nombres, resp.apellidos].filter(Boolean).join(" ").trim();
       if (full) {
         setValue("fullName", full, { shouldValidate: false, shouldDirty: true });
@@ -126,18 +130,20 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
         readOnly={!!showDetails}
       />
 
-      {/* Aceptación de política de uso de datos */}
-      <div className="flex items-start gap-2">
-        <input
-          type="checkbox"
-          className="mt-1 h-4 w-4 rounded border-slate-300 text-modern focus:ring-modern"
-          checked={acceptedPolicy}
-          onChange={() => setPolicyOpen(true)}
-        />
-        <label className="text-sm text-slate-600">
-          Acepto la <button type="button" className="text-modern underline" onClick={() => setPolicyOpen(true)}>política de uso de datos</button>.
-        </label>
-      </div>
+      {/* Aceptación de política de uso de datos (solo antes del despliegue) */}
+      {!showDetails && (
+        <div className="flex items-start gap-2">
+          <input
+            type="checkbox"
+            className="mt-1 h-4 w-4 rounded border-slate-300 text-modern focus:ring-modern"
+            checked={acceptedPolicy}
+            onChange={() => setPolicyOpen(true)}
+          />
+          <label className="text-sm text-slate-600">
+            Acepto la <button type="button" className="text-modern underline" onClick={() => setPolicyOpen(true)}>política de uso de datos</button>.
+          </label>
+        </div>
+      )}
 
 
       <AnimatePresence initial={false}>
