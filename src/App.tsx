@@ -45,7 +45,13 @@ export default function App() {
       </AnimatePresence>
 
       {!loadingIntro && (
-        <HeroLayout imageSide={step === 2 ? "left" : "right"} imageSrc={step === 2 ? "/hero%202.jpg" : undefined} overlayTint={step === 2 ? "modern" : "brand"} photoChildren={step === 2 ? <Step2HeroOverlay /> : undefined}>
+        <HeroLayout
+          imageSide={step === 2 ? "right" : "right"}
+          imageSrc={step === 2 ? "/hero%202.jpg" : undefined}
+          overlayTint={step === 2 ? "modern" : "brand"}
+          photoChildren={step === 2 ? <Step2HeroOverlay /> : undefined}
+          showCarousel={step !== 2}
+        >
           <div className="relative">
             <header className="mb-6">
               <h1 className="text-3xl font-semibold tracking-tight text-origin">

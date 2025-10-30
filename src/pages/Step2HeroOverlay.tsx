@@ -8,24 +8,23 @@ export default function Step2HeroOverlay() {
   const financed = amount - down;
   const cuota = monthlyPayment(financed, data.loan.termMonths);
   return (
-    <div className="absolute top-20 right-6 md:right-8">
-      <div className="bg-white/90 backdrop-blur-md border border-white/40 rounded-2xl shadow-xl w-[92vw] max-w-sm p-4 md:p-5">
-        <div className="flex items-baseline justify-between">
-          <h4 className="text-sm font-medium text-slate-700">Cuota estimada</h4>
-          <span className="text-xs text-slate-500">referencial</span>
+    <div className="absolute inset-0 flex items-center justify-center px-6">
+      <div className="bg-white/90 backdrop-blur-md border border-white/40 rounded-2xl shadow-xl w-[92vw] max-w-xl p-6 md:p-7" aria-label="Cuota mensual (estimado)">
+        <div className="flex items-baseline justify-between mb-2">
+          <h4 className="text-sm font-medium text-slate-700">Cuota mensual <span className="text-slate-500 font-normal">(estimado)</span></h4>
         </div>
-        <p className="mt-1 text-3xl font-semibold text-origin">${cuota.toFixed(2)}</p>
-        <div className="mt-3 grid grid-cols-3 gap-3 text-xs text-slate-600">
+        <p className="text-4xl md:text-5xl font-semibold text-origin text-center tracking-tight">${cuota.toFixed(2)}</p>
+        <div className="mt-4 grid grid-cols-3 gap-3 text-[11px] md:text-xs text-slate-600 text-center">
           <div>
-            <p className="text-slate-500">Vehículo</p>
+            <p className="uppercase tracking-wide text-slate-500">Vehículo</p>
             <p className="font-medium text-slate-700">${amount.toLocaleString()}</p>
           </div>
           <div>
-            <p className="text-slate-500">Entrada</p>
+            <p className="uppercase tracking-wide text-slate-500">Entrada</p>
             <p className="font-medium text-slate-700">${down.toLocaleString()}</p>
           </div>
           <div>
-            <p className="text-slate-500">A financiar</p>
+            <p className="uppercase tracking-wide text-slate-500">A financiar</p>
             <p className="font-medium text-slate-700">${financed.toLocaleString()}</p>
           </div>
         </div>

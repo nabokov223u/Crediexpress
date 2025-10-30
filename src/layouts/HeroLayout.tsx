@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import "../index.css";
 
-export default function HeroLayout({ children, imageSide = "right", imageSrc = "/hero.jpg", overlayTint = "brand", photoChildren }: { children: ReactNode; imageSide?: "left" | "right"; imageSrc?: string; overlayTint?: "brand" | "modern" | "none"; photoChildren?: ReactNode; }) {
+export default function HeroLayout({ children, imageSide = "right", imageSrc = "/hero.jpg", overlayTint = "brand", photoChildren, showCarousel = true }: { children: ReactNode; imageSide?: "left" | "right"; imageSrc?: string; overlayTint?: "brand" | "modern" | "none"; photoChildren?: ReactNode; showCarousel?: boolean; }) {
   const isImageLeft = imageSide === "left";
   return (
     <div className={`min-h-screen flex flex-col md:flex-row ${isImageLeft ? "md:flex-row" : "md:flex-row"} overflow-hidden bg-background`}>
@@ -69,8 +69,8 @@ export default function HeroLayout({ children, imageSide = "right", imageSrc = "
           className="absolute top-6 left-6 h-10 md:h-12"
         />
 
-        {/* Animated marketing carousel (centered) */}
-        <CarouselPhrases />
+  {/* Animated marketing carousel (centered) */}
+  {showCarousel && <CarouselPhrases />}
 
         {/* Custom photo overlay content (per-step) */}
         {photoChildren}

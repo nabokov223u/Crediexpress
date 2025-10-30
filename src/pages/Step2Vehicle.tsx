@@ -83,11 +83,7 @@ export default function Step2Vehicle({ onBack, onNext }:{ onBack:()=>void; onNex
   <div><div className="flex items-center justify-between mb-2"><label className="label">Plazo (meses)</label><div className="text-sm text-slate-700">{term} meses</div></div>
   <input type="range" min={12} max={72} step={3} value={term} onChange={(e)=>handleTermChange(Number(e.target.value))} className="w-full" /></div>
       {/* Summary cards replaced by editable inputs above */}
-      <div className="p-4 rounded-2xl bg-white border border-slate-100" style={{boxShadow:"0 8px 24px rgba(16,24,40,0.08)"}}>
-        <p className="text-sm text-slate-500">Cuota estimada</p>
-        <p className="text-3xl font-semibold text-origin">${cuota.toFixed(2)}</p>
-        <p className="text-xs text-slate-500 mt-1">Estimación referencial (demo).</p>
-      </div>
+      {/* Cuota estimada ahora solo se muestra sobre la imagen en el hero de Step 2 */}
     </div>
     <div className="flex justify-between">
       <button type="button" className="btn-ghost" onClick={onBack}>Atrás</button>
