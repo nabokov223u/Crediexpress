@@ -6,6 +6,7 @@ import Step2Vehicle from "./pages/Step2Vehicle";
 import Step3Review from "./pages/Step3Review";
 import Result from "./pages/Result";
 import HeroLayout from "./layouts/HeroLayout";
+import Step2HeroOverlay from "./pages/Step2HeroOverlay";
 
 export type ResultStatus = "approved" | "review" | "denied" | null;
 
@@ -44,7 +45,7 @@ export default function App() {
       </AnimatePresence>
 
       {!loadingIntro && (
-        <HeroLayout imageSide={step === 2 ? "left" : "right"}>
+        <HeroLayout imageSide={step === 2 ? "left" : "right"} imageSrc={step === 2 ? "/hero%202.jpg" : undefined} overlayTint={step === 2 ? "modern" : "brand"} photoChildren={step === 2 ? <Step2HeroOverlay /> : undefined}>
           <div className="relative">
             <header className="mb-6">
               <h1 className="text-3xl font-semibold tracking-tight text-origin">

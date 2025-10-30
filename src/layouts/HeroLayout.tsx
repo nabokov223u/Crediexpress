@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import "../index.css";
 
-export default function HeroLayout({ children, imageSide = "right" }: { children: ReactNode; imageSide?: "left" | "right" }) {
+export default function HeroLayout({ children, imageSide = "right", imageSrc = "/hero.jpg", overlayTint = "brand", photoChildren }: { children: ReactNode; imageSide?: "left" | "right"; imageSrc?: string; overlayTint?: "brand" | "modern" | "none"; photoChildren?: ReactNode; }) {
   const isImageLeft = imageSide === "left";
   return (
     <div className={`min-h-screen flex flex-col md:flex-row ${isImageLeft ? "md:flex-row" : "md:flex-row"} overflow-hidden bg-background`}>
@@ -42,13 +42,19 @@ export default function HeroLayout({ children, imageSide = "right" }: { children
       >
         {/* Ken Burns effect on hero image */}
         <motion.img
-          src="/hero.jpg"
+          src={imageSrc}
           alt="Hero"
           className="absolute inset-0 w-full h-full object-cover"
           animate={{ scale: [1.06, 1.12], x: [-12, 8], y: [-4, 6] }}
           transition={{ duration: 28, ease: "linear", repeat: Infinity, repeatType: "mirror" }}
         />
-        <div className={`absolute inset-0 ${isImageLeft ? "bg-gradient-to-r" : "bg-gradient-to-l"} from-[#1a0f50]/60 via-[#1a0f50]/40 to-transparent`} />
+        {overlayTint !== "none" && (
+          overlayTint === "modern" ? (
+            <div className="absolute inset-0 bg-[#0763FD]/60" />
+          ) : (
+            <div className={`absolute inset-0 ${isImageLeft ? "bg-gradient-to-r" : "bg-gradient-to-l"} from-[#1a0f50]/60 via-[#1a0f50]/40 to-transparent`} />
+          )
+        )}
 
   {/* Soft left edge shadow to blend with the form */}
         <div className={`pointer-events-none absolute top-0 ${isImageLeft ? "right-0 bg-gradient-to-l" : "left-0 bg-gradient-to-r"} h-full w-16 from-black/15 via-black/8 to-transparent`} />
@@ -65,6 +71,9 @@ export default function HeroLayout({ children, imageSide = "right" }: { children
 
         {/* Animated marketing carousel (centered) */}
         <CarouselPhrases />
+
+        {/* Custom photo overlay content (per-step) */}
+        {photoChildren}
       </motion.div>
     </div>
   );

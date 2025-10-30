@@ -13,11 +13,16 @@ export default function Step2Vehicle({ onBack, onNext }:{ onBack:()=>void; onNex
   const cuota = monthlyPayment(financed, term);
 
   // Handlers to edit Entrada and Monto a financiar directamente
+  const syncContext = (a:number, pct:number, t:number)=>{
+    setData({ ...data, loan:{ vehicleAmount:a, downPaymentPct:pct/100, termMonths:t } });
+  };
   const handleEntradaChange = (val:number)=>{
     const minDown = amount*0.2; const maxDown = amount*0.5;
     const newDown = clamp(val, minDown, maxDown);
     const newPct = (newDown/amount)*100;
-    setDownPct(Math.round(newPct));
+    const pct = Math.round(newPct);
+    setDownPct(pct);
+    syncContext(amount, pct, term);
   };
   const handleFinancedChange = (val:number)=>{
     const minFin = amount*0.5; // if down 50%
@@ -25,8 +30,13 @@ export default function Step2Vehicle({ onBack, onNext }:{ onBack:()=>void; onNex
     const newFin = clamp(val, minFin, maxFin);
     const newDown = amount - newFin;
     const newPct = (newDown/amount)*100;
-    setDownPct(Math.round(newPct));
+    const pct = Math.round(newPct);
+    setDownPct(pct);
+    syncContext(amount, pct, term);
   };
+  const handleAmountChange = (v:number)=>{ setAmount(v); syncContext(v, downPct, term); };
+  const handlePctChange = (v:number)=>{ setDownPct(v); syncContext(amount, v, term); };
+  const handleTermChange = (v:number)=>{ setTerm(v); syncContext(amount, downPct, v); };
   const saveAndNext = ()=>{ setData({ ...data, loan:{ vehicleAmount:amount, downPaymentPct:downPct/100, termMonths:term } }); onNext(); };
   return (<div className="space-y-6">
     <div className="grid gap-5">
@@ -64,14 +74,14 @@ export default function Step2Vehicle({ onBack, onNext }:{ onBack:()=>void; onNex
         </div>
       </div>
 
-      <div><div className="flex items-center justify-between mb-2"><label className="label">Monto del vehículo</label><div className="text-sm text-slate-700">${amount.toLocaleString()}</div></div>
-      <input type="range" min={8000} max={60000} step={100} value={amount} onChange={(e)=>setAmount(Number(e.target.value))} className="w-full" />
+  <div><div className="flex items-center justify-between mb-2"><label className="label">Monto del vehículo</label><div className="text-sm text-slate-700">${amount.toLocaleString()}</div></div>
+  <input type="range" min={8000} max={60000} step={100} value={amount} onChange={(e)=>handleAmountChange(Number(e.target.value))} className="w-full" />
       <p className="helper mt-1">Rango: $8.000 – $60.000</p></div>
-      <div><div className="flex items-center justify-between mb-2"><label className="label">Entrada (%)</label><div className="text-sm text-slate-700">{downPct}%</div></div>
-      <input type="range" min={20} max={50} step={1} value={downPct} onChange={(e)=>setDownPct(Number(e.target.value))} className="w-full" />
+  <div><div className="flex items-center justify-between mb-2"><label className="label">Entrada (%)</label><div className="text-sm text-slate-700">{downPct}%</div></div>
+  <input type="range" min={20} max={50} step={1} value={downPct} onChange={(e)=>handlePctChange(Number(e.target.value))} className="w-full" />
       <p className="helper mt-1">Entre 20% y 50%.</p></div>
-      <div><div className="flex items-center justify-between mb-2"><label className="label">Plazo (meses)</label><div className="text-sm text-slate-700">{term} meses</div></div>
-      <input type="range" min={12} max={72} step={3} value={term} onChange={(e)=>setTerm(Number(e.target.value))} className="w-full" /></div>
+  <div><div className="flex items-center justify-between mb-2"><label className="label">Plazo (meses)</label><div className="text-sm text-slate-700">{term} meses</div></div>
+  <input type="range" min={12} max={72} step={3} value={term} onChange={(e)=>handleTermChange(Number(e.target.value))} className="w-full" /></div>
       {/* Summary cards replaced by editable inputs above */}
       <div className="p-4 rounded-2xl bg-white border border-slate-100" style={{boxShadow:"0 8px 24px rgba(16,24,40,0.08)"}}>
         <p className="text-sm text-slate-500">Cuota estimada</p>
