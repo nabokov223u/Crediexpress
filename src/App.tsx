@@ -47,7 +47,7 @@ export default function App() {
         <HeroLayout>
           <div className="relative">
             <header className="mb-6">
-              <h1 className="text-3xl font-semibold tracking-tight text-white">
+              <h1 className="text-3xl font-semibold tracking-tight text-origin">
                 CrediExpress
               </h1>
               <p className="mt-1 text-modern">

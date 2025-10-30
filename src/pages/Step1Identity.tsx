@@ -88,7 +88,7 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
 
   // 🧠 Render del formulario
   return (
-    <form className="space-y-6 max-w-md mx-auto" onSubmit={handleSubmit(onSubmit)}>
+  <form className="space-y-6 max-w-md mx-auto" onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-2">
         <h2 className="text-2xl font-semibold">Validación de identidad</h2>
         <p className="helper">Ingresa tu número de cédula para continuar</p>
@@ -100,7 +100,7 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
         placeholder="Ingresa tu número de cédula"
         register={register("idNumber")}
         error={errors.idNumber}
-        className={`${showDetails ? "text-xl py-4" : "text-2xl py-5"}`}
+        className={`h-12 ${showDetails ? "text-base" : "text-xl"}`}
       />
 
       {loading && (
@@ -119,18 +119,18 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.18, ease: "easeInOut" }}
           >
-          <Input label="Nombre completo" labelHidden placeholder="Nombre completo" register={register("fullName")} error={errors.fullName} />
+          <Input label="Nombre completo" labelHidden placeholder="Nombre completo" register={register("fullName")} error={errors.fullName} className="h-12" />
 
           <div>
             <label className="label">Estado civil</label>
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               {[
                 ["single", "Soltero/a"],
                 ["married", "Casado/a"],
               ].map(([val, label]) => (
                 <label
                   key={val}
-                  className={`px-3 py-2 rounded-xl border text-sm cursor-pointer ${
+                  className={`h-11 min-w-[128px] px-5 inline-flex items-center justify-center rounded-xl border text-sm cursor-pointer ${
                     watch("maritalStatus") === val ? "border-modern bg-white" : "border-slate-200"
                   }`}
                 >
@@ -143,7 +143,7 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
           </div>
 
           {needsSpouse && (
-            <Input label="Cédula del cónyuge" register={register("spouseId")} error={errors.spouseId} />
+            <Input label="Cédula del cónyuge" labelHidden placeholder="Cédula del cónyuge" register={register("spouseId")} error={errors.spouseId} className="h-12" />
           )}
 
           <div className="pt-2">
