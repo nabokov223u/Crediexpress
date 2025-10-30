@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import "../index.css";
 
@@ -39,10 +39,13 @@ export default function HeroLayout({ children }: { children: ReactNode }) {
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="relative hidden sm:block w-full md:w-7/12 h-48 md:h-auto order-none rounded-l-3xl overflow-hidden"
       >
-        <img
+        {/* Ken Burns effect on hero image */}
+        <motion.img
           src="/hero.jpg"
           alt="Hero"
           className="absolute inset-0 w-full h-full object-cover"
+          animate={{ scale: [1.06, 1.12], x: [-12, 8], y: [-4, 6] }}
+          transition={{ duration: 28, ease: "linear", repeat: Infinity, repeatType: "mirror" }}
         />
         <div className="absolute inset-0 bg-gradient-to-l from-[#1a0f50]/60 via-[#1a0f50]/40 to-transparent" />
 
@@ -59,16 +62,39 @@ export default function HeroLayout({ children }: { children: ReactNode }) {
           className="absolute top-6 left-6 h-10 md:h-12"
         />
 
-        {/* Minimal marketing copy */}
+        {/* Animated marketing carousel (centered) */}
+        <CarouselPhrases />
+      </motion.div>
+    </div>
+  );
+}
+
+function CarouselPhrases() {
+  const phrases = [
+    "Precalificación en minutos",
+    "Datos protegidos y verificados",
+    "Transparente, sin costos ocultos",
+    "Cuotas a tu medida con aliados confiables",
+  ];
+  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setIndex((i) => (i + 1) % phrases.length), 4000);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <div className="absolute inset-0 flex items-center justify-center px-6">
+      <div className="text-center text-white/95 drop-shadow-[0_1px_12px_rgba(0,0,0,0.35)]">
         <motion.div
+          key={index}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.0, duration: 0.7, ease: "easeOut" }}
-          className="absolute bottom-8 right-6 text-white max-w-sm text-right"
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="text-2xl md:text-4xl font-semibold"
         >
-          <p className="text-xl md:text-2xl font-semibold">Financia tu vehículo con confianza</p>
+          {phrases[index]}
         </motion.div>
-      </motion.div>
+      </div>
     </div>
   );
 }
