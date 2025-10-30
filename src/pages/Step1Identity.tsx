@@ -88,7 +88,12 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
 
   // 🧠 Render del formulario
   return (
-  <form className="space-y-6 max-w-md mx-auto" onSubmit={handleSubmit(onSubmit)}>
+    <motion.div
+      layout
+      transition={{ duration: 0.25, ease: "easeInOut" }}
+      className={showDetails ? "pt-2" : "grid place-items-center min-h-[360px]"}
+    >
+    <form className="space-y-6 max-w-md mx-auto" onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-2">
         <h2 className="text-2xl font-semibold">Validación de identidad</h2>
         <p className="helper">Ingresa tu número de cédula para continuar</p>
@@ -155,5 +160,6 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
         )}
       </AnimatePresence>
     </form>
+    </motion.div>
   );
 }
