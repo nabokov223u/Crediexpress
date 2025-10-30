@@ -12,6 +12,9 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
   const { data, setData } = useFormData();
   const [showDetails, setShowDetails] = useState<boolean>(Boolean(data.applicant.fullName));
   const [loading, setLoading] = useState<boolean>(false);
+  const [dataReady, setDataReady] = useState<boolean>(Boolean(data.applicant.fullName));
+  const [acceptedPolicy, setAcceptedPolicy] = useState<boolean>(false);
+  const [policyOpen, setPolicyOpen] = useState<boolean>(false);
 
   const {
     register,
@@ -36,7 +39,7 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
   useEffect(() => {
     const run = async () => {
       // Evita consultas duplicadas o incompletas
-      if (!idNumberValue || !/^\d{10}$/.test(idNumberValue)) { setShowDetails(false); return; }
+      if (!idNumberValue || !/^\d{10}$/.test(idNumberValue)) { setShowDetails(false); setDataReady(false); return; }
       if (idNumberValue === lastIdRef.current) return;
       lastIdRef.current = idNumberValue;
 
@@ -53,15 +56,18 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
         if (full) {
           setValue("fullName", full, { shouldValidate: false, shouldDirty: true });
           if (!watch("maritalStatus")) setValue("maritalStatus", "single", { shouldDirty: true });
-          setShowDetails(true);
+          setDataReady(true);
+          if (acceptedPolicy) setShowDetails(true);
         } else {
           console.warn("No se encontraron nombres válidos en la respuesta:", data);
           setShowDetails(false);
+          setDataReady(false);
           alert("No se pudieron obtener los datos de la cédula. Intenta nuevamente más tarde.");
         }
       } catch (e: any) {
         console.error("Error al autocompletar cédula:", e.message || e);
         setShowDetails(false);
+        setDataReady(false);
         alert("Hubo un problema al consultar el servicio. Por favor, inténtalo nuevamente más tarde.");
       } finally { setLoading(false); }
     };
@@ -107,6 +113,19 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
         error={errors.idNumber}
         className={`h-12 ${showDetails ? "text-base" : "text-xl"}`}
       />
+
+      {/* Aceptación de política de uso de datos */}
+      <div className="flex items-start gap-2">
+        <input
+          type="checkbox"
+          className="mt-1 h-4 w-4 rounded border-slate-300 text-modern focus:ring-modern"
+          checked={acceptedPolicy}
+          onChange={() => setPolicyOpen(true)}
+        />
+        <label className="text-sm text-slate-600">
+          Acepto la <button type="button" className="text-modern underline" onClick={() => setPolicyOpen(true)}>política de uso de datos</button>.
+        </label>
+      </div>
 
 
       <AnimatePresence initial={false}>
@@ -174,6 +193,50 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
             transition={{ duration: 0.6, ease: "easeOut" }}
             className="h-20 w-20 md:h-24 md:w-24"
           />
+        </motion.div>
+      )}
+    </AnimatePresence>
+
+    {/* Policy modal */}
+    <AnimatePresence>
+      {policyOpen && (
+        <motion.div
+          key="policy-modal"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-20 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+        >
+          <motion.div
+            initial={{ scale: 0.96, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.96, opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="bg-white rounded-2xl shadow-xl w-[92%] max-w-lg p-5"
+          >
+            <h3 className="text-lg font-semibold mb-2">Política de uso de datos</h3>
+            <div className="text-sm text-slate-600 max-h-56 overflow-auto space-y-2">
+              <p>Autorizo a CrediExpress a tratar mis datos personales para la gestión de la precalificación crediticia, validación de identidad y análisis de riesgo, de acuerdo con la normativa aplicable.</p>
+              <p>La información podrá ser verificada con proveedores externos para validar identidad y prevenir fraude. Podré solicitar la rectificación o eliminación de mis datos según corresponda.</p>
+              <p>Para más detalles, consulta nuestra Política de Privacidad completa.</p>
+            </div>
+            <div className="flex justify-end gap-3 mt-4">
+              <button
+                type="button"
+                className="btn-ghost"
+                onClick={() => { setAcceptedPolicy(false); setPolicyOpen(false); setShowDetails(false); }}
+              >
+                No aceptar
+              </button>
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={() => { setAcceptedPolicy(true); setPolicyOpen(false); if (dataReady) setShowDetails(true); }}
+              >
+                Aceptar y continuar
+              </button>
+            </div>
+          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
