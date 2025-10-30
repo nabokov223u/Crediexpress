@@ -91,7 +91,7 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
     <motion.div
       layout
       transition={{ duration: 0.25, ease: "easeInOut" }}
-      className={showDetails ? "pt-2" : "grid place-items-center min-h-[360px]"}
+      className={(showDetails ? "pt-2 " : "grid place-items-center min-h-[360px] ") + "relative"}
     >
     <form className="space-y-6 max-w-md mx-auto" onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-2">
@@ -108,12 +108,6 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
         className={`h-12 ${showDetails ? "text-base" : "text-xl"}`}
       />
 
-      {loading && (
-        <div className="flex items-center gap-3 text-white/90">
-          <img src="/logo_icon.png" alt="Cargando" className="h-8 w-8 animate-pulse" />
-          <span className="text-sm">Buscando datos…</span>
-        </div>
-      )}
 
       <AnimatePresence initial={false}>
         {showDetails && (
@@ -160,6 +154,29 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
         )}
       </AnimatePresence>
     </form>
+
+    {/* Overlay loader between cedula entry and details reveal */}
+    <AnimatePresence>
+      {loading && (
+        <motion.div
+          key="overlay-loader"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.25 }}
+          className="absolute inset-0 z-10 bg-white/95 flex items-center justify-center"
+        >
+          <motion.img
+            src="/logo_icon.png"
+            alt="Cargando"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="h-20 w-20 md:h-24 md:w-24"
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
     </motion.div>
   );
 }
