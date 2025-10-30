@@ -55,7 +55,7 @@ export default function App() {
               </p>
             </header>
 
-            <div className="card p-6 overflow-hidden wizard-invert">
+            <div className="card p-6 overflow-hidden">
               <div className="min-h-[420px]">
                 <AnimatePresence mode="wait">
                   {!result && step === 1 && (

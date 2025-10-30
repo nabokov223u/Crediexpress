@@ -88,9 +88,16 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
 
   // 🧠 Render del formulario
   return (
-    <form className="space-y-6 max-w-xl mx-auto" onSubmit={handleSubmit(onSubmit)}>
+    <form className="space-y-6 max-w-md mx-auto" onSubmit={handleSubmit(onSubmit)}>
+      <div className="mb-2">
+        <h2 className="text-2xl font-semibold">Validación de identidad</h2>
+        <p className="helper">Ingresa tu número de cédula para continuar</p>
+      </div>
+
       <Input
         label="Cédula"
+        labelHidden
+        placeholder="Ingresa tu número de cédula"
         register={register("idNumber")}
         error={errors.idNumber}
         className={`${showDetails ? "text-xl py-4" : "text-2xl py-5"}`}
@@ -112,7 +119,7 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.18, ease: "easeInOut" }}
           >
-          <Input label="Nombre completo" register={register("fullName")} error={errors.fullName} />
+          <Input label="Nombre completo" labelHidden placeholder="Nombre completo" register={register("fullName")} error={errors.fullName} />
 
           <div>
             <label className="label">Estado civil</label>
@@ -139,8 +146,8 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
             <Input label="Cédula del cónyuge" register={register("spouseId")} error={errors.spouseId} />
           )}
 
-          <div className="flex justify-end">
-            <button type="submit" className="btn-primary" disabled={loading}>
+          <div className="pt-2">
+            <button type="submit" className="btn-primary w-full" disabled={loading}>
               Confirmo que estos datos son correctos
             </button>
           </div>
