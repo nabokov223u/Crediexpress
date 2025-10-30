@@ -157,7 +157,7 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
           >
           <Input label="Nombre completo" labelHidden placeholder="Nombre completo" register={register("fullName")} error={errors.fullName} className="h-12" readOnly={!!showDetails} />
 
-          <div>
+          <div className="mt-3">
             <label className="label">Estado civil</label>
             <div className="flex gap-3">
               {[

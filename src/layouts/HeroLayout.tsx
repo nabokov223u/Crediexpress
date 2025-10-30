@@ -6,7 +6,7 @@ export default function HeroLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col md:flex-row overflow-hidden bg-background">
       {/* Left: Minimal form column (now on the left) */}
-      <div className="relative flex-1 bg-white text-ink order-1 md:order-none">
+  <div className="relative flex-1 bg-white text-ink order-1 md:order-none">
         {/* Top-right support */}
         <div className="absolute top-6 right-6 text-sm text-slate-500">
           ¿Ya eres cliente? <a href="#" className="text-modern font-medium hover:underline">Soporte</a>
@@ -27,6 +27,9 @@ export default function HeroLayout({ children }: { children: ReactNode }) {
           {" "}y{ " "}
           <a href="#" className="underline hover:text-slate-700">Términos de Servicio</a>.
         </div>
+
+        {/* Sombra sutil en el borde derecho del formulario para unir con la foto */}
+        <div className="pointer-events-none absolute top-0 right-0 h-full w-16 bg-gradient-to-l from-slate-900/10 via-slate-900/5 to-transparent hidden sm:block" />
       </div>
 
       {/* Right: Photo (now on the right, larger ~60%) */}
