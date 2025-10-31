@@ -7,6 +7,9 @@ export default function Step2Vehicle({ onBack, onNext }:{ onBack:()=>void; onNex
   const [amount, setAmount] = useState<number>(data.loan.vehicleAmount);
   const [downPct, setDownPct] = useState<number>(data.loan.downPaymentPct*100);
   const [term, setTerm] = useState<number>(data.loan.termMonths);
+  const [amountStr, setAmountStr] = useState<string>(String(data.loan.vehicleAmount));
+  const [pctStr, setPctStr] = useState<string>(String(Math.round(data.loan.downPaymentPct*100)));
+  const [termStr, setTermStr] = useState<string>(String(data.loan.termMonths));
   const clamp = (val:number, min:number, max:number)=> Math.min(Math.max(val, min), max);
   const roundTo = (val:number, step:number)=> Math.round(val/step)*step;
   const down = Math.round(amount*(downPct/100));
@@ -35,25 +38,40 @@ export default function Step2Vehicle({ onBack, onNext }:{ onBack:()=>void; onNex
     setDownPct(pct);
     syncContext(amount, pct, term);
   };
-  const handleAmountChange = (v:number)=>{ setAmount(v); syncContext(v, downPct, term); };
-  const handlePctChange = (v:number)=>{ setDownPct(v); syncContext(amount, v, term); };
-  const handleTermChange = (v:number)=>{ setTerm(v); syncContext(amount, downPct, v); };
+  const handleAmountChange = (v:number)=>{ setAmount(v); setAmountStr(String(v)); syncContext(v, downPct, term); };
+  const handlePctChange = (v:number)=>{ setDownPct(v); setPctStr(String(v)); syncContext(amount, v, term); };
+  const handleTermChange = (v:number)=>{ setTerm(v); setTermStr(String(v)); syncContext(amount, downPct, v); };
   // Manual inputs for sliders
-  const onAmountInput = (v:string)=>{
-    const n = roundTo(Number(v || 0), 100);
-    const cl = clamp(n, 8000, 60000);
-    handleAmountChange(cl);
+  // Free typing in numeric boxes, commit on blur/Enter
+  const onAmountTyping = (v:string)=>{ setAmountStr(v.replace(/[^\d]/g, "")); };
+  const commitAmount = ()=>{
+    const parsed = Number(amountStr);
+    if (Number.isFinite(parsed)) {
+      const cl = clamp(roundTo(parsed, 100), 8000, 60000);
+      handleAmountChange(cl);
+    } else {
+      setAmountStr(String(amount));
+    }
   };
-  const onPctInput = (v:string)=>{
-    const n = Math.round(Number(v || 0));
-    const cl = clamp(n, 20, 50);
-    handlePctChange(cl);
+  const onPctTyping = (v:string)=>{ setPctStr(v.replace(/[^\d]/g, "")); };
+  const commitPct = ()=>{
+    const parsed = Number(pctStr);
+    if (Number.isFinite(parsed)) {
+      const cl = clamp(Math.round(parsed), 20, 50);
+      handlePctChange(cl);
+    } else {
+      setPctStr(String(downPct));
+    }
   };
-  const onTermInput = (v:string)=>{
-    const n = Number(v || 0);
-    const rounded = roundTo(n, 3);
-    const cl = clamp(rounded, 12, 72);
-    handleTermChange(cl);
+  const onTermTyping = (v:string)=>{ setTermStr(v.replace(/[^\d]/g, "")); };
+  const commitTerm = ()=>{
+    const parsed = Number(termStr);
+    if (Number.isFinite(parsed)) {
+      const cl = clamp(roundTo(parsed, 3), 12, 72);
+      handleTermChange(cl);
+    } else {
+      setTermStr(String(term));
+    }
   };
   const saveAndNext = ()=>{ setData({ ...data, loan:{ vehicleAmount:amount, downPaymentPct:downPct/100, termMonths:term } }); onNext(); };
   return (<div className="space-y-6">
@@ -64,7 +82,15 @@ export default function Step2Vehicle({ onBack, onNext }:{ onBack:()=>void; onNex
           <label className="label">Monto del vehículo</label>
           <div className="flex items-center gap-2">
             <span className="text-slate-500">$</span>
-            <input type="number" className="input h-10 w-28 text-right" value={amount} min={8000} max={60000} step={100} onChange={(e)=>onAmountInput(e.target.value)} />
+            <input
+              type="text"
+              inputMode="numeric"
+              className="input h-11 w-32 text-right text-base md:text-lg font-medium no-spin bg-white/95 shadow-sm border-slate-300 focus:ring-modern"
+              value={amountStr}
+              onChange={(e)=>onAmountTyping(e.target.value)}
+              onBlur={commitAmount}
+              onKeyDown={(e)=>{ if(e.key==='Enter'){ e.currentTarget.blur(); } }}
+            />
           </div>
         </div>
         <input type="range" min={8000} max={60000} step={100} value={amount} onChange={(e)=>handleAmountChange(Number(e.target.value))} className="w-full" />
@@ -75,7 +101,15 @@ export default function Step2Vehicle({ onBack, onNext }:{ onBack:()=>void; onNex
         <div className="flex items-center justify-between mb-2">
           <label className="label">Entrada (%)</label>
           <div className="flex items-center gap-2">
-            <input type="number" className="input h-10 w-20 text-right" value={downPct} min={20} max={50} step={1} onChange={(e)=>onPctInput(e.target.value)} />
+            <input
+              type="text"
+              inputMode="numeric"
+              className="input h-11 w-24 text-right text-base md:text-lg font-medium no-spin bg-white/95 shadow-sm border-slate-300 focus:ring-modern"
+              value={pctStr}
+              onChange={(e)=>onPctTyping(e.target.value)}
+              onBlur={commitPct}
+              onKeyDown={(e)=>{ if(e.key==='Enter'){ e.currentTarget.blur(); } }}
+            />
             <span className="text-slate-500">%</span>
           </div>
         </div>
@@ -87,7 +121,15 @@ export default function Step2Vehicle({ onBack, onNext }:{ onBack:()=>void; onNex
         <div className="flex items-center justify-between mb-2">
           <label className="label">Plazo (meses)</label>
           <div className="flex items-center gap-2">
-            <input type="number" className="input h-10 w-24 text-right" value={term} min={12} max={72} step={3} onChange={(e)=>onTermInput(e.target.value)} />
+            <input
+              type="text"
+              inputMode="numeric"
+              className="input h-11 w-24 text-right text-base md:text-lg font-medium no-spin bg-white/95 shadow-sm border-slate-300 focus:ring-modern"
+              value={termStr}
+              onChange={(e)=>onTermTyping(e.target.value)}
+              onBlur={commitTerm}
+              onKeyDown={(e)=>{ if(e.key==='Enter'){ e.currentTarget.blur(); } }}
+            />
           </div>
         </div>
         <input type="range" min={12} max={72} step={3} value={term} onChange={(e)=>handleTermChange(Number(e.target.value))} className="w-full" />
