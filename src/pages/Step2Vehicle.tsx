@@ -1,8 +1,9 @@
 import { useFormData } from "../context/FormContext";
 import { useState } from "react";
 import { monthlyPayment } from "../services/calculator";
+import { submitPrequalification } from "../services/api";
 
-export default function Step2Vehicle({ onBack, onNext }:{ onBack:()=>void; onNext:()=>void; }){
+export default function Step2Vehicle({ onBack, onResult }:{ onBack:()=>void; onResult:(s:"approved"|"review"|"denied")=>void; }){
   const { data, setData } = useFormData();
   const [amount, setAmount] = useState<number>(data.loan.vehicleAmount);
   const [downPct, setDownPct] = useState<number>(data.loan.downPaymentPct*100);
@@ -73,7 +74,21 @@ export default function Step2Vehicle({ onBack, onNext }:{ onBack:()=>void; onNex
       setTermStr(String(term));
     }
   };
-  const saveAndNext = ()=>{ setData({ ...data, loan:{ vehicleAmount:amount, downPaymentPct:downPct/100, termMonths:term } }); onNext(); };
+  const [loading,setLoading] = useState(false);
+  const [error,setError] = useState<string|null>(null);
+  const handleCalificar = async ()=>{
+    const payload = { ...data, loan:{ vehicleAmount:amount, downPaymentPct:downPct/100, termMonths:term } } as typeof data;
+    setData(payload);
+    setLoading(true); setError(null);
+    try{
+      const res = await submitPrequalification(payload);
+      onResult(res.status);
+    }catch{
+      setError("No pudimos enviar tu solicitud. Intenta nuevamente.");
+    }finally{
+      setLoading(false);
+    }
+  };
   return (<div className="space-y-6">
     <div className="grid gap-5">
       {/* Sliders primero con inputs manuales a la derecha */}
@@ -171,9 +186,19 @@ export default function Step2Vehicle({ onBack, onNext }:{ onBack:()=>void; onNex
       {/* Summary cards replaced by editable inputs above */}
       {/* Cuota estimada ahora solo se muestra sobre la imagen en el hero de Step 2 */}
     </div>
+    {error && <p className="error">{error}</p>}
     <div className="flex justify-between">
       <button type="button" className="btn-ghost" onClick={onBack}>Atrás</button>
-      <button type="button" className="btn-primary" onClick={saveAndNext}>Siguiente</button>
+      <button type="button" className="btn-primary" onClick={handleCalificar} disabled={loading}>
+        {loading ? (
+          <span className="inline-flex items-center gap-2">
+            <span className="spinner" />
+            Calificando…
+          </span>
+        ) : (
+          "Calificar para crédito"
+        )}
+      </button>
     </div>
   </div>);
 }

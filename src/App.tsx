@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { FormProvider } from "./context/FormContext";
 import Step1Identity from "./pages/Step1Identity";
 import Step2Vehicle from "./pages/Step2Vehicle";
-import Step3Review from "./pages/Step3Review";
 import Result from "./pages/Result";
 import HeroLayout from "./layouts/HeroLayout";
 import Step2HeroOverlay from "./pages/Step2HeroOverlay";
@@ -84,18 +83,7 @@ export default function App() {
                       exit={{ opacity: 0, x: 24 }}
                       transition={{ duration: 0.35 }}
                     >
-                      <Step2Vehicle onBack={() => setStep(1)} onNext={() => setStep(3)} />
-                    </motion.div>
-                  )}
-                  {!result && step === 3 && (
-                    <motion.div
-                      key="s3"
-                      initial={{ opacity: 0, x: -24 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 24 }}
-                      transition={{ duration: 0.35 }}
-                    >
-                      <Step3Review onBack={() => setStep(2)} onResult={(s) => setResult(s)} />
+                      <Step2Vehicle onBack={() => setStep(1)} onResult={(s) => setResult(s)} />
                     </motion.div>
                   )}
                   {result && (
