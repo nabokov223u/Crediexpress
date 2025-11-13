@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
 import AnimatedCheckIcon from "../components/AnimatedCheckIcon";
+import { useState, useEffect } from "react";
 
 interface MinimalLoginLayoutProps {
   children: ReactNode;
@@ -15,6 +16,57 @@ export default function MinimalLoginLayout({
   currentStep = 1,
   totalSteps = 3
 }: MinimalLoginLayoutProps) {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [clickCount, setClickCount] = useState(0);
+  const [showSecret, setShowSecret] = useState(false);
+  const [konamiIndex, setKonamiIndex] = useState(0);
+  const [logoParallax, setLogoParallax] = useState({ x: 0, y: 0 });
+  const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+
+  // Konami code detector
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === konamiCode[konamiIndex]) {
+        const newIndex = konamiIndex + 1;
+        setKonamiIndex(newIndex);
+        if (newIndex === konamiCode.length) {
+          setShowSecret(true);
+          setKonamiIndex(0);
+          setTimeout(() => setShowSecret(false), 5000);
+        }
+      } else {
+        setKonamiIndex(0);
+      }
+    };
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [konamiIndex]);
+
+  // Triple click handler
+  const handleLogoClick = () => {
+    setClickCount(prev => prev + 1);
+    if (clickCount === 2) {
+      setShowSecret(true);
+      setClickCount(0);
+      setTimeout(() => setShowSecret(false), 5000);
+    }
+    setTimeout(() => setClickCount(0), 1000);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    setMousePosition({ x, y });
+    
+    // Parallax para el logo (movimiento sutil)
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const moveX = (x - centerX) / 50;
+    const moveY = (y - centerY) / 50;
+    setLogoParallax({ x: moveX, y: moveY });
+  };
+
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Fondo con imagen difuminada */}
@@ -27,14 +79,14 @@ export default function MinimalLoginLayout({
         {/* Overlay de blur y oscurecimiento */}
         <div className="absolute inset-0 backdrop-blur-2xl bg-slate-900/40" />
         
-        {/* Patrón animado más evidente */}
+        {/* Patrón animado más evidente pero más lento */}
         <motion.div
           className="absolute inset-0 opacity-[0.15]"
           animate={{
             backgroundPosition: ['0% 0%', '100% 100%'],
           }}
           transition={{
-            duration: 15,
+            duration: 40, // Aumentado de 15 a 40 segundos
             repeat: Infinity,
             repeatType: 'reverse',
             ease: 'linear',
@@ -88,8 +140,17 @@ export default function MinimalLoginLayout({
           className="w-full max-w-6xl"
         >
           {/* Card principal */}
-          <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
-            <div className="grid grid-cols-1 lg:grid-cols-[40%_60%] min-h-[650px]">
+          <div 
+            className="bg-white rounded-3xl shadow-2xl overflow-hidden transition-shadow duration-200"
+            onMouseMove={handleMouseMove}
+            style={{
+              boxShadow: `
+                0 20px 60px rgba(0, 0, 0, 0.15),
+                ${mousePosition.x * 0.05}px ${mousePosition.y * 0.05}px 80px -40px rgba(26, 15, 80, 0.12),
+                ${mousePosition.x * 0.03}px ${mousePosition.y * 0.03}px 50px -20px rgba(7, 99, 253, 0.08)
+              `,
+            }}
+          >            <div className="grid grid-cols-1 lg:grid-cols-[40%_60%] min-h-[650px]">
               {/* Columna izquierda - Logo y contenido informativo */}
               <div className="relative bg-gradient-to-br from-slate-50 to-slate-100 p-10 md:p-12 flex flex-col justify-between overflow-hidden">
                 {/* Contenido superior */}
@@ -99,20 +160,45 @@ export default function MinimalLoginLayout({
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
-                    className="relative mb-8"
+                    className="relative mb-8 cursor-pointer"
+                    onClick={handleLogoClick}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
                     <motion.img
                       src="/logo_3d.png"
                       alt="Originarsa"
                       className="w-48 h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 object-contain drop-shadow-2xl"
                       animate={{
-                        y: [-10, 10, -10],
-                        rotateY: [0, 5, 0, -5, 0],
+                        y: [-10 + logoParallax.y, 10 + logoParallax.y, -10 + logoParallax.y],
+                        x: logoParallax.x,
+                        rotateY: [logoParallax.x * 2, 5 + logoParallax.x * 2, logoParallax.x * 2, -5 + logoParallax.x * 2, logoParallax.x * 2],
+                        rotateX: -logoParallax.y * 2,
                       }}
                       transition={{
-                        duration: 6,
-                        repeat: Infinity,
-                        ease: "easeInOut",
+                        y: {
+                          duration: 6,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        },
+                        x: {
+                          type: "spring",
+                          stiffness: 150,
+                          damping: 15,
+                        },
+                        rotateY: {
+                          duration: 6,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        },
+                        rotateX: {
+                          type: "spring",
+                          stiffness: 150,
+                          damping: 15,
+                        },
+                      }}
+                      style={{
+                        transformStyle: "preserve-3d",
                       }}
                     />
                     
@@ -130,6 +216,18 @@ export default function MinimalLoginLayout({
                       }}
                     />
                   </motion.div>
+
+                  {/* Mensaje secreto de easter egg */}
+                  {showSecret && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.5, y: -20 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.5 }}
+                      className="absolute top-4 right-4 bg-gradient-to-r from-brand to-modern text-white px-4 py-2 rounded-lg shadow-xl text-sm font-bold z-50"
+                    >
+                      🎉 ¡Secreto descubierto! 🎉
+                    </motion.div>
+                  )}
 
                   {/* Texto descriptivo */}
                   <motion.div

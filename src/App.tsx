@@ -49,15 +49,15 @@ export default function App() {
 
       {!loadingIntro && (
         <>
-          {/* Step 1: Nuevo diseño minimalista con transición */}
+          {/* Step 1: Transición suave con fade */}
           <AnimatePresence mode="wait">
             {!result && step === 1 && (
               <motion.div
                 key="step1"
-                initial={{ opacity: 0, x: -100 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 100 }}
-                transition={{ duration: 0.5, ease: "easeInOut" }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
               >
                 <MinimalLoginLayout currentStep={1} totalSteps={3}>
                   <Step1IdentityMinimal onNext={() => setStep(2)} />
@@ -65,14 +65,14 @@ export default function App() {
               </motion.div>
             )}
 
-            {/* Step 2 con transición */}
+            {/* Step 2 con transición suave */}
             {!result && step === 2 && (
               <motion.div
                 key="step2"
-                initial={{ opacity: 0, x: -100 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 100 }}
-                transition={{ duration: 0.5, ease: "easeInOut" }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
               >
                 <MinimalLoginLayout currentStep={2} totalSteps={3}>
                   <Step2VehicleMinimal
@@ -83,14 +83,14 @@ export default function App() {
               </motion.div>
             )}
 
-            {/* Result con transición especial (zoom in) */}
+            {/* Result con transición suave y elegante */}
             {result && (
               <motion.div
                 key="result"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
+                initial={{ opacity: 0, scale: 0.96, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.96, y: -20 }}
+                transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
               >
                 <MinimalLoginLayout currentStep={3} totalSteps={3}>
                   <ResultMinimal

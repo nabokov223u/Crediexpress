@@ -259,8 +259,16 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
                 >
                   <Input
                     label="Cédula del cónyuge"
-                    placeholder="0000000000"
-                    register={register("spouseId")}
+                    placeholder="Ej: 0987654321"
+                    register={{
+                      ...register("spouseId"),
+                      onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                        // Solo números, máximo 10 dígitos
+                        const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                        e.target.value = value;
+                        register("spouseId").onChange(e);
+                      }
+                    }}
                     error={errors.spouseId}
                     className="h-13 rounded-xl text-base"
                   />
