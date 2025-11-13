@@ -4,7 +4,9 @@ import { FormProvider } from "./context/FormContext";
 import Step1Identity from "./pages/Step1Identity";
 import Step1IdentityMinimal from "./pages/Step1IdentityMinimal";
 import Step2Vehicle from "./pages/Step2Vehicle";
+import Step2VehicleMinimal from "./pages/Step2VehicleMinimal";
 import Result from "./pages/Result";
+import ResultMinimal from "./pages/ResultMinimal";
 import HeroLayout from "./layouts/HeroLayout";
 import MinimalLoginLayout from "./layouts/MinimalLoginLayout";
 import Step2HeroOverlay from "./pages/Step2HeroOverlay";
@@ -56,45 +58,24 @@ export default function App() {
 
           {/* Step 2 y Result: Layout anterior */}
           {!result && step === 2 && (
-            <HeroLayout
-              imageSide="right"
-              imageSrc="/hero%202.jpg"
-              overlayTint="modern"
-              photoChildren={<Step2HeroOverlay />}
-              showCarousel={false}
-            >
-              <div className="relative">
-                <header className="mb-6">
-                  <h1 className="text-3xl font-semibold tracking-tight text-origin">
-                    CrediExpress
-                  </h1>
-                  <p className="mt-1 text-modern">
-                    Precalificación rápida para tu crédito automotriz
-                  </p>
-                </header>
-
-                <div className="card p-6 overflow-hidden">
-                  <div className="min-h-[420px]">
-                    <Step2Vehicle
-                      onBack={() => setStep(1)}
-                      onResult={(s) => setResult(s)}
-                    />
-                  </div>
-                </div>
-              </div>
-            </HeroLayout>
+            <MinimalLoginLayout currentStep={2} totalSteps={3}>
+              <Step2VehicleMinimal
+                onBack={() => setStep(1)}
+                onResult={(s) => setResult(s)}
+              />
+            </MinimalLoginLayout>
           )}
 
           {result && (
-            <HeroLayout>
-              <Result
+            <MinimalLoginLayout currentStep={3} totalSteps={3}>
+              <ResultMinimal
                 status={result}
                 onRestart={() => {
                   setResult(null);
                   setStep(1);
                 }}
               />
-            </HeroLayout>
+            </MinimalLoginLayout>
           )}
         </>
       )}

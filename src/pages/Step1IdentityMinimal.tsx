@@ -105,11 +105,11 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
     <motion.div layout transition={{ duration: 0.3, ease: "easeInOut" }} className="w-full">
       <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
         {/* Header minimalista */}
-        <div className="mb-6">
+        <div className="mb-8">
           <motion.h2
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-2xl md:text-3xl font-bold text-slate-800 mb-2"
+            className="text-3xl md:text-4xl font-bold text-slate-900 mb-3"
           >
             Bienvenido
           </motion.h2>
@@ -117,7 +117,7 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.1 }}
-            className="text-slate-600 text-sm"
+            className="text-slate-700 text-base md:text-lg"
           >
             Comencemos con tu cédula
           </motion.p>
@@ -131,7 +131,7 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
             placeholder="0000000000"
             register={register("idNumber")}
             error={errors.idNumber}
-            className="h-12 text-center text-base tracking-wider font-medium border-2 focus:border-brand transition-all rounded-xl"
+            className="h-14 text-center text-lg tracking-wider font-semibold border-2 focus:border-brand transition-all rounded-xl"
             readOnly={!!showDetails}
           />
         </div>
@@ -143,14 +143,14 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
             className="space-y-4"
           >
             {/* Checkbox de política */}
-            <label className="flex items-start gap-2 cursor-pointer group">
+            <label className="flex items-start gap-3 cursor-pointer group">
               <input
                 type="checkbox"
-                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand focus:ring-brand transition-all"
+                className="mt-1 h-5 w-5 rounded border-slate-300 text-brand focus:ring-brand transition-all"
                 checked={acceptedPolicy}
                 onChange={() => setPolicyOpen(true)}
               />
-              <span className="text-xs text-slate-600 group-hover:text-slate-800 transition-colors">
+              <span className="text-sm text-slate-700 group-hover:text-slate-900 transition-colors leading-relaxed">
                 Acepto la{" "}
                 <button
                   type="button"
@@ -170,7 +170,7 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
               type="button"
               disabled={!acceptedPolicy || loading}
               onClick={fetchAndReveal}
-              className="w-full h-12 bg-gradient-to-r from-brand to-modern text-white rounded-xl font-semibold shadow-lg shadow-brand/20 hover:shadow-xl hover:shadow-brand/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+              className="w-full h-14 bg-gradient-to-r from-brand to-modern text-white rounded-xl font-bold text-lg shadow-lg shadow-brand/20 hover:shadow-xl hover:shadow-brand/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
               whileHover={{ scale: acceptedPolicy && !loading ? 1.01 : 1 }}
               whileTap={{ scale: acceptedPolicy && !loading ? 0.98 : 1 }}
             >
@@ -199,30 +199,30 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="space-y-4 overflow-hidden"
+              className="space-y-5 overflow-hidden"
             >
               <Input
                 label="Nombre completo"
                 placeholder="Tu nombre completo"
                 register={register("fullName")}
                 error={errors.fullName}
-                className="h-11 rounded-xl"
+                className="h-13 rounded-xl text-base"
                 readOnly
               />
 
               {/* Estado civil con diseño pill */}
               <div>
-                <label className="block text-xs font-medium text-slate-700 mb-2">
+                <label className="block text-sm font-semibold text-slate-800 mb-3">
                   Estado civil
                 </label>
-                <div className="flex gap-2">
+                <div className="flex gap-3">
                   {[
                     ["single", "Soltero/a"],
                     ["married", "Casado/a"],
                   ].map(([val, label]) => (
                     <label
                       key={val}
-                      className={`flex-1 h-11 flex items-center justify-center rounded-xl border-2 font-medium text-sm cursor-pointer transition-all ${
+                      className={`flex-1 h-13 flex items-center justify-center rounded-xl border-2 font-semibold text-base cursor-pointer transition-all ${
                         watch("maritalStatus") === val
                           ? "border-brand bg-brand/5 text-brand"
                           : "border-slate-200 hover:border-slate-300"
@@ -251,24 +251,24 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
                     placeholder="0000000000"
                     register={register("spouseId")}
                     error={errors.spouseId}
-                    className="h-11 rounded-xl"
+                    className="h-13 rounded-xl text-base"
                   />
                 </motion.div>
               )}
 
               {/* Contacto */}
-              <div className="pt-2 space-y-3">
-                <h3 className="text-xs font-semibold text-slate-700">
+              <div className="pt-3 space-y-4">
+                <h3 className="text-sm font-bold text-slate-800">
                   Datos de contacto
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Input
                     label="Teléfono"
                     placeholder="+593 99 999 9999"
                     type="tel"
                     register={register("phone")}
                     error={errors.phone}
-                    className="h-11 rounded-xl"
+                    className="h-13 rounded-xl text-base"
                   />
                   <Input
                     label="Correo"
@@ -276,14 +276,14 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
                     type="email"
                     register={register("email")}
                     error={errors.email}
-                    className="h-11 rounded-xl"
+                    className="h-13 rounded-xl text-base"
                   />
                 </div>
               </div>
 
               <motion.button
                 type="submit"
-                className="w-full h-12 bg-gradient-to-r from-brand to-modern text-white rounded-xl font-semibold shadow-lg shadow-brand/20 hover:shadow-xl hover:shadow-brand/30 transition-all duration-300"
+                className="w-full h-14 bg-gradient-to-r from-brand to-modern text-white rounded-xl font-bold text-lg shadow-lg shadow-brand/20 hover:shadow-xl hover:shadow-brand/30 transition-all duration-300"
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
               >

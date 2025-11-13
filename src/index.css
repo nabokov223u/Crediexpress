@@ -35,6 +35,8 @@
 	.label { @apply block text-sm font-medium text-slate-700 mb-1; }
 	.helper { @apply text-xs text-slate-500; }
 	.error { @apply text-xs text-red-600 mt-1; }
+	/* Custom height for better legibility */
+	.h-13 { height: 3.25rem; /* 52px */ }
 	/* Hide browser number spinners when using .no-spin */
 	.no-spin::-webkit-outer-spin-button, .no-spin::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 	.no-spin { -moz-appearance: textfield; }
