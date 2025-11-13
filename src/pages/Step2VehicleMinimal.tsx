@@ -109,33 +109,14 @@ export default function Step2VehicleMinimal({
         >
           Detalles del crédito
         </motion.h2>
-        <div className="flex items-center justify-between">
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.1 }}
-            className="text-slate-700 text-base md:text-lg"
-          >
-            Personaliza tu financiamiento
-          </motion.p>
-          
-          {/* Toggle calculadora avanzada */}
-          <button
-            onClick={() => setShowAdvanced(!showAdvanced)}
-            className="group flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-brand bg-slate-100 hover:bg-brand/10 rounded-lg transition-all duration-300"
-          >
-            <svg
-              className={`w-4 h-4 transition-transform duration-300 ${showAdvanced ? 'rotate-90' : ''}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            Avanzado
-          </button>
-        </div>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="text-slate-700 text-base md:text-lg"
+        >
+          Personaliza tu financiamiento
+        </motion.p>
       </div>
 
       {/* Resumen destacado de la cuota con glassmorphism y bounce */}
@@ -389,91 +370,72 @@ export default function Step2VehicleMinimal({
         </div>
       </div>
 
-      {/* Calculadora avanzada (sutil) */}
-      <AnimatePresence>
+      {/* Toggle calculadora avanzada - DESHABILITADO */}
+      {/* <div className="flex justify-center pt-2">
+        <button
+          onClick={() => setShowAdvanced(!showAdvanced)}
+          className="group flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-600 hover:text-brand bg-slate-100 hover:bg-brand/10 rounded-lg transition-all duration-300"
+        >
+          <svg
+            className={`w-4 h-4 transition-transform duration-300 ${showAdvanced ? 'rotate-90' : ''}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          {showAdvanced ? 'Ocultar detalles' : 'Ver detalles financieros'}
+        </button>
+      </div> */}
+
+      {/* Calculadora avanzada (sutil) - DESHABILITADO */}
+      {/* <AnimatePresence>
         {showAdvanced && (
           <motion.div
-            initial={{ opacity: 0, height: 0, marginTop: 0 }}
-            animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
-            exit={{ opacity: 0, height: 0, marginTop: 0 }}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
             className="overflow-hidden"
           >
-            <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 border border-slate-200 space-y-4">
-              <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                <svg className="w-4 h-4 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                </svg>
-                Desglose financiero
-              </h4>
-              
-              {/* Desglose primera cuota */}
-              <div className="bg-white rounded-lg p-3 border border-slate-200">
-                <p className="text-xs font-semibold text-slate-600 mb-2">Primera cuota detallada</p>
-                <div className="space-y-1.5">
+            <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-4 border border-slate-200 space-y-3">
+              <div className="bg-white rounded-lg p-2.5 border border-slate-200">
+                <p className="text-[11px] font-semibold text-slate-600 mb-1.5">Primera cuota</p>
+                <div className="space-y-1">
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-slate-600">Capital:</span>
-                    <span className="text-sm font-bold text-slate-800">
+                    <span className="text-[10px] text-slate-600">Capital:</span>
+                    <span className="text-xs font-bold text-slate-800">
                       ${((financed * 0.013) * 0.4).toLocaleString('es', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-slate-600">Interés:</span>
-                    <span className="text-sm font-bold text-modern">
+                    <span className="text-[10px] text-slate-600">Interés:</span>
+                    <span className="text-xs font-bold text-modern">
                       ${((financed * 0.013) * 0.6).toLocaleString('es', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                   </div>
-                  <div className="h-px bg-slate-200 my-1" />
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-semibold text-slate-700">Total cuota:</span>
-                    <span className="text-base font-bold text-brand">
-                      ${cuota.toLocaleString('es', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </span>
-                  </div>
                 </div>
               </div>
               
-              {/* Totales */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-white rounded-lg p-3 border border-slate-200">
-                  <p className="text-xs font-medium text-slate-600 mb-1">Total a pagar</p>
-                  <p className="text-lg font-bold text-slate-900">
-                    ${(cuota * term).toLocaleString('es', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              <div className="grid grid-cols-2 gap-2">
+                <div className="bg-white rounded-lg p-2.5 border border-slate-200">
+                  <p className="text-[10px] font-medium text-slate-600 mb-0.5">Total a pagar</p>
+                  <p className="text-sm font-bold text-slate-900">
+                    ${(cuota * term).toLocaleString('es', { maximumFractionDigits: 0 })}
                   </p>
-                  <p className="text-[10px] text-slate-500 mt-0.5">en {term} meses</p>
                 </div>
-                <div className="bg-white rounded-lg p-3 border border-slate-200">
-                  <p className="text-xs font-medium text-slate-600 mb-1">Total intereses</p>
-                  <p className="text-lg font-bold text-modern">
-                    ${((cuota * term) - financed).toLocaleString('es', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                <div className="bg-white rounded-lg p-2.5 border border-slate-200">
+                  <p className="text-[10px] font-medium text-slate-600 mb-0.5">Intereses</p>
+                  <p className="text-sm font-bold text-modern">
+                    ${((cuota * term) - financed).toLocaleString('es', { maximumFractionDigits: 0 })}
                   </p>
-                  <p className="text-[10px] text-slate-500 mt-0.5">TNA 15.6%</p>
                 </div>
-              </div>
-              
-              <div className="text-[10px] text-slate-500 text-center pt-2 border-t border-slate-200">
-                Sistema Francés • Base 30/360 • Cuotas fijas
               </div>
             </div>
           </motion.div>
         )}
-      </AnimatePresence>
-
-      {/* Resumen de financiamiento */}
-      <div className="grid grid-cols-2 gap-4 pt-4">
-        <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-          <p className="text-xs font-medium text-slate-600 mb-1">Monto a financiar</p>
-          <p className="text-2xl font-bold text-slate-900">
-            <CountUp value={financed} prefix="$" duration={0.5} />
-          </p>
-        </div>
-        <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-          <p className="text-xs font-medium text-slate-600 mb-1">Entrada inicial</p>
-          <p className="text-2xl font-bold text-slate-900">
-            <CountUp value={down} prefix="$" duration={0.5} />
-          </p>
-        </div>
-      </div>
+      </AnimatePresence> */}
 
       {/* Error */}
       {error && (

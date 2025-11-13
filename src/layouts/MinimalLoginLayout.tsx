@@ -353,16 +353,21 @@ export default function MinimalLoginLayout({
         </motion.div>
       </div>
 
-      {/* Soporte en esquina superior derecha */}
+      {/* Texto de soporte */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1 }}
-        className="absolute top-6 right-6 text-sm text-white/80 hidden md:block"
+        className="fixed bottom-6 right-6 z-50 text-sm text-white/90"
       >
         ¿Necesitas ayuda?{" "}
-        <a href="#" className="text-white font-medium hover:underline">
-          Soporte
+        <a 
+          href="https://wa.me/593999999999?text=Hola,%20necesito%20ayuda%20con%20mi%20precalificación"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-modern font-semibold hover:text-white transition-colors duration-300 hover:underline"
+        >
+          Contacta a un asesor
         </a>
       </motion.div>
     </div>
