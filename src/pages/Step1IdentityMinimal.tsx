@@ -131,7 +131,7 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
             placeholder="0000000000"
             register={register("idNumber")}
             error={errors.idNumber}
-            className="h-14 text-center text-lg tracking-wider font-semibold border-2 focus:border-brand transition-all rounded-xl"
+            className="h-14 text-center text-lg font-semibold border-2 focus:border-brand transition-all rounded-xl"
             readOnly={!!showDetails}
           />
         </div>
