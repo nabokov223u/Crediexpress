@@ -158,14 +158,14 @@ export default function Step2VehicleMinimal({
       <div className="space-y-6">
         {/* Precio del vehículo con input editable */}
         <div>
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-4">
             <Tooltip content="Precio total del vehículo que deseas financiar" position="top">
-              <label className="text-sm font-semibold text-slate-800 cursor-help border-b border-dashed border-slate-400">
+              <label className="text-base font-bold text-slate-900 cursor-help border-b-2 border-dashed border-slate-400">
                 Precio del vehículo
               </label>
             </Tooltip>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-500">$</span>
+              <span className="text-sm text-slate-600">$</span>
               <input
                 type="text"
                 value={amount.toLocaleString()}
@@ -173,7 +173,7 @@ export default function Step2VehicleMinimal({
                   const val = parseInt(e.target.value.replace(/\D/g, '')) || 15000;
                   handleAmountChange(val);
                 }}
-                className="text-2xl font-bold text-brand bg-transparent border-b-2 border-transparent hover:border-brand/30 focus:border-brand focus:outline-none w-32 text-right transition-colors"
+                className="text-3xl font-bold text-brand bg-transparent border-b-2 border-transparent hover:border-brand/30 focus:border-brand focus:outline-none w-40 text-right transition-colors"
               />
             </div>
           </div>
@@ -233,14 +233,14 @@ export default function Step2VehicleMinimal({
 
         {/* Entrada con presets */}
         <div>
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-4">
             <Tooltip content="Dinero que pagas al inicio (mínimo 20%, máximo 50%)" position="top">
-              <label className="text-sm font-semibold text-slate-800 cursor-help border-b border-dashed border-slate-400">
+              <label className="text-base font-bold text-slate-900 cursor-help border-b-2 border-dashed border-slate-400">
                 Entrada
               </label>
             </Tooltip>
-            <div className="text-2xl font-bold text-modern">
-              {downPct}% <span className="text-base font-normal text-slate-600">(<CountUp value={down} prefix="$" duration={0.5} />)</span>
+            <div className="text-3xl font-bold text-modern">
+              {downPct}% <span className="text-lg font-normal text-slate-600">(<CountUp value={down} prefix="$" duration={0.5} />)</span>
             </div>
           </div>
           
@@ -297,14 +297,14 @@ export default function Step2VehicleMinimal({
 
         {/* Plazo con presets */}
         <div>
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-4">
             <Tooltip content="Tiempo en el que pagarás el crédito (12 a 72 meses)" position="top">
-              <label className="text-sm font-semibold text-slate-800 cursor-help border-b border-dashed border-slate-400">
+              <label className="text-base font-bold text-slate-900 cursor-help border-b-2 border-dashed border-slate-400">
                 Plazo
               </label>
             </Tooltip>
-            <div className="text-2xl font-bold text-slate-700">
-              {term} meses
+            <div className="text-3xl font-bold text-slate-700">
+              {term} <span className="text-lg font-normal text-slate-600">meses</span>
             </div>
           </div>
           
