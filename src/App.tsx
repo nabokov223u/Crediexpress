@@ -49,7 +49,7 @@ export default function App() {
         <>
           {/* Step 1: Nuevo diseño minimalista */}
           {!result && step === 1 && (
-            <MinimalLoginLayout>
+            <MinimalLoginLayout currentStep={1} totalSteps={3}>
               <Step1IdentityMinimal onNext={() => setStep(2)} />
             </MinimalLoginLayout>
           )}

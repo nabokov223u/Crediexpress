@@ -102,14 +102,14 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
   };
 
   return (
-    <motion.div layout transition={{ duration: 0.3, ease: "easeInOut" }}>
-      <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+    <motion.div layout transition={{ duration: 0.3, ease: "easeInOut" }} className="w-full">
+      <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
         {/* Header minimalista */}
-        <div className="text-center mb-8">
+        <div className="mb-6">
           <motion.h2
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-3xl font-bold text-brand mb-2"
+            className="text-2xl md:text-3xl font-bold text-slate-800 mb-2"
           >
             Bienvenido
           </motion.h2>
@@ -117,7 +117,7 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.1 }}
-            className="text-slate-500"
+            className="text-slate-600 text-sm"
           >
             Comencemos con tu cédula
           </motion.p>
@@ -131,7 +131,7 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
             placeholder="0000000000"
             register={register("idNumber")}
             error={errors.idNumber}
-            className="h-14 text-center text-lg tracking-wider font-medium border-2 focus:border-brand transition-all"
+            className="h-12 text-center text-base tracking-wider font-medium border-2 focus:border-brand transition-all rounded-xl"
             readOnly={!!showDetails}
           />
         </div>
@@ -143,14 +143,14 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
             className="space-y-4"
           >
             {/* Checkbox de política */}
-            <label className="flex items-start gap-3 cursor-pointer group">
+            <label className="flex items-start gap-2 cursor-pointer group">
               <input
                 type="checkbox"
-                className="mt-1 h-5 w-5 rounded border-slate-300 text-brand focus:ring-brand transition-all"
+                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand focus:ring-brand transition-all"
                 checked={acceptedPolicy}
                 onChange={() => setPolicyOpen(true)}
               />
-              <span className="text-sm text-slate-600 group-hover:text-slate-800 transition-colors">
+              <span className="text-xs text-slate-600 group-hover:text-slate-800 transition-colors">
                 Acepto la{" "}
                 <button
                   type="button"
@@ -170,8 +170,8 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
               type="button"
               disabled={!acceptedPolicy || loading}
               onClick={fetchAndReveal}
-              className="w-full h-14 bg-gradient-to-r from-brand to-modern text-white rounded-2xl font-semibold text-lg shadow-lg shadow-brand/20 hover:shadow-xl hover:shadow-brand/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
-              whileHover={{ scale: acceptedPolicy && !loading ? 1.02 : 1 }}
+              className="w-full h-12 bg-gradient-to-r from-brand to-modern text-white rounded-xl font-semibold shadow-lg shadow-brand/20 hover:shadow-xl hover:shadow-brand/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+              whileHover={{ scale: acceptedPolicy && !loading ? 1.01 : 1 }}
               whileTap={{ scale: acceptedPolicy && !loading ? 0.98 : 1 }}
             >
               {loading ? (
@@ -199,30 +199,30 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="space-y-5 overflow-hidden"
+              className="space-y-4 overflow-hidden"
             >
               <Input
                 label="Nombre completo"
                 placeholder="Tu nombre completo"
                 register={register("fullName")}
                 error={errors.fullName}
-                className="h-12"
+                className="h-11 rounded-xl"
                 readOnly
               />
 
               {/* Estado civil con diseño pill */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-3">
+                <label className="block text-xs font-medium text-slate-700 mb-2">
                   Estado civil
                 </label>
-                <div className="flex gap-3">
+                <div className="flex gap-2">
                   {[
                     ["single", "Soltero/a"],
                     ["married", "Casado/a"],
                   ].map(([val, label]) => (
                     <label
                       key={val}
-                      className={`flex-1 h-12 flex items-center justify-center rounded-xl border-2 font-medium cursor-pointer transition-all ${
+                      className={`flex-1 h-11 flex items-center justify-center rounded-xl border-2 font-medium text-sm cursor-pointer transition-all ${
                         watch("maritalStatus") === val
                           ? "border-brand bg-brand/5 text-brand"
                           : "border-slate-200 hover:border-slate-300"
@@ -251,24 +251,24 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
                     placeholder="0000000000"
                     register={register("spouseId")}
                     error={errors.spouseId}
-                    className="h-12"
+                    className="h-11 rounded-xl"
                   />
                 </motion.div>
               )}
 
               {/* Contacto */}
-              <div className="pt-4 space-y-4">
-                <h3 className="text-sm font-semibold text-slate-700">
+              <div className="pt-2 space-y-3">
+                <h3 className="text-xs font-semibold text-slate-700">
                   Datos de contacto
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <Input
                     label="Teléfono"
                     placeholder="+593 99 999 9999"
                     type="tel"
                     register={register("phone")}
                     error={errors.phone}
-                    className="h-12"
+                    className="h-11 rounded-xl"
                   />
                   <Input
                     label="Correo"
@@ -276,15 +276,15 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
                     type="email"
                     register={register("email")}
                     error={errors.email}
-                    className="h-12"
+                    className="h-11 rounded-xl"
                   />
                 </div>
               </div>
 
               <motion.button
                 type="submit"
-                className="w-full h-14 bg-gradient-to-r from-brand to-modern text-white rounded-2xl font-semibold text-lg shadow-lg shadow-brand/20 hover:shadow-xl hover:shadow-brand/30 transition-all duration-300"
-                whileHover={{ scale: 1.02 }}
+                className="w-full h-12 bg-gradient-to-r from-brand to-modern text-white rounded-xl font-semibold shadow-lg shadow-brand/20 hover:shadow-xl hover:shadow-brand/30 transition-all duration-300"
+                whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
               >
                 Confirmar y continuar
@@ -309,12 +309,12 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-8"
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6"
             >
-              <h3 className="text-2xl font-bold text-brand mb-4">
+              <h3 className="text-xl font-bold text-brand mb-3">
                 Política de uso de datos
               </h3>
-              <div className="text-sm text-slate-600 space-y-3 max-h-64 overflow-auto pr-2">
+              <div className="text-sm text-slate-600 space-y-2 max-h-60 overflow-auto pr-2">
                 <p>
                   Autorizo a CrediExpress a tratar mis datos personales para la
                   gestión de la precalificación crediticia, validación de
@@ -328,10 +328,10 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
                   Para más detalles, consulta nuestra Política de Privacidad completa.
                 </p>
               </div>
-              <div className="flex gap-3 mt-6">
+              <div className="flex gap-3 mt-5">
                 <button
                   type="button"
-                  className="flex-1 h-12 rounded-xl border-2 border-slate-200 font-medium hover:bg-slate-50 transition-colors"
+                  className="flex-1 h-11 rounded-xl border-2 border-slate-200 font-medium hover:bg-slate-50 transition-colors text-sm"
                   onClick={() => {
                     setAcceptedPolicy(false);
                     setPolicyOpen(false);
@@ -341,7 +341,7 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
                 </button>
                 <button
                   type="button"
-                  className="flex-1 h-12 rounded-xl bg-gradient-to-r from-brand to-modern text-white font-semibold hover:shadow-lg transition-all"
+                  className="flex-1 h-11 rounded-xl bg-gradient-to-r from-brand to-modern text-white font-semibold hover:shadow-lg transition-all text-sm"
                   onClick={() => {
                     setAcceptedPolicy(true);
                     setPolicyOpen(false);
