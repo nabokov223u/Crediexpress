@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FormProvider } from "./context/FormContext";
 import Step1Identity from "./pages/Step1Identity";
+import Step1IdentityMinimal from "./pages/Step1IdentityMinimal";
 import Step2Vehicle from "./pages/Step2Vehicle";
 import Result from "./pages/Result";
 import HeroLayout from "./layouts/HeroLayout";
+import MinimalLoginLayout from "./layouts/MinimalLoginLayout";
 import Step2HeroOverlay from "./pages/Step2HeroOverlay";
 
 export type ResultStatus = "approved" | "review" | "denied" | null;
@@ -44,70 +46,57 @@ export default function App() {
       </AnimatePresence>
 
       {!loadingIntro && (
-        <HeroLayout
-          imageSide={step === 2 ? "right" : "right"}
-          imageSrc={step === 2 ? "/hero%202.jpg" : undefined}
-          overlayTint={step === 2 ? "modern" : "brand"}
-          photoChildren={step === 2 ? <Step2HeroOverlay /> : undefined}
-          showCarousel={step !== 2}
-        >
-          <div className="relative">
-            <header className="mb-6">
-              <h1 className="text-3xl font-semibold tracking-tight text-origin">
-                CrediExpress
-              </h1>
-              <p className="mt-1 text-modern">
-                Precalificación rápida para tu crédito automotriz
-              </p>
-            </header>
+        <>
+          {/* Step 1: Nuevo diseño minimalista */}
+          {!result && step === 1 && (
+            <MinimalLoginLayout>
+              <Step1IdentityMinimal onNext={() => setStep(2)} />
+            </MinimalLoginLayout>
+          )}
 
-            <div className="card p-6 overflow-hidden">
-              <div className="min-h-[420px]">
-                <AnimatePresence mode="wait">
-                  {!result && step === 1 && (
-                    <motion.div
-                      key="s1"
-                      initial={{ opacity: 0, x: -24 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 24 }}
-                      transition={{ duration: 0.35 }}
-                    >
-                      <Step1Identity onNext={() => setStep(2)} />
-                    </motion.div>
-                  )}
-                  {!result && step === 2 && (
-                    <motion.div
-                      key="s2"
-                      initial={{ opacity: 0, x: -24 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 24 }}
-                      transition={{ duration: 0.35 }}
-                    >
-                      <Step2Vehicle onBack={() => setStep(1)} onResult={(s) => setResult(s)} />
-                    </motion.div>
-                  )}
-                  {result && (
-                    <motion.div
-                      key="res"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.35 }}
-                    >
-                      <Result
-                        status={result}
-                        onRestart={() => {
-                          setResult(null);
-                          setStep(1);
-                        }}
-                      />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+          {/* Step 2 y Result: Layout anterior */}
+          {!result && step === 2 && (
+            <HeroLayout
+              imageSide="right"
+              imageSrc="/hero%202.jpg"
+              overlayTint="modern"
+              photoChildren={<Step2HeroOverlay />}
+              showCarousel={false}
+            >
+              <div className="relative">
+                <header className="mb-6">
+                  <h1 className="text-3xl font-semibold tracking-tight text-origin">
+                    CrediExpress
+                  </h1>
+                  <p className="mt-1 text-modern">
+                    Precalificación rápida para tu crédito automotriz
+                  </p>
+                </header>
+
+                <div className="card p-6 overflow-hidden">
+                  <div className="min-h-[420px]">
+                    <Step2Vehicle
+                      onBack={() => setStep(1)}
+                      onResult={(s) => setResult(s)}
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </HeroLayout>
+            </HeroLayout>
+          )}
+
+          {result && (
+            <HeroLayout>
+              <Result
+                status={result}
+                onRestart={() => {
+                  setResult(null);
+                  setStep(1);
+                }}
+              />
+            </HeroLayout>
+          )}
+        </>
       )}
     </FormProvider>
   );
