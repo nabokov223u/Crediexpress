@@ -170,7 +170,18 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
               type="button"
               disabled={!acceptedPolicy || loading}
               onClick={fetchAndReveal}
-              className="w-full h-14 bg-gradient-to-r from-brand to-modern text-white rounded-xl font-bold text-lg shadow-lg shadow-brand/20 hover:shadow-xl hover:shadow-brand/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+              className="w-full h-14 bg-gradient-to-r from-brand via-modern to-brand text-white rounded-xl font-bold text-lg shadow-lg shadow-brand/20 hover:shadow-xl hover:shadow-brand/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 bg-[length:200%_100%]"
+              style={{
+                backgroundPosition: '0% 50%',
+              }}
+              animate={{
+                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: 'linear',
+              }}
               whileHover={{ scale: acceptedPolicy && !loading ? 1.01 : 1 }}
               whileTap={{ scale: acceptedPolicy && !loading ? 0.98 : 1 }}
             >
@@ -283,7 +294,18 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
 
               <motion.button
                 type="submit"
-                className="w-full h-14 bg-gradient-to-r from-brand to-modern text-white rounded-xl font-bold text-lg shadow-lg shadow-brand/20 hover:shadow-xl hover:shadow-brand/30 transition-all duration-300"
+                className="w-full h-14 bg-gradient-to-r from-brand via-modern to-brand text-white rounded-xl font-bold text-lg shadow-lg shadow-brand/20 hover:shadow-xl hover:shadow-brand/30 transition-all duration-300 bg-[length:200%_100%]"
+                style={{
+                  backgroundPosition: '0% 50%',
+                }}
+                animate={{
+                  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: 'linear',
+                }}
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -309,7 +331,7 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6"
+              className="bg-white/95 backdrop-blur-2xl rounded-2xl shadow-2xl w-full max-w-lg p-6 border border-white/30"
             >
               <h3 className="text-xl font-bold text-brand mb-3">
                 Política de uso de datos
@@ -341,7 +363,10 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
                 </button>
                 <button
                   type="button"
-                  className="flex-1 h-11 rounded-xl bg-gradient-to-r from-brand to-modern text-white font-semibold hover:shadow-lg transition-all text-sm"
+                  className="flex-1 h-11 rounded-xl bg-gradient-to-r from-brand via-modern to-brand text-white font-semibold hover:shadow-lg transition-all text-sm bg-[length:200%_100%] animate-gradient"
+                  style={{
+                    animation: 'gradient 3s linear infinite',
+                  }}
                   onClick={() => {
                     setAcceptedPolicy(true);
                     setPolicyOpen(false);

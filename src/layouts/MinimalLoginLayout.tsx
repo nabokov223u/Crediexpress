@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
+import AnimatedCheckIcon from "../components/AnimatedCheckIcon";
 
 interface MinimalLoginLayoutProps {
   children: ReactNode;
@@ -25,6 +26,56 @@ export default function MinimalLoginLayout({
         />
         {/* Overlay de blur y oscurecimiento */}
         <div className="absolute inset-0 backdrop-blur-2xl bg-slate-900/40" />
+        
+        {/* Patrón animado más evidente */}
+        <motion.div
+          className="absolute inset-0 opacity-[0.15]"
+          animate={{
+            backgroundPosition: ['0% 0%', '100% 100%'],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            repeatType: 'reverse',
+            ease: 'linear',
+          }}
+          style={{
+            backgroundImage: `
+              radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.9) 3px, transparent 3px),
+              radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.7) 2px, transparent 2px),
+              radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.5) 1.5px, transparent 1.5px)
+            `,
+            backgroundSize: '70px 70px, 50px 50px, 35px 35px',
+          }}
+        />
+        
+        {/* Elementos decorativos adicionales */}
+        <motion.div
+          className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand/5 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            x: [0, 50, 0],
+            y: [0, -30, 0],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+        <motion.div
+          className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-modern/5 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.3, 1],
+            x: [0, -40, 0],
+            y: [0, 40, 0],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
       </div>
 
       {/* Contenedor principal centrado */}
@@ -34,13 +85,13 @@ export default function MinimalLoginLayout({
           initial={{ opacity: 0, y: 20, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="w-full max-w-7xl"
+          className="w-full max-w-6xl"
         >
           {/* Card principal */}
           <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
-            <div className="grid grid-cols-1 lg:grid-cols-[42%_58%] min-h-[700px]">
+            <div className="grid grid-cols-1 lg:grid-cols-[40%_60%] min-h-[650px]">
               {/* Columna izquierda - Logo y contenido informativo */}
-              <div className="relative bg-gradient-to-br from-slate-50 to-slate-100 p-10 md:p-12 flex flex-col justify-between">
+              <div className="relative bg-gradient-to-br from-slate-50 to-slate-100 p-10 md:p-12 flex flex-col justify-between overflow-hidden">
                 {/* Contenido superior */}
                 <div className="flex-1 flex flex-col items-center justify-center">
                   {/* Logo animado grande */}
@@ -178,11 +229,11 @@ export default function MinimalLoginLayout({
             transition={{ duration: 0.6, delay: 0.4 }}
             className="mt-6 flex items-center justify-center gap-4"
           >
-            {/* Barra de progreso */}
+            {/* Barra de progreso con glassmorphism */}
             <div className="flex items-center gap-2">
-              <div className="w-32 md:w-48 h-2 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
+              <div className="w-48 md:w-64 h-2.5 bg-white/30 backdrop-blur-md rounded-full overflow-hidden border border-white/20">
                 <motion.div
-                  className="h-full bg-white rounded-full"
+                  className="h-full bg-white rounded-full shadow-lg"
                   initial={{ width: 0 }}
                   animate={{ width: `${(currentStep / totalSteps) * 100}%` }}
                   transition={{ duration: 0.5, ease: "easeOut" }}

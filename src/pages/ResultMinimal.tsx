@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import AnimatedCheckIcon from "../components/AnimatedCheckIcon";
 
 interface ResultMinimalProps {
   status: "approved" | "review" | "denied";
@@ -11,7 +12,7 @@ export default function ResultMinimal({ status, onRestart }: ResultMinimalProps)
       title: "¡Felicitaciones!",
       subtitle: "Tu crédito fue preaprobado",
       description: "Nuestro equipo se comunicará contigo en las próximas horas para completar el proceso y coordinar la entrega de tu vehículo.",
-      icon: "✅",
+      icon: <AnimatedCheckIcon className="w-24 h-24 text-green-500" />,
       gradient: "from-green-500 to-emerald-600",
       bgColor: "bg-green-50",
       textColor: "text-green-900",
@@ -21,7 +22,7 @@ export default function ResultMinimal({ status, onRestart }: ResultMinimalProps)
       title: "En análisis",
       subtitle: "Estamos revisando tu solicitud",
       description: "Tu solicitud está siendo evaluada por nuestro equipo. Te contactaremos pronto con una respuesta. Este proceso puede tomar entre 24 a 48 horas.",
-      icon: "🕓",
+      icon: <div className="w-24 h-24 text-blue-500 text-7xl flex items-center justify-center">🕓</div>,
       gradient: "from-blue-500 to-indigo-600",
       bgColor: "bg-blue-50",
       textColor: "text-blue-900",
@@ -57,7 +58,7 @@ export default function ResultMinimal({ status, onRestart }: ResultMinimalProps)
           damping: 15,
           delay: 0.1 
         }}
-        className={`w-24 h-24 rounded-full ${cfg.iconBg} flex items-center justify-center text-5xl mb-6 shadow-lg`}
+        className="mb-6"
       >
         {cfg.icon}
       </motion.div>
@@ -102,15 +103,15 @@ export default function ResultMinimal({ status, onRestart }: ResultMinimalProps)
           transition={{ delay: 0.6 }}
           className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-2xl mb-8"
         >
-          <div className="bg-white rounded-xl p-4 border border-slate-200 text-center">
+          <div className="bg-white/80 backdrop-blur-md rounded-xl p-4 border border-slate-200/50 text-center shadow-sm">
             <p className="text-xs font-medium text-slate-600 mb-1">Próximo paso</p>
             <p className="text-sm font-bold text-slate-900">Verificación de documentos</p>
           </div>
-          <div className="bg-white rounded-xl p-4 border border-slate-200 text-center">
+          <div className="bg-white/80 backdrop-blur-md rounded-xl p-4 border border-slate-200/50 text-center shadow-sm">
             <p className="text-xs font-medium text-slate-600 mb-1">Tiempo estimado</p>
             <p className="text-sm font-bold text-slate-900">24-48 horas</p>
           </div>
-          <div className="bg-white rounded-xl p-4 border border-slate-200 text-center">
+          <div className="bg-white/80 backdrop-blur-md rounded-xl p-4 border border-slate-200/50 text-center shadow-sm">
             <p className="text-xs font-medium text-slate-600 mb-1">Contacto</p>
             <p className="text-sm font-bold text-slate-900">Vía email o teléfono</p>
           </div>

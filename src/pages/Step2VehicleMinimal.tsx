@@ -3,6 +3,8 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { monthlyPayment } from "../services/calculator";
 import { submitPrequalification } from "../services/api";
+import CountUp from "../components/CountUp";
+import Tooltip from "../components/Tooltip";
 
 export default function Step2VehicleMinimal({ 
   onBack, 
@@ -96,16 +98,34 @@ export default function Step2VehicleMinimal({
         </motion.p>
       </div>
 
-      {/* Resumen destacado de la cuota */}
+      {/* Resumen destacado de la cuota con glassmorphism */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.2 }}
-        className="bg-gradient-to-br from-brand to-modern rounded-2xl p-6 text-white text-center"
+        className="bg-gradient-to-br from-brand/90 via-modern/90 to-brand/90 backdrop-blur-xl rounded-2xl p-6 text-white text-center relative overflow-hidden bg-[length:200%_200%] border border-white/20"
+        style={{
+          backgroundPosition: '0% 50%',
+        }}
       >
-        <p className="text-sm font-medium mb-2 opacity-90">Tu cuota mensual estimada</p>
-        <p className="text-5xl font-bold">${cuota.toLocaleString("es-EC")}</p>
-        <p className="text-xs mt-3 opacity-80">Por {term} meses • Tasa referencial 2% mensual</p>
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"
+          animate={{
+            backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
+          }}
+          transition={{
+            duration: 5,
+            repeat: Infinity,
+            ease: 'linear',
+          }}
+        />
+        <div className="relative z-10">
+          <p className="text-sm font-medium mb-2 opacity-90">Tu cuota mensual estimada</p>
+          <p className="text-5xl font-bold">
+            <CountUp value={cuota} prefix="$" duration={0.8} />
+          </p>
+          <p className="text-xs mt-3 opacity-80">Por {term} meses • Tasa referencial 2% mensual</p>
+        </div>
       </motion.div>
 
       {/* Sliders */}
@@ -113,11 +133,13 @@ export default function Step2VehicleMinimal({
         {/* Monto del vehículo */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <label className="text-sm font-semibold text-slate-800">
-              Monto del vehículo
-            </label>
+            <Tooltip content="Precio total del vehículo que deseas financiar" position="top">
+              <label className="text-sm font-semibold text-slate-800 cursor-help border-b border-dashed border-slate-400">
+                Monto del vehículo
+              </label>
+            </Tooltip>
             <div className="text-2xl font-bold text-brand">
-              ${amount.toLocaleString("es-EC")}
+              <CountUp value={amount} prefix="$" duration={0.5} />
             </div>
           </div>
           <input
@@ -138,11 +160,13 @@ export default function Step2VehicleMinimal({
         {/* Entrada */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <label className="text-sm font-semibold text-slate-800">
-              Entrada
-            </label>
+            <Tooltip content="Dinero que pagas al inicio (mínimo 20%, máximo 50%)" position="top">
+              <label className="text-sm font-semibold text-slate-800 cursor-help border-b border-dashed border-slate-400">
+                Entrada
+              </label>
+            </Tooltip>
             <div className="text-2xl font-bold text-modern">
-              {downPct}% <span className="text-base font-normal text-slate-600">(${down.toLocaleString("es-EC")})</span>
+              {downPct}% <span className="text-base font-normal text-slate-600">(<CountUp value={down} prefix="$" duration={0.5} />)</span>
             </div>
           </div>
           <input
@@ -163,9 +187,11 @@ export default function Step2VehicleMinimal({
         {/* Plazo */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <label className="text-sm font-semibold text-slate-800">
-              Plazo
-            </label>
+            <Tooltip content="Tiempo en el que pagarás el crédito (12 a 60 meses)" position="top">
+              <label className="text-sm font-semibold text-slate-800 cursor-help border-b border-dashed border-slate-400">
+                Plazo
+              </label>
+            </Tooltip>
             <div className="text-2xl font-bold text-slate-700">
               {term} meses
             </div>
@@ -190,11 +216,15 @@ export default function Step2VehicleMinimal({
       <div className="grid grid-cols-2 gap-4 pt-4">
         <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
           <p className="text-xs font-medium text-slate-600 mb-1">Monto a financiar</p>
-          <p className="text-2xl font-bold text-slate-900">${financed.toLocaleString("es-EC")}</p>
+          <p className="text-2xl font-bold text-slate-900">
+            <CountUp value={financed} prefix="$" duration={0.5} />
+          </p>
         </div>
         <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
           <p className="text-xs font-medium text-slate-600 mb-1">Entrada inicial</p>
-          <p className="text-2xl font-bold text-slate-900">${down.toLocaleString("es-EC")}</p>
+          <p className="text-2xl font-bold text-slate-900">
+            <CountUp value={down} prefix="$" duration={0.5} />
+          </p>
         </div>
       </div>
 
@@ -224,7 +254,18 @@ export default function Step2VehicleMinimal({
           type="button"
           onClick={handleCalificar}
           disabled={loading}
-          className="flex-1 h-14 bg-gradient-to-r from-brand to-modern text-white rounded-xl font-bold text-lg shadow-lg shadow-brand/20 hover:shadow-xl hover:shadow-brand/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+          className="flex-1 h-14 bg-gradient-to-r from-brand via-modern to-brand text-white rounded-xl font-bold text-lg shadow-lg shadow-brand/20 hover:shadow-xl hover:shadow-brand/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 bg-[length:200%_100%]"
+          style={{
+            backgroundPosition: '0% 50%',
+          }}
+          animate={{
+            backgroundPosition: loading ? '0% 50%' : ['0% 50%', '100% 50%', '0% 50%'],
+          }}
+          transition={{
+            duration: 3,
+            repeat: loading ? 0 : Infinity,
+            ease: 'linear',
+          }}
           whileHover={{ scale: loading ? 1 : 1.01 }}
           whileTap={{ scale: loading ? 1 : 0.98 }}
         >

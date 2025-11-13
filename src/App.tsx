@@ -49,34 +49,61 @@ export default function App() {
 
       {!loadingIntro && (
         <>
-          {/* Step 1: Nuevo diseño minimalista */}
-          {!result && step === 1 && (
-            <MinimalLoginLayout currentStep={1} totalSteps={3}>
-              <Step1IdentityMinimal onNext={() => setStep(2)} />
-            </MinimalLoginLayout>
-          )}
+          {/* Step 1: Nuevo diseño minimalista con transición */}
+          <AnimatePresence mode="wait">
+            {!result && step === 1 && (
+              <motion.div
+                key="step1"
+                initial={{ opacity: 0, x: -100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 100 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+              >
+                <MinimalLoginLayout currentStep={1} totalSteps={3}>
+                  <Step1IdentityMinimal onNext={() => setStep(2)} />
+                </MinimalLoginLayout>
+              </motion.div>
+            )}
 
-          {/* Step 2 y Result: Layout anterior */}
-          {!result && step === 2 && (
-            <MinimalLoginLayout currentStep={2} totalSteps={3}>
-              <Step2VehicleMinimal
-                onBack={() => setStep(1)}
-                onResult={(s) => setResult(s)}
-              />
-            </MinimalLoginLayout>
-          )}
+            {/* Step 2 con transición */}
+            {!result && step === 2 && (
+              <motion.div
+                key="step2"
+                initial={{ opacity: 0, x: -100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 100 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+              >
+                <MinimalLoginLayout currentStep={2} totalSteps={3}>
+                  <Step2VehicleMinimal
+                    onBack={() => setStep(1)}
+                    onResult={(s) => setResult(s)}
+                  />
+                </MinimalLoginLayout>
+              </motion.div>
+            )}
 
-          {result && (
-            <MinimalLoginLayout currentStep={3} totalSteps={3}>
-              <ResultMinimal
-                status={result}
-                onRestart={() => {
-                  setResult(null);
-                  setStep(1);
-                }}
-              />
-            </MinimalLoginLayout>
-          )}
+            {/* Result con transición especial (zoom in) */}
+            {result && (
+              <motion.div
+                key="result"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+              >
+                <MinimalLoginLayout currentStep={3} totalSteps={3}>
+                  <ResultMinimal
+                    status={result}
+                    onRestart={() => {
+                      setResult(null);
+                      setStep(1);
+                    }}
+                  />
+                </MinimalLoginLayout>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </>
       )}
     </FormProvider>

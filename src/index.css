@@ -37,6 +37,15 @@
 	.error { @apply text-xs text-red-600 mt-1; }
 	/* Custom height for better legibility */
 	.h-13 { height: 3.25rem; /* 52px */ }
+	/* Animated gradient for buttons */
+	@keyframes gradient {
+		0%, 100% { background-position: 0% 50%; }
+		50% { background-position: 100% 50%; }
+	}
+	.animate-gradient {
+		background-size: 200% 100%;
+		animation: gradient 3s linear infinite;
+	}
 	/* Hide browser number spinners when using .no-spin */
 	.no-spin::-webkit-outer-spin-button, .no-spin::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 	.no-spin { -moz-appearance: textfield; }
