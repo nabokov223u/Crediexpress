@@ -70,18 +70,26 @@ export async function submitPrequalification(payload: FormData): Promise<Prequal
     // Preparar el request
     const requestBody = mapFormDataToRequest(payload);
     
-    console.log('📤 Enviando solicitud al calificador:', requestBody);
+    console.log('📤 Enviando solicitud al calificador:');
+    console.log('URL:', API_ENDPOINT);
+    console.log('Body:', requestBody);
     
     // Llamar al API del calificador
     const response = await fetch(API_ENDPOINT, {
       method: 'POST',
+      mode: 'cors',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
       body: JSON.stringify(requestBody),
     });
     
+    console.log('📡 Status:', response.status, response.statusText);
+    
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ Error del servidor:', errorText);
       throw new Error(`Error HTTP: ${response.status} ${response.statusText}`);
     }
     
@@ -113,10 +121,23 @@ export async function submitPrequalification(payload: FormData): Promise<Prequal
     }
     
   } catch (error) {
-    console.error('❌ Error en la calificación de crédito:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+    
+    // Detectar si es error de CORS
+    if (errorMessage.includes('fetch') || errorMessage.includes('CORS') || errorMessage.includes('Failed to fetch')) {
+      console.error('🚫 Error de CORS detectado - El servidor no permite peticiones desde este origen');
+      console.warn('💡 Solución: El equipo de backend debe configurar CORS en api-pre.originarsa.com');
+      console.warn('   Headers necesarios:');
+      console.warn('   - Access-Control-Allow-Origin: * (o tu dominio específico)');
+      console.warn('   - Access-Control-Allow-Methods: POST, OPTIONS');
+      console.warn('   - Access-Control-Allow-Headers: Content-Type, Accept');
+    } else {
+      console.error('❌ Error en la calificación de crédito:', errorMessage);
+    }
     
     // En caso de error, usar lógica fallback (la original)
     console.warn('🔄 Usando lógica de calificación local como fallback');
+    console.info('ℹ️ La aplicación sigue funcionando normalmente con calificación local');
     
     const financed = payload.loan.vehicleAmount * (1 - payload.loan.downPaymentPct);
     let status: 'approved' | 'review' | 'denied';
