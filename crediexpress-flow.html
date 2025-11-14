@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CrediExpress - Presentación Ejecutiva</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    
+    * { 
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: transparent;
+      overflow: hidden;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 1; }
+      50% { transform: scale(1); opacity: 0.7; }
+      100% { transform: scale(0.95); opacity: 1; }
+    }
+    
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .slide {
+      display: none;
+      opacity: 0;
+      height: 100vh;
+      width: 100vw;
+      padding: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: transparent;
+    }
+    
+    .slide.active {
+      display: flex;
+      animation: fadeIn 0.6s ease-out forwards;
+    }
+    
+    .slide-content {
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      margin: 0;
+      padding: 0;
+      animation: slideInUp 0.8s ease-out;
+    }
+    
+    .presentation-card {
+      background: #ffffff;
+      backdrop-filter: none;
+      border-radius: 0;
+      border: none;
+      padding: 80px 100px 140px 100px;
+      box-shadow: none;
+      width: 100%;
+      max-width: 100%;
+      height: 100%;
+      max-height: 100%;
+      overflow-y: auto;
+    }
+    
+    .presentation-card-dark {
+      background: linear-gradient(135deg, #1a0f50 0%, #0763FD 100%);
+      color: white;
+      border: none;
+      border-radius: 0;
+      padding: 80px 100px 140px 100px;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .badge {
+      display: inline-block;
+      background: rgba(7, 99, 253, 0.1);
+      color: #0763FD;
+      padding: 6px 16px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 4px 6px 4px 0;
+    }
+    
+    .badge-dark {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+    
+    .badge-success {
+      background: rgba(34, 197, 94, 0.15);
+      color: #22c55e;
+    }
+    
+    .badge-warning {
+      background: rgba(251, 191, 36, 0.15);
+      color: #fbbf24;
+    }
+    
+    .highlight {
+      background: linear-gradient(120deg, rgba(7, 99, 253, 0.1) 0%, rgba(7, 99, 253, 0.05) 100%);
+      border-left: 4px solid #0763FD;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+    }
+    
+    .highlight-dark {
+      background: rgba(255, 255, 255, 0.1);
+      border-left-color: #e0d2a2;
+    }
+    
+    .nav-controls {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 20px;
+      z-index: 100;
+    }
+    
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 14px 32px;
+      border-radius: 50px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      color: #1a0f50;
+    }
+    
+    .nav-btn:hover:not(:disabled) {
+      background: #0763FD;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px rgba(7, 99, 253, 0.4);
+    }
+    
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+    
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #0763FD 0%, #e0d2a2 100%);
+      transition: width 0.5s ease;
+      z-index: 1000;
+    }
+    
+    .slide-counter {
+      position: fixed;
+      top: 40px;
+      right: 40px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-weight: 600;
+      color: #1a0f50;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+    }
+    
+    #logo-container {
+      display: none;
+    }
+    
+    code {
+      background: rgba(0, 0, 0, 0.05);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .presentation-card-dark code {
+      background: rgba(255, 255, 255, 0.15);
+      color: #e0d2a2;
+    }
+    
+    .metric-box {
+      background: rgba(7, 99, 253, 0.05);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      border: 2px solid rgba(7, 99, 253, 0.2);
+    }
+    
+    .metric-box-dark {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+    
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+    }
+    
+    ul.styled-list {
+      list-style: none;
+      padding-left: 0;
+    }
+    
+    ul.styled-list li {
+      padding: 12px 0;
+      padding-left: 30px;
+      position: relative;
+    }
+    
+    ul.styled-list li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: #22c55e;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    
+    .index-item {
+      background: rgba(7, 99, 253, 0.05);
+      border-left: 4px solid #0763FD;
+      padding: 20px 24px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .index-item:hover {
+      background: rgba(7, 99, 253, 0.12);
+      transform: translateX(8px);
+      box-shadow: 0 4px 12px rgba(7, 99, 253, 0.2);
+    }
+    
+    .flow-step {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      position: relative;
+    }
+    
+    .flow-arrow {
+      font-size: 36px;
+      color: rgba(255, 255, 255, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <!-- Logo 3D -->
+  <div id="logo-container"></div>
+  
+  <!-- Progress Bar -->
+  <div class="progress-bar" id="progress"></div>
+  
+  <!-- Slide Counter -->
+  <div class="slide-counter" id="counter">1 / 11</div>
+  
+  <!-- Navigation Controls -->
+  <div class="nav-controls">
+    <button class="nav-btn" id="prevBtn" onclick="previousSlide()" disabled>← Anterior</button>
+    <button class="nav-btn" id="nextBtn" onclick="nextSlide()">Continuar →</button>
+  </div>
+
+  <!-- SLIDE 1: PORTADA -->
+  <div class="slide active" id="slide-1">
+    <div class="slide-content flex items-center justify-center">
+      <div class="presentation-card text-center" style="max-width: 900px;">
+        <div class="inline-block mb-6">
+          <span class="badge badge-success" style="font-size: 14px;">INNOVACIÓN DIGITAL</span>
+        </div>
+        <h1 class="text-7xl font-black mb-6 bg-gradient-to-r from-[#1a0f50] to-[#0763FD] bg-clip-text text-transparent">
+          CrediExpress
+        </h1>
+        <p class="text-3xl font-light text-[#64748b] mb-8">
+          La revolución digital en <strong class="font-bold text-[#1a0f50]">pre-calificación crediticia</strong>
+        </p>
+        <div class="h-1 w-32 mx-auto bg-gradient-to-r from-[#0763FD] to-[#e0d2a2] rounded-full mb-10"></div>
+        <p class="text-xl text-[#475569] leading-relaxed max-w-2xl mx-auto">
+          Una experiencia de usuario <strong>premium</strong>, diseñada para convertir <strong>leads digitales</strong> en <strong>clientes calificados</strong> en menos de <strong>60 segundos</strong>.
+        </p>
+        <div class="mt-12 grid-3">
+          <div class="metric-box">
+            <div class="text-5xl font-black text-[#0763FD] mb-2">60s</div>
+            <div class="text-sm text-[#64748b] font-semibold">Tiempo promedio</div>
+          </div>
+          <div class="metric-box">
+            <div class="text-5xl font-black text-[#0763FD] mb-2">100%</div>
+            <div class="text-sm text-[#64748b] font-semibold">Digital & Responsive</div>
+          </div>
+          <div class="metric-box">
+            <div class="text-5xl font-black text-[#0763FD] mb-2">0</div>
+            <div class="text-sm text-[#64748b] font-semibold">Fricción del usuario</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: ÍNDICE -->
+  <div class="slide" id="slide-2">
+    <div class="slide-content flex items-center justify-center">
+      <div class="presentation-card" style="max-width: 1100px;">
+        <h2 class="text-5xl font-black mb-4 text-[#1a0f50]">Agenda de Presentación</h2>
+        <p class="text-xl text-[#64748b] mb-10">9 puntos clave que transforman leads en clientes</p>
+        
+        <div class="grid-2 gap-6">
+          <div>
+            <div class="index-item" onclick="goToSlide(3)">
+              <div class="flex items-center gap-4">
+                <div class="text-4xl">💡</div>
+                <div>
+                  <h3 class="text-xl font-bold text-[#1a0f50] mb-1">1. El Desafío</h3>
+                  <p class="text-sm text-[#64748b]">Problema actual y nuestra solución</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="index-item" onclick="goToSlide(4)">
+              <div class="flex items-center gap-4">
+                <div class="text-4xl">🎨</div>
+                <div>
+                  <h3 class="text-xl font-bold text-[#1a0f50] mb-1">2. Experiencia Premium</h3>
+                  <p class="text-sm text-[#64748b]">Diseño y performance de clase mundial</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="index-item" onclick="goToSlide(5)">
+              <div class="flex items-center gap-4">
+                <div class="text-4xl">🔄</div>
+                <div>
+                  <h3 class="text-xl font-bold text-[#1a0f50] mb-1">3. Diagrama de Flujo</h3>
+                  <p class="text-sm text-[#64748b]">Visualización completa del proceso</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="index-item" onclick="goToSlide(6)">
+              <div class="flex items-center gap-4">
+                <div class="text-4xl">🎯</div>
+                <div>
+                  <h3 class="text-xl font-bold text-[#1a0f50] mb-1">4. Captura & Validación</h3>
+                  <p class="text-sm text-[#64748b]">Pasos 1 y 2: Lead y verificación de cédula</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="index-item" onclick="goToSlide(7)">
+              <div class="flex items-center gap-4">
+                <div class="text-4xl">💰</div>
+                <div>
+                  <h3 class="text-xl font-bold text-[#1a0f50] mb-1">5. Simulador Financiero</h3>
+                  <p class="text-sm text-[#64748b]">Motor de cálculo Sistema Francés</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <div class="index-item" onclick="goToSlide(8)">
+              <div class="flex items-center gap-4">
+                <div class="text-4xl">🔌</div>
+                <div>
+                  <h3 class="text-xl font-bold text-[#1a0f50] mb-1">6. Integración API</h3>
+                  <p class="text-sm text-[#64748b]">Calificación crediticia en tiempo real</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="index-item" onclick="goToSlide(9)">
+              <div class="flex items-center gap-4">
+                <div class="text-4xl">✨</div>
+                <div>
+                  <h3 class="text-xl font-bold text-[#1a0f50] mb-1">7. Resultado al Usuario</h3>
+                  <p class="text-sm text-[#64748b]">3 caminos con psicología visual</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="index-item" onclick="goToSlide(10)">
+              <div class="flex items-center gap-4">
+                <div class="text-4xl">🔥</div>
+                <div>
+                  <h3 class="text-xl font-bold text-[#1a0f50] mb-1">8. Firebase & CRM</h3>
+                  <p class="text-sm text-[#64748b]">Persistencia y gestión comercial</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="index-item" onclick="goToSlide(11)">
+              <div class="flex items-center gap-4">
+                <div class="text-4xl">🚀</div>
+                <div>
+                  <h3 class="text-xl font-bold text-[#1a0f50] mb-1">9. Conclusión</h3>
+                  <p class="text-sm text-[#64748b]">Por qué CrediExpress es la solución</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: PROBLEMA Y SOLUCIÓN -->
+  <div class="slide" id="slide-3">
+    <div class="slide-content">
+      <div class="presentation-card">
+        <h2 class="text-5xl font-black mb-4 text-[#1a0f50]">El Desafío</h2>
+        <p class="text-xl text-[#64748b] mb-10">¿Cómo capturamos y calificamos leads digitales de manera efectiva?</p>
+        
+        <div class="grid-2 mb-10">
+          <div>
+            <h3 class="text-2xl font-bold mb-4 text-red-600">❌ Antes</h3>
+            <ul class="space-y-3 text-[#475569]">
+              <li>📝 Formularios largos y complejos</li>
+              <li>⏱️ Tiempo de respuesta: 24-48 horas</li>
+              <li>📞 Requiere múltiples llamadas</li>
+              <li>😓 Alta tasa de abandono (~70%)</li>
+              <li>📄 Documentación física requerida</li>
+              <li>🤷 Sin visibilidad del estado</li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 class="text-2xl font-bold mb-4 text-green-600">✅ Con CrediExpress</h3>
+            <ul class="space-y-3 text-[#475569]">
+              <li>🚀 <strong>3 pasos simples</strong>, diseño minimalista</li>
+              <li>⚡ <strong>Respuesta inmediata</strong> (< 60 segundos)</li>
+              <li>🎯 <strong>Auto-calificación</strong> inteligente</li>
+              <li>💎 <strong>Conversión optimizada</strong> (~45%)</li>
+              <li>📱 <strong>100% digital</strong>, cero papel</li>
+              <li>✨ <strong>Feedback visual</strong> en tiempo real</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="highlight">
+          <p class="text-lg font-semibold text-[#1a0f50] mb-2">💡 Valor Clave</p>
+          <p class="text-[#475569]">
+            Transformamos la fricción en una experiencia <strong>fluida y memorable</strong>, reduciendo el tiempo de pre-calificación de <strong>días a segundos</strong> y mejorando la satisfacción del cliente desde el primer contacto.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: EXPERIENCIA DE USUARIO -->
+  <div class="slide" id="slide-4">
+    <div class="slide-content">
+      <div class="presentation-card-dark presentation-card">
+        <h2 class="text-5xl font-black mb-4">Experiencia Premium</h2>
+        <p class="text-xl text-white/80 mb-10">Cada detalle cuenta en la conversión</p>
+        
+        <div class="grid-2 mb-8">
+          <div>
+            <h3 class="text-2xl font-bold mb-6">🎨 Diseño Minimalista</h3>
+            <ul class="styled-list text-white/90 space-y-3">
+              <li><strong>Split-screen elegante:</strong> 40% branding + 60% funcionalidad</li>
+              <li><strong>Logo 3D interactivo</strong> con parallax y mouse tracking</li>
+              <li><strong>Glassmorphism</strong> en todos los elementos</li>
+              <li><strong>Microanimaciones</strong> con Framer Motion</li>
+              <li><strong>Gradientes dinámicos</strong> que guían la atención</li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 class="text-2xl font-bold mb-6">⚡ Performance</h3>
+            <ul class="styled-list text-white/90 space-y-3">
+              <li><strong>< 100KB</strong> bundle inicial (optimizado)</li>
+              <li><strong>Code splitting</strong> automático</li>
+              <li><strong>Lazy loading</strong> de componentes</li>
+              <li><strong>SessionStorage</strong> para no perder progreso</li>
+              <li><strong>Responsive</strong> mobile-first</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="highlight highlight-dark">
+          <p class="text-lg font-semibold mb-3">🎯 Easter Eggs & Engagement</p>
+          <div class="grid-2 text-white/90">
+            <div>
+              <strong>• Triple-click en logo:</strong> Confetti celebration<br>
+              <strong>• Konami code:</strong> Mensaje secreto<br>
+              <strong>• Bounce animations:</strong> Feedback visual instantáneo
+            </div>
+            <div>
+              <span class="badge badge-dark">Gamificación</span>
+              <span class="badge badge-dark">Sorpresa</span>
+              <span class="badge badge-dark">Memorabilidad</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: DIAGRAMA DE FLUJO VISUAL -->
+  <div class="slide" id="slide-5">
+    <div class="slide-content flex items-center justify-center">
+      <div class="presentation-card-dark presentation-card" style="max-width: 1200px;">
+        <h2 class="text-5xl font-black mb-4 text-center">Flujo Completo: De Lead a Cliente</h2>
+        <p class="text-xl text-white/80 mb-12 text-center">Arquitectura end-to-end en 60 segundos</p>
+        
+        <div class="space-y-6">
+          <!-- Fila 1: Entrada y Validación -->
+          <div class="grid grid-cols-5 gap-4 items-center">
+            <div class="flow-step">
+              <div class="text-4xl mb-3">🎯</div>
+              <h3 class="font-bold text-lg mb-2">Lead Digital</h3>
+              <p class="text-sm text-white/70">Meta/Google Ads</p>
+              <p class="text-xs text-white/50 mt-2">UTM tracking</p>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+              <div class="text-4xl mb-3">📋</div>
+              <h3 class="font-bold text-lg mb-2">Validación</h3>
+              <p class="text-sm text-white/70">Cédula ecuatoriana</p>
+              <p class="text-xs text-white/50 mt-2">Módulo 10 + API</p>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+              <div class="text-4xl mb-3">💰</div>
+              <h3 class="font-bold text-lg mb-2">Simulador</h3>
+              <p class="text-sm text-white/70">Sistema Francés</p>
+              <p class="text-xs text-white/50 mt-2">TNA 15.6%</p>
+            </div>
+          </div>
+          
+          <div class="text-center">
+            <div class="flow-arrow" style="font-size: 48px;">⬇</div>
+          </div>
+          
+          <!-- Fila 2: API y Resultado -->
+          <div class="grid grid-cols-5 gap-4 items-center">
+            <div class="flow-step">
+              <div class="text-4xl mb-3">🔌</div>
+              <h3 class="font-bold text-lg mb-2">API Scoring</h3>
+              <p class="text-sm text-white/70">Calificación real</p>
+              <p class="text-xs text-white/50 mt-2">+ Fallback local</p>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step" style="border-color: #22c55e;">
+              <div class="text-4xl mb-3">✅</div>
+              <h3 class="font-bold text-lg mb-2 text-green-300">Aprobado</h3>
+              <p class="text-sm text-white/70">Confetti 🎉</p>
+            </div>
+            <div class="flow-step" style="border-color: #fbbf24;">
+              <div class="text-4xl mb-3">⏳</div>
+              <h3 class="font-bold text-lg mb-2 text-yellow-300">Revisión</h3>
+              <p class="text-sm text-white/70">24-48h</p>
+            </div>
+            <div class="flow-step" style="border-color: #ef4444;">
+              <div class="text-4xl mb-3">❌</div>
+              <h3 class="font-bold text-lg mb-2 text-red-300">Negado</h3>
+              <p class="text-sm text-white/70">Alternativas</p>
+            </div>
+          </div>
+          
+          <div class="text-center">
+            <div class="flow-arrow" style="font-size: 48px;">⬇</div>
+            <p class="text-white/60 text-sm mt-2">(Solo Aprobados y Revisión)</p>
+          </div>
+          
+          <!-- Fila 3: Persistencia y Gestión -->
+          <div class="grid grid-cols-5 gap-4 items-center">
+            <div class="col-start-2 flow-step">
+              <div class="text-4xl mb-3">🔥</div>
+              <h3 class="font-bold text-lg mb-2">Firebase</h3>
+              <p class="text-sm text-white/70">Firestore DB</p>
+              <p class="text-xs text-white/50 mt-2">Real-time sync</p>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+              <div class="text-4xl mb-3">📊</div>
+              <h3 class="font-bold text-lg mb-2">MiniCRM</h3>
+              <p class="text-sm text-white/70">Gestión comercial</p>
+              <p class="text-xs text-white/50 mt-2">Dashboard en vivo</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="highlight highlight-dark mt-10">
+          <div class="grid grid-cols-3 gap-6 text-center">
+            <div>
+              <div class="text-3xl font-black text-[#e0d2a2] mb-2">60s</div>
+              <div class="text-sm text-white/80">Tiempo total del flujo</div>
+            </div>
+            <div>
+              <div class="text-3xl font-black text-[#e0d2a2] mb-2">100%</div>
+              <div class="text-sm text-white/80">Resiliencia (fallback incluido)</div>
+            </div>
+            <div>
+              <div class="text-3xl font-black text-[#e0d2a2] mb-2">5</div>
+              <div class="text-sm text-white/80">Pasos automatizados</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: PASO 1 & 2 -->
+  <div class="slide" id="slide-6">
+    <div class="slide-content">
+      <div class="presentation-card">
+        <h2 class="text-5xl font-black mb-4 text-[#1a0f50]">Captura & Validación Inteligente</h2>
+        <p class="text-xl text-[#64748b] mb-10">Primeros 30 segundos: Datos del cliente verificados automáticamente</p>
+        
+        <div class="grid-2 mb-8">
+          <div>
+            <h3 class="text-2xl font-bold mb-4 text-[#1a0f50]">🎯 Paso 1: Captura de Lead</h3>
+            <p class="text-[#475569] mb-4">El usuario llega desde <strong>campañas digitales</strong> (Meta, Google, TikTok) y es recibido con una <strong>experiencia visual impactante</strong>.</p>
+            <div class="space-y-2 mb-4">
+              <span class="badge">Meta Ads</span>
+              <span class="badge">Google Ads</span>
+              <span class="badge">TikTok Ads</span>
+              <span class="badge">Orgánico</span>
+            </div>
+            <ul class="styled-list text-sm text-[#475569]">
+              <li>UTM parameters capturados para analytics</li>
+              <li>SessionStorage: no pierde progreso</li>
+              <li>Animaciones Framer Motion que generan confianza</li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 class="text-2xl font-bold mb-4 text-[#1a0f50]">📋 Paso 2: Validación de Cédula</h3>
+            <p class="text-[#475569] mb-4"><strong>Verificación automática</strong> con algoritmo ecuatoriano certificado + API externa opcional.</p>
+            <div class="space-y-2 mb-4">
+              <span class="badge-success">Módulo 10</span>
+              <span class="badge-success">Provincia válida</span>
+              <span class="badge-success">Dígito verificador</span>
+            </div>
+            <ul class="styled-list text-sm text-[#475569]">
+              <li>Validación Zod en tiempo real (10 dígitos, provincia 01-24)</li>
+              <li>API Webservices.ec para auto-llenado de nombres</li>
+              <li>Fallback graceful si API falla</li>
+              <li>Estado civil + cédula cónyuge si aplica</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="highlight">
+          <p class="text-lg font-semibold text-[#1a0f50] mb-2">💎 Diferenciador Técnico</p>
+          <p class="text-[#475569]">
+            No solo validamos formato: ejecutamos el <strong>algoritmo oficial ecuatoriano</strong> (módulo 10 con dígito verificador) y opcionalmente consultamos registros reales. El usuario <strong>no puede avanzar</strong> con datos incorrectos, asegurando <strong>calidad de leads</strong> desde el inicio.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: PASO 3 - SIMULADOR -->
+  <div class="slide" id="slide-7">
+    <div class="slide-content">
+      <div class="presentation-card-dark presentation-card">
+        <h2 class="text-5xl font-black mb-4">Simulador Financiero de Clase Mundial</h2>
+        <p class="text-xl text-white/80 mb-10">El corazón de la experiencia: cotización en tiempo real con UX premium</p>
+        
+        <div class="mb-8">
+          <h3 class="text-3xl font-bold mb-6">💰 Motor de Cálculo: Sistema Francés</h3>
+          <div class="grid-2 gap-8">
+            <div>
+              <h4 class="text-xl font-semibold mb-4 text-[#e0d2a2]">🎛️ Controles Interactivos</h4>
+              <ul class="space-y-3 text-white/90 text-sm">
+                <li><strong>Precio del vehículo:</strong> $15k - $60k
+                  <br><span class="text-white/60">→ Presets: $15k, $25k, $35k, $50k</span>
+                  <br><span class="text-white/60">→ Input editable con formato de miles</span>
+                  <br><span class="text-white/60">→ Slider con gradiente visual dinámico</span>
+                </li>
+                <li><strong>Entrada inicial:</strong> 20% - 50%
+                  <br><span class="text-white/60">→ Presets: 20%, 30%, 40%, 50%</span>
+                  <br><span class="text-white/60">→ Visualización dual ($ y %)</span>
+                </li>
+                <li><strong>Plazo:</strong> 12 - 72 meses
+                  <br><span class="text-white/60">→ Presets: 12, 24, 36, 48, 60 meses</span>
+                  <br><span class="text-white/60">→ Incrementos de 3 meses</span>
+                </li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 class="text-xl font-semibold mb-4 text-[#e0d2a2]">🧮 Precisión Matemática</h4>
+              <div class="bg-black/20 p-4 rounded-xl text-sm text-white/90 mb-4">
+                <strong>Metodología:</strong> Sistema Francés<br>
+                <strong>TNA:</strong> 15.6% anual<br>
+                <strong>Base:</strong> 30/360 (mes comercial)<br><br>
+                <code class="text-xs">i_eff = (1 + TNA/12)^12 - 1</code><br>
+                <code class="text-xs">i_mes = (1 + i_eff)^(30/360) - 1</code><br>
+                <code class="text-xs">Cuota = P × [i(1+i)^N] / [(1+i)^N - 1]</code>
+              </div>
+              <ul class="space-y-2 text-white/80 text-sm">
+                <li>✓ Coincide 100% con Excel financiero</li>
+                <li>✓ Validado contra calculadoras oficiales</li>
+                <li>✓ Cálculos instantáneos (< 10ms)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <div class="highlight highlight-dark">
+          <p class="text-lg font-semibold mb-3">✨ Magia UX</p>
+          <div class="grid-3 text-white/90 text-sm">
+            <div>
+              <strong>CountUp Animado</strong><br>
+              <span class="text-white/60">Los valores monetarios "cuentan" hacia arriba, generando anticipación</span>
+            </div>
+            <div>
+              <strong>Bounce Animation</strong><br>
+              <span class="text-white/60">Cuota rebota en verde↓ o rojo↑ según si mejora o empeora</span>
+            </div>
+            <div>
+              <strong>Tooltips Contextuales</strong><br>
+              <span class="text-white/60">Explicaciones financieras en hover, educamos al usuario</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: PASO 4 - API INTEGRATION -->
+  <div class="slide" id="slide-8">
+    <div class="slide-content">
+      <div class="presentation-card">
+        <h2 class="text-5xl font-black mb-4 text-[#1a0f50]">Integración con Motor de Scoring</h2>
+        <p class="text-xl text-[#64748b] mb-10">Calificación crediticia en tiempo real con el backend de Originarsa</p>
+        
+        <div class="mb-8">
+          <h3 class="text-2xl font-bold mb-4 text-[#1a0f50]">🔌 API REST: Arquitectura Robusta</h3>
+          <div class="grid-2 gap-6 mb-6">
+            <div class="bg-[#f8fafc] p-6 rounded-xl border-2 border-[#e2e8f0]">
+              <h4 class="font-bold mb-3 text-[#1a0f50]">📤 Request</h4>
+              <div class="text-xs bg-white p-3 rounded border border-[#cbd5e1] overflow-auto">
+POST /api/Creditos/Obtener...<br><br>
+{<br>
+&nbsp;&nbsp;"codigoTipoCotizador": "COD_COT_001",<br>
+&nbsp;&nbsp;"identificacion": "1722282659",<br>
+&nbsp;&nbsp;"montoVehiculo": 35000,<br>
+&nbsp;&nbsp;"porcentajeEntrada": 36,<br>
+&nbsp;&nbsp;"plazo": 48,<br>
+&nbsp;&nbsp;"valorEntrada": 12672,<br>
+&nbsp;&nbsp;"valorCuotaMensual": 763,<br>
+&nbsp;&nbsp;"montoAFinanciar": 22528<br>
+}
+              </div>
+            </div>
+            
+            <div class="bg-[#f8fafc] p-6 rounded-xl border-2 border-[#e2e8f0]">
+              <h4 class="font-bold mb-3 text-[#1a0f50]">📥 Response</h4>
+              <div class="text-xs bg-white p-3 rounded border border-[#cbd5e1] overflow-auto">
+{<br>
+&nbsp;&nbsp;"data": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"calificacionCrediExpress":<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"ClienteCalificado_REVISION",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"motivoCalificacionCrediExpress": "CIN"<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;"mensaje": [{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"huboError": false,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"codigoRespuesta": 10000<br>
+&nbsp;&nbsp;}]<br>
+}
+              </div>
+            </div>
+          </div>
+          
+          <div class="grid-3 mb-6">
+            <div class="metric-box">
+              <div class="text-3xl mb-2">✅</div>
+              <div class="font-bold text-[#22c55e]">APROBADO</div>
+              <div class="text-xs text-[#64748b] mt-1">Confetti + celebración</div>
+            </div>
+            <div class="metric-box">
+              <div class="text-3xl mb-2">⏳</div>
+              <div class="font-bold text-[#fbbf24]">REVISIÓN</div>
+              <div class="text-xs text-[#64748b] mt-1">24-48h seguimiento</div>
+            </div>
+            <div class="metric-box">
+              <div class="text-3xl mb-2">❌</div>
+              <div class="font-bold text-[#ef4444]">NEGADO</div>
+              <div class="text-xs text-[#64748b] mt-1">Mensaje empático</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="highlight">
+          <p class="text-lg font-semibold text-[#1a0f50] mb-2">🛡️ Resiliencia & Reliability</p>
+          <ul class="styled-list text-[#475569]">
+            <li><strong>Fallback automático:</strong> Si API falla, usa lógica local por montos/plazos</li>
+            <li><strong>Logs detallados:</strong> 📤📥❌ emojis en consola para debugging rápido</li>
+            <li><strong>Manejo CORS:</strong> Detecta y explica errores de integración</li>
+            <li><strong>Validación de respuesta:</strong> Verifica huboError, códigos, estructura JSON</li>
+            <li><strong>Timeout handling:</strong> No deja al usuario esperando indefinidamente</li>
+          </ul>
+          <p class="text-[#475569] mt-3">
+            <strong>Resultado:</strong> La aplicación <strong>nunca falla</strong>. Siempre muestra un resultado al usuario, incluso si el backend está caído.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: PASO 5 - RESULTADO -->
+  <div class="slide" id="slide-9">
+    <div class="slide-content">
+      <div class="presentation-card-dark presentation-card">
+        <h2 class="text-5xl font-black mb-4">Momento de Verdad: El Resultado</h2>
+        <p class="text-xl text-white/80 mb-10">La respuesta que el cliente esperaba, presentada de forma memorable</p>
+        
+        <div class="mb-8">
+          <h3 class="text-3xl font-bold mb-6">✨ Tres Caminos, Tres Experiencias</h3>
+          
+          <div class="space-y-6">
+            <div class="bg-white/10 p-6 rounded-xl border-2 border-green-400/30">
+              <h4 class="text-2xl font-bold mb-3 text-green-300">🎉 APROBADO</h4>
+              <ul class="space-y-2 text-white/90">
+                <li><strong>Visual:</strong> Confetti celebration con canvas-confetti (50 partículas + 2s continuo)</li>
+                <li><strong>Animación:</strong> AnimatedCheckIcon con scale dramático (5 keyframes)</li>
+                <li><strong>Título:</strong> Gradiente verde animado: "¡Felicitaciones! Tu crédito ha sido preaprobado"</li>
+                <li><strong>Mini-cards:</strong> Stagger effect (0.1s delay) mostrando monto, cuota, plazo</li>
+                <li><strong>CTA:</strong> Botón destacado "Hablar con un asesor" → WhatsApp directo</li>
+              </ul>
+            </div>
+            
+            <div class="bg-white/10 p-6 rounded-xl border-2 border-yellow-400/30">
+              <h4 class="text-2xl font-bold mb-3 text-yellow-300">⏳ EN REVISIÓN</h4>
+              <ul class="space-y-2 text-white/90">
+                <li><strong>Visual:</strong> Icono de reloj con animación pulse suave</li>
+                <li><strong>Color:</strong> Dorado (#0763FD - modern) que transmite optimismo</li>
+                <li><strong>Mensaje:</strong> "Tu solicitud está en revisión. Te contactaremos en 24-48 horas"</li>
+                <li><strong>Próximos pasos:</strong> Checklist visual de lo que sigue</li>
+              </ul>
+            </div>
+            
+            <div class="bg-white/10 p-6 rounded-xl border-2 border-red-400/30">
+              <h4 class="text-2xl font-bold mb-3 text-red-300">❌ NEGADO</h4>
+              <ul class="space-y-2 text-white/90">
+                <li><strong>Tono empático:</strong> "Lamentamos no poder aprobarlo en este momento"</li>
+                <li><strong>Alternativas:</strong> Sugerencias de mejora (aumentar entrada, reducir plazo)</li>
+                <li><strong>CTA secundario:</strong> "Explora otras opciones" o contacto con asesor</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <div class="highlight highlight-dark">
+          <p class="text-lg font-semibold mb-2">🎭 Psicología de la Presentación</p>
+          <p class="text-white/90">
+            No solo mostramos datos, creamos una <strong>experiencia emocional</strong>. El confetti en aprobados genera <strong>dopamina</strong>, las animaciones stagger crean <strong>anticipación</strong>, y los gradientes dirigir la <strong>atención visual</strong>. Cada frame está diseñado para maximizar <strong>confianza</strong> y <strong>conversión</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: FIREBASE & CRM -->
+  <div class="slide" id="slide-10">
+    <div class="slide-content">
+      <div class="presentation-card">
+        <h2 class="text-5xl font-black mb-4 text-[#1a0f50]">Persistencia & Gestión Comercial</h2>
+        <p class="text-xl text-[#64748b] mb-10">Del lead digital al seguimiento comercial: data pipeline completo</p>
+        
+        <div class="grid-2 gap-8 mb-8">
+          <div>
+            <h3 class="text-2xl font-bold mb-4 text-[#1a0f50]">🔥 Firebase Firestore</h3>
+            <p class="text-[#475569] mb-4"><strong>Base de datos en tiempo real</strong> para almacenar y sincronizar aplicaciones</p>
+            
+            <div class="bg-[#f8fafc] p-4 rounded-xl border border-[#e2e8f0] mb-4">
+              <h4 class="font-semibold mb-2 text-sm">📄 Estructura del Documento</h4>
+              <div class="text-xs bg-white p-3 rounded overflow-auto font-mono">
+{<br>
+&nbsp;&nbsp;"id": "auto-firebase-id",<br>
+&nbsp;&nbsp;"createdAt": Timestamp,<br>
+&nbsp;&nbsp;"status": "approved/review",<br>
+&nbsp;&nbsp;"applicant": { idNumber, fullName,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;email, phone, maritalStatus },<br>
+&nbsp;&nbsp;"loan": { vehicleAmount,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;downPaymentPct, termMonths },<br>
+&nbsp;&nbsp;"calculated": { financedAmount,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;monthlyPayment }<br>
+}
+              </div>
+            </div>
+            
+            <ul class="styled-list text-sm text-[#475569]">
+              <li>Real-time listeners para updates automáticos</li>
+              <li>Offline persistence habilitada</li>
+              <li>Security Rules: solo escritura autenticada</li>
+              <li>Retry automático en fallos de red</li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 class="text-2xl font-bold mb-4 text-[#1a0f50]">📊 MiniCRM Dashboard</h3>
+            <p class="text-[#475569] mb-4"><strong>Panel de gestión</strong> para el equipo comercial</p>
+            
+            <div class="space-y-3 mb-4">
+              <div class="metric-box">
+                <div class="text-2xl font-bold text-[#0763FD]">Vista en Tiempo Real</div>
+                <div class="text-xs text-[#64748b] mt-1">Todas las precalificaciones sincronizadas</div>
+              </div>
+              <div class="metric-box">
+                <div class="text-2xl font-bold text-[#0763FD]">Filtros Inteligentes</div>
+                <div class="text-xs text-[#64748b] mt-1">Por estado, fecha, monto, cédula</div>
+              </div>
+            </div>
+            
+            <h4 class="font-semibold mb-2 text-sm">✨ Features Planeadas:</h4>
+            <ul class="space-y-1 text-xs text-[#475569]">
+              <li>• Asignación automática de leads a asesores</li>
+              <li>• Notas y seguimiento de cada cliente</li>
+              <li>• Pipeline states (contactado, docs, aprobación final)</li>
+              <li>• Notificaciones push para nuevos leads</li>
+              <li>• WhatsApp Business API integration</li>
+              <li>• Dashboard de métricas y conversión</li>
+              <li>• Exportación Excel/CSV</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="highlight">
+          <p class="text-lg font-semibold text-[#1a0f50] mb-2">🔄 Flujo de Datos Completo</p>
+          <div class="flex items-center justify-between text-sm text-[#475569] bg-white p-4 rounded-xl">
+            <div class="text-center"><strong>Lead Digital</strong><br>(Meta/Google Ads)</div>
+            <div class="text-2xl">→</div>
+            <div class="text-center"><strong>Precalificación</strong><br>(60 segundos)</div>
+            <div class="text-2xl">→</div>
+            <div class="text-center"><strong>Firebase</strong><br>(Persistencia)</div>
+            <div class="text-2xl">→</div>
+            <div class="text-center"><strong>MiniCRM</strong><br>(Gestión comercial)</div>
+            <div class="text-2xl">→</div>
+            <div class="text-center"><strong>Cliente</strong><br>(Crédito aprobado)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: CIERRE -->
+  <div class="slide" id="slide-11">
+    <div class="slide-content flex items-center justify-center">
+      <div class="presentation-card-dark presentation-card text-center" style="max-width: 1000px;">
+        <h2 class="text-6xl font-black mb-6">¿Por qué CrediExpress?</h2>
+        <p class="text-2xl text-white/80 mb-12">Un producto digital completo, diseñado para resultados</p>
+        
+        <div class="grid-3 gap-6 mb-12">
+          <div class="metric-box metric-box-dark">
+            <div class="text-5xl mb-3">🚀</div>
+            <div class="text-2xl font-bold mb-2">Velocidad</div>
+            <div class="text-white/70 text-sm">De días a 60 segundos</div>
+          </div>
+          <div class="metric-box metric-box-dark">
+            <div class="text-5xl mb-3">💎</div>
+            <div class="text-2xl font-bold mb-2">Calidad</div>
+            <div class="text-white/70 text-sm">Leads verificados y calificados</div>
+          </div>
+          <div class="metric-box metric-box-dark">
+            <div class="text-5xl mb-3">📈</div>
+            <div class="text-2xl font-bold mb-2">Conversión</div>
+            <div class="text-white/70 text-sm">UX optimizada para resultados</div>
+          </div>
+        </div>
+        
+        <div class="grid-2 gap-8 text-left mb-12">
+          <div>
+            <h3 class="text-2xl font-bold mb-4 text-[#e0d2a2]">💡 Innovación Técnica</h3>
+            <ul class="styled-list text-white/90">
+              <li>Stack moderno: React 18 + TypeScript + Vite</li>
+              <li>Animaciones premium con Framer Motion</li>
+              <li>Sistema Francés con precisión matemática</li>
+              <li>API integration con fallback robusto</li>
+              <li>Firebase real-time para sincronización</li>
+              <li>Responsive mobile-first</li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 class="text-2xl font-bold mb-4 text-[#e0d2a2]">🎯 Impacto de Negocio</h3>
+            <ul class="styled-list text-white/90">
+              <li>Reduce costo de adquisición (CAC)</li>
+              <li>Aumenta conversión de leads digitales</li>
+              <li>Mejora satisfacción del cliente (NPS)</li>
+              <li>Genera data valiosa para CRM</li>
+              <li>Escalable sin costo marginal</li>
+              <li>Diferenciador competitivo claro</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="h-1 w-64 mx-auto bg-gradient-to-r from-[#0763FD] to-[#e0d2a2] rounded-full mb-8"></div>
+        
+        <p class="text-2xl font-light text-white/90 mb-4">
+          <strong class="font-bold text-white">CrediExpress</strong> no es solo una aplicación web.
+        </p>
+        <p class="text-3xl font-bold text-[#e0d2a2]">
+          Es la puerta digital a nuevos clientes.
+        </p>
+        
+        <div class="mt-12">
+          <div class="inline-block">
+            <span class="badge badge-dark" style="font-size: 14px; padding: 8px 20px;">Desarrollado con ❤️ por el equipo de Originarsa</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Logo 3D Setup (Adaptado de Logo3D.tsx)
+    let scene, camera, renderer, logoMesh;
+    
+    function initLogo() {
+      const container = document.getElementById('logo-container');
+      
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
+      camera.position.z = 3;
+      
+      renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      renderer.setSize(100, 100);
+      renderer.setClearColor(0x000000, 0);
+      container.appendChild(renderer.domElement);
+      
+      const geometry = new THREE.BoxGeometry(1.2, 1.2, 1.2);
+      const material = new THREE.MeshPhongMaterial({
+        color: 0x0763FD,
+        shininess: 100,
+        specular: 0x1a0f50
+      });
+      
+      logoMesh = new THREE.Mesh(geometry, material);
+      scene.add(logoMesh);
+      
+      const light1 = new THREE.DirectionalLight(0xffffff, 1);
+      light1.position.set(5, 5, 5);
+      scene.add(light1);
+      
+      const light2 = new THREE.AmbientLight(0x404040, 0.5);
+      scene.add(light2);
+      
+      animate();
+    }
+    
+    function animate() {
+      requestAnimationFrame(animate);
+      logoMesh.rotation.x += 0.005;
+      logoMesh.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    }
+    
+    // Presentation Logic
+    let currentSlide = 1;
+    const totalSlides = 11;
+    
+    function updateSlide() {
+      // Hide all slides
+      document.querySelectorAll('.slide').forEach(slide => {
+        slide.classList.remove('active');
+      });
+      
+      // Show current slide
+      document.getElementById(`slide-${currentSlide}`).classList.add('active');
+      
+      // Update counter
+      document.getElementById('counter').textContent = `${currentSlide} / ${totalSlides}`;
+      
+      // Update progress bar
+      const progress = (currentSlide / totalSlides) * 100;
+      document.getElementById('progress').style.width = `${progress}%`;
+      
+      // Update buttons
+      document.getElementById('prevBtn').disabled = currentSlide === 1;
+      document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+      
+      if (currentSlide === totalSlides) {
+        document.getElementById('nextBtn').textContent = 'Fin ✓';
+      } else {
+        document.getElementById('nextBtn').textContent = 'Continuar →';
+      }
+    }
+    
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+        updateSlide();
+      }
+    }
+    
+    function previousSlide() {
+      if (currentSlide > 1) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+    
+    function goToSlide(slideNumber) {
+      if (slideNumber >= 1 && slideNumber <= totalSlides) {
+        currentSlide = slideNumber;
+        updateSlide();
+      }
+    }
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        previousSlide();
+      }
+    });
+    
+    // Initialize
+    window.onload = () => {
+      updateSlide();
+    };
+  </script>
+</body>
+</html>
+          <p class="text-[#64748b] mb-4">Usuario ingresa desde campañas digitales</p>
+          
+          <div class="space-y-2">
+            <span class="badge">Meta Ads</span>
+            <span class="badge">Google Ads</span>
+            <span class="badge">TikTok</span>
+            <span class="badge">Orgánico</span>
+          </div>
+          
+          <div class="detail-box">
+            <strong class="block mb-2">📍 Componente:</strong>
+            <code>Splash → MinimalLoginLayout</code>
+            
+            <strong class="block mt-3 mb-2">🎨 UX/UI:</strong>
+            • Split-screen: 40% logo animado + 60% formulario<br>
+            • Animaciones con Framer Motion<br>
+            • Parallax en logo según movimiento del mouse<br>
+            • Easter eggs: triple-click y Konami code
+            
+            <strong class="block mt-3 mb-2">📊 Tracking:</strong>
+            • UTM parameters capturados<br>
+            • Session storage para persistencia<br>
+            • Analytics de entrada (pendiente)
+          </div>
+        </div>
+
+        <div class="arrow">⬇</div>
+        <div class="connection-line">Validación de cédula ecuatoriana</div>
+
+        <!-- PASO 2: VALIDACIÓN DE CÉDULA -->
+        <div id="step2" class="card card-data" style="animation-delay: 0.1s;">
+          <div class="icon-box">📋</div>
+          <h2 class="font-bold text-2xl mb-2 text-[#1a0f50]">Paso 2: Validación de Cédula</h2>
+          <p class="text-[#64748b] mb-4">Verificación y consulta de datos del titular</p>
+          
+          <div class="space-y-2">
+            <span class="badge-success">Algoritmo módulo 10</span>
+            <span class="badge-success">Provincia válida</span>
+            <span class="badge-success">Dígito verificador</span>
+          </div>
+          
+          <div class="detail-box">
+            <strong class="block mb-2">📍 Componente:</strong>
+            <code>Step1IdentityMinimal.tsx</code>
+            
+            <strong class="block mt-3 mb-2">🔐 Validación Local (Zod):</strong>
+            • Longitud exacta: 10 dígitos<br>
+            • Código provincia: 01-24<br>
+            • Tercer dígito: 0-5<br>
+            • Cálculo dígito verificador correcto
+            
+            <strong class="block mt-3 mb-2">🌐 API Externa (Opcional):</strong>
+            • Servicio: <code>services/cedula.ts</code><br>
+            • Provider: Webservices.ec<br>
+            • Consulta automática de nombres completos<br>
+            • Modo mock disponible (desarrollo)<br>
+            • Fallback si API falla
+            
+            <strong class="block mt-3 mb-2">📝 Datos Capturados:</strong>
+            • Número de cédula (validado)<br>
+            • Nombre completo (auto-llenado o manual)<br>
+            • Teléfono (formato +593...)<br>
+            • Email (validación RFC)<br>
+            • Estado civil (single/married)<br>
+            • Cédula cónyuge (si aplica)
+            
+            <strong class="block mt-3 mb-2">💾 Persistencia:</strong>
+            • SessionStorage: <code>crediexpress:data</code><br>
+            • FormContext (React Context API)
+          </div>
+        </div>
+
+        <div class="arrow">⬇</div>
+        <div class="connection-line">Simulación financiera</div>
+
+        <!-- PASO 3: SIMULACIÓN DE CRÉDITO -->
+        <div id="step3" class="card" style="animation-delay: 0.2s;">
+          <div class="icon-box">💰</div>
+          <h2 class="font-bold text-2xl mb-2 text-[#1a0f50]">Paso 3: Simulación de Crédito</h2>
+          <p class="text-[#64748b] mb-4">Cotizador interactivo con cálculo en tiempo real</p>
+          
+          <div class="space-y-2">
+            <span class="badge">Sistema Francés</span>
+            <span class="badge">TNA 15.6%</span>
+            <span class="badge">Base 30/360</span>
+          </div>
+          
+          <div class="detail-box">
+            <strong class="block mb-2">📍 Componente:</strong>
+            <code>Step2VehicleMinimal.tsx</code>
+            
+            <strong class="block mt-3 mb-2">🎛️ Controles Interactivos:</strong>
+            <strong>1. Precio del vehículo:</strong><br>
+            • Rango: $15,000 - $60,000<br>
+            • Input editable con formato de miles<br>
+            • Presets rápidos: $15k, $25k, $35k, $50k<br>
+            • Slider con gradiente visual<br>
+            • Marcas visuales cada $10k
+            
+            <strong class="mt-2 block">2. Entrada inicial:</strong><br>
+            • Rango: 20% - 50%<br>
+            • Presets: 20%, 30%, 40%, 50%<br>
+            • Visualización en $ y %<br>
+            • Slider con gradiente dorado
+            
+            <strong class="mt-2 block">3. Plazo:</strong><br>
+            • Rango: 12 - 72 meses<br>
+            • Presets: 12m, 24m, 36m, 48m, 60m<br>
+            • Incrementos de 3 meses<br>
+            • Marcas visuales cada 12m
+            
+            <strong class="block mt-3 mb-2">🧮 Motor de Cálculo:</strong>
+            • Archivo: <code>services/calculator.ts</code><br>
+            • Metodología: Sistema Francés (French amortization)<br>
+            • TNA: 15.6% anual<br>
+            • Base: 30/360 (mes comercial)<br>
+            • Fórmula:
+            <div class="mt-2 bg-white p-2 rounded text-xs">
+              i_eff = (1 + TNA/12)^12 - 1<br>
+              i_mes = (1 + i_eff)^(30/360) - 1<br>
+              Cuota = P × [i(1+i)^N] / [(1+i)^N - 1]
+            </div>
+            
+            <strong class="block mt-3 mb-2">✨ Features UX:</strong>
+            • Tooltips explicativos (componente Tooltip.tsx)<br>
+            • CountUp animado en valores monetarios<br>
+            • Bounce animation en cuota (verde↓ / rojo↑)<br>
+            • Gradientes en sliders según valor<br>
+            • Glassmorphism en card principal
+            
+            <strong class="block mt-3 mb-2">📊 Valores Calculados:</strong>
+            • Monto a financiar = precio - entrada<br>
+            • Valor entrada = precio × % entrada<br>
+            • Cuota mensual (Sistema Francés)<br>
+            • Total a pagar = cuota × meses<br>
+            • Total intereses = total - financiado
+          </div>
+        </div>
+
+        <div class="arrow">⬇</div>
+        <div class="connection-line">Envío a calificador crediticio</div>
+
+        <!-- PASO 4: CALIFICACIÓN VÍA API -->
+        <div id="api" class="card card-tech" style="animation-delay: 0.3s;">
+          <div class="icon-box" style="background: rgba(255,255,255,0.2);">🔌</div>
+          <h2 class="font-bold text-2xl mb-2">Paso 4: Calificación Crediticia</h2>
+          <p class="text-white/80 mb-4">Integración con motor de scoring de Originarsa</p>
+          
+          <div class="space-y-2">
+            <span class="badge" style="background: rgba(255,255,255,0.2); color: white;">POST Request</span>
+            <span class="badge" style="background: rgba(255,255,255,0.2); color: white;">JSON</span>
+            <span class="badge" style="background: rgba(255,255,255,0.2); color: white;">Async</span>
+          </div>
+          
+          <div class="detail-box detail-box-tech">
+            <strong class="block mb-2">📍 Servicio:</strong>
+            <code>services/api.ts → submitPrequalification()</code>
+            
+            <strong class="block mt-3 mb-2">🌐 Endpoint:</strong>
+            <div class="bg-black/20 p-2 rounded mt-1 text-xs break-all">
+              https://api-pre.originarsa.com/api/Creditos/ObtenerCalificacionCreditoRapido
+            </div>
+            
+            <strong class="block mt-3 mb-2">📤 Request Body:</strong>
+            <div class="bg-black/20 p-3 rounded mt-1 text-xs">
+{<br>
+&nbsp;&nbsp;"codigoTipoCotizador": "COD_COT_001", // Constante fija<br>
+&nbsp;&nbsp;"identificacion": "1722282659",<br>
+&nbsp;&nbsp;"montoVehiculo": 35000,<br>
+&nbsp;&nbsp;"porcentajeEntrada": 36, // % como entero<br>
+&nbsp;&nbsp;"plazo": 48,<br>
+&nbsp;&nbsp;"valorEntrada": 12672,<br>
+&nbsp;&nbsp;"valorCuotaMensual": 763,<br>
+&nbsp;&nbsp;"montoAFinanciar": 22528<br>
+}
+            </div>
+            
+            <strong class="block mt-3 mb-2">📥 Response Body:</strong>
+            <div class="bg-black/20 p-3 rounded mt-1 text-xs">
+{<br>
+&nbsp;&nbsp;"data": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"calificacionCrediExpress": "ClienteCalificado_REVISION",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"motivoCalificacionCrediExpress": "CIN"<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;"mensaje": [{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"huboError": false,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"codigoRespuesta": 10000,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"mensajeRespuesta": "Success"<br>
+&nbsp;&nbsp;}]<br>
+}
+            </div>
+            
+            <strong class="block mt-3 mb-2">🔄 Mapeo de Estados:</strong>
+            • <code>ClienteCalificado_APROBADO</code> → <span class="text-green-300">approved</span><br>
+            • <code>ClienteCalificado_REVISION</code> → <span class="text-yellow-300">review</span><br>
+            • <code>ClienteCalificado_NEGADO</code> → <span class="text-red-300">denied</span>
+            
+            <strong class="block mt-3 mb-2">⚡ Funcionalidades:</strong>
+            • Validación de respuesta (huboError, códigos)<br>
+            • Logs detallados en consola (📤📥❌)<br>
+            • Timeout handling<br>
+            • <strong>Fallback automático</strong> si API falla:<br>
+            &nbsp;&nbsp;→ Usa lógica local por montos/plazos<br>
+            &nbsp;&nbsp;→ Aplicación sigue funcionando<br>
+            • Error CORS detectado automáticamente
+            
+            <strong class="block mt-3 mb-2">⚠️ Manejo de Errores:</strong>
+            • HTTP errors (404, 500, etc.)<br>
+            • CORS policy blocks<br>
+            • Network failures<br>
+            • Invalid JSON responses<br>
+            • Business logic errors (huboError: true)
+          </div>
+        </div>
+
+        <div class="arrow">⬇</div>
+        <div class="connection-line">Presentación de resultado</div>
+
+        <!-- PASO 5: RESULTADO -->
+        <div id="result" class="card" style="animation-delay: 0.4s;">
+          <div class="icon-box">✨</div>
+          <h2 class="font-bold text-2xl mb-2 text-[#1a0f50]">Paso 5: Resultado al Usuario</h2>
+          <p class="text-[#64748b] mb-4">Pantalla de respuesta con animaciones celebratorias</p>
+          
+          <div class="space-y-2">
+            <span class="badge-success">Aprobado</span>
+            <span class="badge-warning">En Revisión</span>
+            <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">Negado</span>
+          </div>
+          
+          <div class="detail-box">
+            <strong class="block mb-2">📍 Componente:</strong>
+            <code>ResultMinimal.tsx</code>
+            
+            <strong class="block mt-3 mb-2">🎉 Estado: APROBADO</strong>
+            • Confetti celebration (canvas-confetti)<br>
+            &nbsp;&nbsp;→ Burst inicial: 50 partículas<br>
+            &nbsp;&nbsp;→ Confetti continuo: 2s duration<br>
+            • Icono animado: <code>AnimatedCheckIcon</code><br>
+            • Título con gradiente verde<br>
+            • Animación de scale con 5 keyframes<br>
+            • Mini-cards con stagger effect (0.1s delay)<br>
+            • Mensaje: "¡Felicitaciones! Tu crédito ha sido preaprobado"
+            
+            <strong class="block mt-3 mb-2">⏳ Estado: EN REVISIÓN</strong>
+            • Icono de reloj animado<br>
+            • Color dorado (modern)<br>
+            • Mensaje: "Tu solicitud está en revisión"<br>
+            • Tiempo estimado: 24-48 horas<br>
+            • Mini-cards con siguiente paso
+            
+            <strong class="block mt-3 mb-2">❌ Estado: NEGADO</strong>
+            • Icono X con animación suave<br>
+            • Color rojo<br>
+            • Mensaje empático<br>
+            • Alternativas o próximos pasos
+            
+            <strong class="block mt-3 mb-2">📊 Información Mostrada:</strong>
+            • Monto aprobado / solicitado<br>
+            • Cuota mensual estimada<br>
+            • Plazo seleccionado<br>
+            • Próximos pasos<br>
+            • Botón de contacto a asesor (WhatsApp)
+            
+            <strong class="block mt-3 mb-2">🎨 Animaciones:</strong>
+            • Dramatic entry: scale + opacity<br>
+            • Stagger children (título → icono → cards)<br>
+            • Hover effects en mini-cards (lift)<br>
+            • Spring physics (Framer Motion)<br>
+            • Gradient text animations
+          </div>
+        </div>
+
+        <div class="arrow">⬇</div>
+        <div class="connection-line">Persistencia de datos</div>
+
+        <!-- FIREBASE -->
+        <div id="firebase" class="card card-tech" style="animation-delay: 0.5s;">
+          <div class="icon-box" style="background: rgba(255,255,255,0.2);">🔥</div>
+          <h2 class="font-bold text-2xl mb-2">Persistencia: Firebase Firestore</h2>
+          <p class="text-white/80 mb-4">Almacenamiento en tiempo real de aplicaciones</p>
+          
+          <div class="space-y-2">
+            <span class="badge" style="background: rgba(255,255,255,0.2); color: white;">Firestore DB</span>
+            <span class="badge" style="background: rgba(255,255,255,0.2); color: white;">Real-time</span>
+            <span class="badge" style="background: rgba(255,255,255,0.2); color: white;">Cloud</span>
+          </div>
+          
+          <div class="detail-box detail-box-tech">
+            <strong class="block mb-2">📍 Servicio:</strong>
+            <code>services/firebase.ts</code>
+            
+            <strong class="block mt-3 mb-2">🔧 Configuración:</strong>
+            • Firebase SDK 9+ (modular)<br>
+            • Config en: <code>config/firebase.ts</code><br>
+            • Credenciales: Variables de entorno (.env)<br>
+            &nbsp;&nbsp;→ VITE_FIREBASE_API_KEY<br>
+            &nbsp;&nbsp;→ VITE_FIREBASE_AUTH_DOMAIN<br>
+            &nbsp;&nbsp;→ VITE_FIREBASE_PROJECT_ID<br>
+            &nbsp;&nbsp;→ VITE_FIREBASE_STORAGE_BUCKET<br>
+            &nbsp;&nbsp;→ VITE_FIREBASE_MESSAGING_SENDER_ID<br>
+            &nbsp;&nbsp;→ VITE_FIREBASE_APP_ID
+            
+            <strong class="block mt-3 mb-2">📚 Colección:</strong>
+            <code>prequalifications</code>
+            
+            <strong class="block mt-3 mb-2">📄 Estructura del Documento:</strong>
+            <div class="bg-black/20 p-3 rounded mt-1 text-xs">
+{<br>
+&nbsp;&nbsp;"id": "auto-generated-firebase-id",<br>
+&nbsp;&nbsp;"createdAt": Timestamp,<br>
+&nbsp;&nbsp;"updatedAt": Timestamp,<br>
+&nbsp;&nbsp;"status": "approved" | "review" | "denied",<br>
+&nbsp;&nbsp;"applicant": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"idNumber": "1722282659",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"fullName": "Juan Pérez",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"email": "juan@example.com",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"phone": "+593999123456",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"maritalStatus": "single"<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;"loan": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"vehicleAmount": 35000,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"downPaymentPct": 0.36,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"termMonths": 48<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;"calculated": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"financedAmount": 22528,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"downPaymentAmount": 12672,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"monthlyPayment": 763<br>
+&nbsp;&nbsp;}<br>
+}
+            </div>
+            
+            <strong class="block mt-3 mb-2">📝 Operaciones:</strong>
+            • <code>savePrequalificationToFirebase()</code><br>
+            &nbsp;&nbsp;→ Guarda nueva aplicación<br>
+            &nbsp;&nbsp;→ Retorna ID del documento<br>
+            &nbsp;&nbsp;→ Timestamp automático<br>
+            • Queries disponibles para CRM:<br>
+            &nbsp;&nbsp;→ Filter by status<br>
+            &nbsp;&nbsp;→ Order by createdAt<br>
+            &nbsp;&nbsp;→ Pagination support
+            
+            <strong class="block mt-3 mb-2">🔒 Seguridad:</strong>
+            • Firestore Security Rules configuradas<br>
+            • Validación de esquema en reglas<br>
+            • Solo escritura autenticada (producción)<br>
+            • Lectura limitada por roles
+            
+            <strong class="block mt-3 mb-2">⚙️ Estados Guardados:</strong>
+            • ✅ <span class="text-green-300">approved</span> → Sí se guarda<br>
+            • ⏳ <span class="text-yellow-300">review</span> → Sí se guarda<br>
+            • ❌ <span class="text-red-300">denied</span> → No se guarda (opcional)
+            
+            <strong class="block mt-3 mb-2">🔄 Sincronización:</strong>
+            • Real-time listeners disponibles<br>
+            • Offline persistence habilitada<br>
+            • Retry automático en fallos<br>
+            • Fallback graceful si Firebase falla
+          </div>
+        </div>
+
+        <div class="arrow">⬇</div>
+        <div class="connection-line">Gestión comercial</div>
+
+        <!-- CRM -->
+        <div id="crm" class="card card-data" style="animation-delay: 0.6s;">
+          <div class="icon-box">📊</div>
+          <h2 class="font-bold text-2xl mb-2 text-[#1a0f50]">Gestión: MiniCRM Comercial</h2>
+          <p class="text-[#64748b] mb-4">Dashboard para equipo de ventas</p>
+          
+          <div class="space-y-2">
+            <span class="badge">Dashboard</span>
+            <span class="badge">Real-time</span>
+            <span class="badge">Filtros</span>
+            <span class="badge">Exportación</span>
+          </div>
+          
+          <div class="detail-box">
+            <strong class="block mb-2">🎯 Funcionalidad:</strong>
+            • Vista de todas las precalificaciones<br>
+            • Filtros por estado (aprobado/revisión)<br>
+            • Búsqueda por cédula o nombre<br>
+            • Ordenamiento por fecha<br>
+            • Paginación de resultados
+            
+            <strong class="block mt-3 mb-2">📊 Datos Visualizados:</strong>
+            • Cliente (nombre, cédula, contacto)<br>
+            • Vehículo (monto, entrada, plazo)<br>
+            • Cuota mensual calculada<br>
+            • Estado de calificación<br>
+            • Fecha de solicitud<br>
+            • Último update
+            
+            <strong class="block mt-3 mb-2">🔌 Conexión Firebase:</strong>
+            • Queries en tiempo real<br>
+            • Listeners para updates automáticos<br>
+            • Caché local para performance<br>
+            • Sincronización bidireccional
+            
+            <strong class="block mt-3 mb-2">✨ Features Planeadas:</strong>
+            • Asignación de leads a asesores<br>
+            • Notas y seguimiento<br>
+            • Historial de comunicaciones<br>
+            • Estados de pipeline (contactado, documentos, etc.)<br>
+            • Notificaciones push para nuevos leads<br>
+            • Integración WhatsApp Business API<br>
+            • Dashboard de métricas y conversión<br>
+            • Exportación a Excel/CSV
+            
+            <strong class="block mt-3 mb-2">👥 Roles (Futuro):</strong>
+            • Admin: Full access<br>
+            • Asesor: Solo sus leads asignados<br>
+            • Supervisor: Equipo completo<br>
+            • Solo lectura: Reportes
+          </div>
+        </div>
+
+        <!-- NOTA FINAL -->
+        <div class="mt-16 p-8 rounded-2xl" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2);">
+          <h3 class="text-2xl font-bold text-white mb-4">📐 Arquitectura Técnica</h3>
+          <div class="grid grid-cols-2 gap-6 text-white/90 text-sm">
+            <div>
+              <strong class="block mb-2 text-[#e0d2a2]">Frontend:</strong>
+              • React 18 + TypeScript<br>
+              • Vite (build tool)<br>
+              • Tailwind CSS + Custom theme<br>
+              • Framer Motion (animations)<br>
+              • React Hook Form + Zod<br>
+              • SessionStorage persistence
+            </div>
+            <div>
+              <strong class="block mb-2 text-[#e0d2a2]">Backend / Servicios:</strong>
+              • Firebase Firestore (database)<br>
+              • Originarsa Scoring API<br>
+              • Webservices.ec (cédula lookup)<br>
+              • No servidor propio (serverless)
+            </div>
+            <div>
+              <strong class="block mb-2 text-[#e0d2a2]">Deployment:</strong>
+              • Vercel (hosting)<br>
+              • GitHub (version control)<br>
+              • Environment variables<br>
+              • CI/CD automático
+            </div>
+            <div>
+              <strong class="block mb-2 text-[#e0d2a2]">Performance:</strong>
+              • Code splitting automático<br>
+              • Lazy loading components<br>
+              • Optimized images<br>
+              • < 100KB bundle inicial
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function goTo(id) {
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+
+    let scale = 1;
+    document.addEventListener("wheel", function (event) {
+      if (!event.ctrlKey) return;
+      event.preventDefault();
+      scale += event.deltaY * -0.001;
+      scale = Math.min(Math.max(0.4, scale), 2);
+      document.getElementById("canvas").style.transform = `scale(${scale})`;
+    }, { passive: false });
+  </script>
+</body>
+</html>

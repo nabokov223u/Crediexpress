@@ -128,7 +128,7 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
           <Input
             label="Número de cédula"
             labelHidden
-            placeholder="0000000000"
+            placeholder="1722282659"
             register={register("idNumber")}
             error={errors.idNumber}
             className="h-14 text-center text-lg font-semibold border-2 focus:border-brand transition-all rounded-xl"
@@ -259,7 +259,7 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
                 >
                   <Input
                     label="Cédula del cónyuge"
-                    placeholder="Ej: 0987654321"
+                    placeholder="Ej: 1715328649"
                     register={{
                       ...register("spouseId"),
                       onChange: (e: React.ChangeEvent<HTMLInputElement>) => {

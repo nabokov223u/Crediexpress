@@ -51,16 +51,6 @@ export default function Input({ label, type = "text", placeholder, register, err
           }}
           transition={{ duration: 0.2 }}
         />
-        {/* Checkmark de validación */}
-        {!message && hasValue && !readOnly && (
-          <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500 text-xl"
-          >
-            ✓
-          </motion.div>
-        )}
       </div>
       {message && (
         <motion.p
