@@ -128,7 +128,7 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
           <Input
             label="Número de cédula"
             labelHidden
-            placeholder="1712345678"
+            placeholder="17123*****"
             register={register("idNumber")}
             error={errors.idNumber}
             className="h-14 text-center text-lg font-semibold border-2 focus:border-brand transition-all rounded-xl"
