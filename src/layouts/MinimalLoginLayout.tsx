@@ -356,15 +356,17 @@ export default function MinimalLoginLayout({
                   transition={{ duration: 0.6, delay: 0.8 }}
                   className="border-t border-slate-200 pt-6 mt-6 space-y-4"
                 >
-                  {/* Disclaimer */}
-                  <div className="text-xs text-slate-600 leading-relaxed">
-                    <p className="mb-2">
-                      <span className="font-semibold text-slate-700">🔒 Política de Privacidad:</span> Tus datos están protegidos y solo serán usados para el proceso de precalificación crediticia.
-                    </p>
-                    <p>
-                      Al continuar, aceptas nuestros <a href="#" className="text-brand hover:underline font-medium">términos y condiciones</a>.
-                    </p>
-                  </div>
+                  {/* Disclaimer - Solo visible en el primer paso */}
+                  {currentStep === 1 && (
+                    <div className="text-xs text-slate-600 leading-relaxed">
+                      <p className="mb-2">
+                        <span className="font-semibold text-slate-700">✨ Tu seguridad es prioridad:</span> Garantizamos la confidencialidad de tus datos para brindarte la mejor oferta.
+                      </p>
+                      <p>
+                        Al iniciar, aceptas nuestros <a href="#" className="text-brand hover:underline font-medium">términos y condiciones</a>.
+                      </p>
+                    </div>
+                  )}
 
                   {/* Copyright */}
                   <div className="text-xs text-slate-500 pt-2">

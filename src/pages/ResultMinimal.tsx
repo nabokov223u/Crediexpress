@@ -225,7 +225,7 @@ export default function ResultMinimal({ status, onRestart }: ResultMinimalProps)
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
-          Contactar soporte
+          Contactar con asesor
         </motion.a>
       </motion.div>
     </motion.div>

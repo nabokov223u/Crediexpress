@@ -150,7 +150,7 @@ export default function Step2VehicleMinimal({
           <p className="text-5xl font-bold">
             <CountUp value={cuota} prefix="$" duration={0.8} />
           </p>
-          <p className="text-xs mt-3 opacity-80">Por {term} meses • TNA 15.6% (Sistema Francés)</p>
+          <p className="text-xs mt-3 opacity-80">Por {term} meses</p>
         </div>
       </motion.div>
 

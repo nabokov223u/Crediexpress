@@ -4,9 +4,9 @@ module.exports = {
     extend: {
       colors: {
         origin: "#1A0F50", // histórico: títulos destacados
-        modern: "#0763FD", // acento secundario (azul)
+        modern: "#2dd4bf", // acento secundario (teal)
         trust: "#E7EAF1",  // fondo suave
-        brand: "#1A0F50",  // acento principal (ahora azul origen)
+        brand: "#0d234a",  // acento principal (dark blue)
         ink: "#0f172a",    // texto principal (slate-900)
         muted: "#64748b",  // texto secundario (slate-500)
         surface: "#ffffff",
