@@ -168,7 +168,7 @@ export default function MinimalLoginLayout({
                     <motion.img
                       src="/logo_menta_3d.png"
                       alt="Originarsa"
-                      className="w-48 h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 object-contain drop-shadow-2xl"
+                      className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 object-contain drop-shadow-2xl"
                       animate={{
                         y: [-10 + logoParallax.y, 10 + logoParallax.y, -10 + logoParallax.y],
                         x: logoParallax.x,
@@ -237,10 +237,10 @@ export default function MinimalLoginLayout({
                     className="text-center hidden lg:block mb-8"
                   >
                     <h3 className="text-2xl font-bold text-white mb-3">
-                      Tu auto nuevo en 3 pasos
+                      Tu auto nuevo está cerca
                     </h3>
                     <p className="text-base text-slate-300 mb-6">
-                      Tu auto soñado en minutos, solo:
+                      Precalifica en minutos siguiendo estos pasos:
                     </p>
                   </motion.div>
 
@@ -256,8 +256,8 @@ export default function MinimalLoginLayout({
                         <span className="text-teal-400 font-bold text-sm">1</span>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-white">Identifícate</p>
-                        <p className="text-xs text-slate-400">Ingresa tus datos básicos.</p>
+                        <p className="text-sm font-medium text-white">Datos</p>
+                        <p className="text-xs text-slate-400">Ingresa tu información básica.</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
@@ -265,8 +265,8 @@ export default function MinimalLoginLayout({
                         <span className="text-teal-400 font-bold text-sm">2</span>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-white">Simula</p>
-                        <p className="text-xs text-slate-400">Ajusta la cuota a tu presupuesto.</p>
+                        <p className="text-sm font-medium text-white">Cotización</p>
+                        <p className="text-xs text-slate-400">Ajusta tu plan de pagos.</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
@@ -274,14 +274,14 @@ export default function MinimalLoginLayout({
                         <span className="text-teal-400 font-bold text-sm">3</span>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-white">Estrena</p>
-                        <p className="text-xs text-slate-400">Recibe tu precalificación al instante.</p>
+                        <p className="text-sm font-medium text-white">Resultado</p>
+                        <p className="text-xs text-slate-400">Recibe respuesta inmediata.</p>
                       </div>
                     </div>
                     
                     <div className="pt-4 text-center">
                       <p className="text-sm text-teal-400 font-medium">
-                        Comienza ingresando tu cédula a la derecha.
+                        Ingresa tu cédula para comenzar.
                       </p>
                     </div>
                   </motion.div>
