@@ -17,6 +17,7 @@ export default function App() {
   const [step, setStep] = useState(1);
   const [loadingIntro, setLoadingIntro] = useState(true);
   const [result, setResult] = useState<ResultStatus>(null);
+  const [identityExpanded, setIdentityExpanded] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setLoadingIntro(false), 2500);
@@ -59,8 +60,8 @@ export default function App() {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
               >
-                <MinimalLoginLayout currentStep={1} totalSteps={3}>
-                  <Step1IdentityMinimal onNext={() => setStep(2)} />
+                <MinimalLoginLayout currentStep={1} totalSteps={3} identityExpanded={identityExpanded}>
+                  <Step1IdentityMinimal onNext={() => setStep(2)} onExpanded={setIdentityExpanded} />
                 </MinimalLoginLayout>
               </motion.div>
             )}

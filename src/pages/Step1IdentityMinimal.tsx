@@ -8,7 +8,7 @@ import Input from "../components/Input";
 import { getDatosPorCedula } from "../services/cedula";
 import { useFormData } from "../context/FormContext";
 
-export default function Step1IdentityMinimal({ onNext }: { onNext: () => void }) {
+export default function Step1IdentityMinimal({ onNext, onExpanded }: { onNext: () => void; onExpanded?: (expanded: boolean) => void }) {
   const { data, setData } = useFormData();
   const [showDetails, setShowDetails] = useState<boolean>(Boolean(data.applicant.fullName));
   const [loading, setLoading] = useState<boolean>(false);
@@ -40,6 +40,7 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
   useEffect(() => {
     if (!idNumberValue || !/^\d{10}$/.test(idNumberValue)) {
       setShowDetails(false);
+      onExpanded?.(false);
       setDataReady(false);
       setAcceptedPolicy(false);
       return;
@@ -47,10 +48,11 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
     if (idNumberValue !== lastIdRef.current) {
       lastIdRef.current = idNumberValue;
       setShowDetails(false);
+      onExpanded?.(false);
       setDataReady(false);
       setAcceptedPolicy(false);
     }
-  }, [idNumberValue]);
+  }, [idNumberValue, onExpanded]);
 
   const fetchAndReveal = async () => {
     if (!idNumberValue || !/^\d{10}$/.test(idNumberValue)) {
@@ -69,14 +71,17 @@ export default function Step1IdentityMinimal({ onNext }: { onNext: () => void })
         if (!watch("maritalStatus")) setValue("maritalStatus", "single", { shouldDirty: true });
         setDataReady(true);
         setShowDetails(true);
+        onExpanded?.(true);
       } else {
         setDataReady(false);
         setShowDetails(false);
+        onExpanded?.(false);
         alert("No se pudieron obtener los datos de la cédula. Intenta nuevamente más tarde.");
       }
     } catch (e: any) {
       setDataReady(false);
       setShowDetails(false);
+      onExpanded?.(false);
       alert("Hubo un problema al consultar el servicio. Por favor, inténtalo nuevamente más tarde.");
     } finally {
       setLoading(false);
