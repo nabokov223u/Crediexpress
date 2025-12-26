@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useFormData } from "../context/FormContext";
 
 export default function InteractiveQuoteVisualizer() {
@@ -14,125 +14,182 @@ export default function InteractiveQuoteVisualizer() {
   const downPaymentAmount = vehicleAmount * downPaymentPct;
   const financedAmount = vehicleAmount * financedPct;
 
-  // Configuración del círculo SVG
-  const radius = 120;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference * (1 - downPaymentPct);
-
-  // Animación reactiva basada en el plazo (termMonths: 12-72)
-  // Menor plazo = latido más rápido (urgencia/rapidez)
-  // Mayor plazo = latido más lento (calma)
-  const pulseDuration = 8 - ((loan.termMonths - 12) / 60) * 6; // Rango de 8s (lento) a 2s (rápido) invertido? 
-  // Mejor: Menor plazo (12) = Rápido (2s). Mayor plazo (72) = Lento (6s).
-  const spinDuration = 2 + ((loan.termMonths - 12) / 60) * 10; 
+  // Lógica de "Fuerza de Conexión" (Simulada)
+  // Mayor entrada = Mejor perfil = Conexión más fuerte
+  const connectionStrength = 0.3 + (downPaymentPct * 1.2); // 0.54 a 0.9
+  
+  // Configuración de Nodos Satélite (Aliados Financieros)
+  const satellites = useMemo(() => {
+    return Array.from({ length: 5 }).map((_, i) => {
+      const angle = (i * 72) * (Math.PI / 180); // 5 nodos distribuidos
+      return {
+        id: i,
+        angle, // Ángulo base
+        distance: 140, // Radio de órbita
+        size: 12 + Math.random() * 8, // Tamaño variable
+        delay: i * 0.5
+      };
+    });
+  }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center h-full w-full relative z-10">
-      <div className="relative w-80 h-80 flex items-center justify-center">
-        {/* Círculo Base (Financiamiento) */}
-        <svg className="absolute inset-0 w-full h-full transform -rotate-90 drop-shadow-2xl">
-          <circle
-            cx="50%"
-            cy="50%"
-            r={radius}
-            stroke="rgba(255,255,255,0.1)"
-            strokeWidth="24"
-            fill="transparent"
-          />
-          {/* Círculo de Progreso (Entrada) */}
-          <motion.circle
-            cx="50%"
-            cy="50%"
-            r={radius}
-            stroke="#2dd4bf" // teal-400
-            strokeWidth="24"
-            fill="transparent"
-            strokeDasharray={circumference}
-            strokeLinecap="round"
-            initial={{ strokeDashoffset: circumference }}
-            animate={{ strokeDashoffset }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            className="drop-shadow-[0_0_15px_rgba(45,212,191,0.5)]"
-          />
+    <div className="flex flex-col items-center justify-center h-full w-full relative z-10 overflow-hidden">
+      <div className="relative w-96 h-96 flex items-center justify-center">
+        
+        {/* SVG Container para Conexiones y Órbitas */}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none">
+          <defs>
+            <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#2dd4bf" stopOpacity="0.1" />
+              <stop offset="100%" stopColor="#2dd4bf" stopOpacity="0.8" />
+            </linearGradient>
+          </defs>
+
+          {/* Anillos de Órbita (Decorativos) */}
+          <circle cx="50%" cy="50%" r="140" stroke="rgba(255,255,255,0.05)" strokeWidth="1" fill="none" />
+          <circle cx="50%" cy="50%" r="100" stroke="rgba(255,255,255,0.03)" strokeWidth="1" fill="none" strokeDasharray="4 4" />
+
+          {/* Conexiones Dinámicas */}
+          <g className="origin-center animate-spin-slow" style={{ transformOrigin: '50% 50%', animationDuration: '60s' }}>
+            {satellites.map((sat, i) => {
+              const x = 192 + Math.cos(sat.angle) * sat.distance;
+              const y = 192 + Math.sin(sat.angle) * sat.distance;
+              
+              return (
+                <motion.line
+                  key={`line-${i}`}
+                  x1="192"
+                  y1="192"
+                  x2={x}
+                  y2={y}
+                  stroke="url(#lineGradient)"
+                  strokeWidth={2 * connectionStrength}
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ 
+                    pathLength: 1, 
+                    opacity: connectionStrength,
+                    strokeWidth: [1, 3 * connectionStrength, 1]
+                  }}
+                  transition={{ 
+                    pathLength: { duration: 1, delay: sat.delay * 0.2 },
+                    opacity: { duration: 0.5 },
+                    strokeWidth: { 
+                      duration: 2 + Math.random(), 
+                      repeat: Infinity, 
+                      repeatType: "reverse" 
+                    }
+                  }}
+                />
+              );
+            })}
+          </g>
         </svg>
 
-        {/* Orbe Central / Logo 3D */}
-        <motion.div
-          className="absolute inset-0 flex items-center justify-center"
-          animate={{ 
-            scale: [0.85, 0.95, 0.85],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
+        {/* Nodos Satélite (Aliados) */}
+        <motion.div 
+          className="absolute inset-0"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
         >
-          {/* Halo de energía */}
-          <motion.div 
-            className="absolute w-48 h-48 rounded-full bg-teal-500/10 blur-2xl"
-            animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.2, 1] }}
-            transition={{ duration: 3, repeat: Infinity }}
-          />
+          {satellites.map((sat, i) => {
+            // Posicionamiento absoluto basado en ángulo
+            const top = 50 + Math.sin(sat.angle) * (sat.distance / 192 * 50);
+            const left = 50 + Math.cos(sat.angle) * (sat.distance / 192 * 50);
+
+            return (
+              <motion.div
+                key={`sat-${i}`}
+                className="absolute rounded-full bg-slate-800 border border-teal-500/50 shadow-[0_0_15px_rgba(45,212,191,0.3)] flex items-center justify-center"
+                style={{
+                  width: sat.size,
+                  height: sat.size,
+                  top: `${top}%`,
+                  left: `${left}%`,
+                  transform: 'translate(-50%, -50%)'
+                }}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: sat.delay }}
+              >
+                <div className="w-[40%] h-[40%] bg-teal-400 rounded-full animate-pulse" />
+              </motion.div>
+            );
+          })}
+        </motion.div>
+
+        {/* Nodo Central (Usuario / Originarsa) */}
+        <motion.div
+          className="absolute z-20 flex items-center justify-center w-32 h-32"
+          animate={{ scale: [0.95, 1.05, 0.95] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          {/* Glow Central */}
+          <div className="absolute inset-0 bg-teal-500/20 blur-3xl rounded-full" />
           
-          {/* Logo 3D Giratorio */}
+          {/* Logo */}
           <motion.img
             src="/logo_menta_3d.png"
-            alt="Core"
-            className="w-40 h-40 object-contain relative z-10"
-            animate={{
-              rotateY: 360,
-              y: [-5, 5, -5]
-            }}
-            transition={{
-              rotateY: { duration: spinDuration * 3, repeat: Infinity, ease: "linear" },
-              y: { duration: 3, repeat: Infinity, ease: "easeInOut" }
-            }}
+            alt="Hub"
+            className="w-28 h-28 object-contain drop-shadow-2xl relative z-10"
+            animate={{ rotateY: 360 }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
           />
         </motion.div>
 
-        {/* Etiquetas Flotantes Conectadas */}
+        {/* Etiquetas de Datos (Estáticas en posición, dinámicas en valor) */}
         {/* Entrada */}
         <motion.div 
-          className="absolute -right-4 top-10 bg-white/10 backdrop-blur-md border border-white/20 p-3 rounded-xl shadow-xl"
+          className="absolute -right-2 top-16 bg-white/10 backdrop-blur-md border border-teal-500/30 p-3 rounded-xl shadow-xl z-30"
           initial={{ x: 20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 0.5 }}
         >
-          <p className="text-xs text-teal-300 font-semibold uppercase tracking-wider mb-1">Tu Entrada</p>
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-2 h-2 rounded-full bg-teal-400" />
+            <p className="text-xs text-teal-100 font-semibold uppercase tracking-wider">Tu Entrada</p>
+          </div>
           <p className="text-xl font-bold text-white">
             ${downPaymentAmount.toLocaleString()}
-            <span className="text-sm font-normal text-white/70 ml-1">({Math.round(downPaymentPct * 100)}%)</span>
+            <span className="text-sm font-normal text-teal-200/70 ml-1">({Math.round(downPaymentPct * 100)}%)</span>
           </p>
         </motion.div>
 
         {/* Financiamiento */}
         <motion.div 
-          className="absolute -left-4 bottom-10 bg-blue-900/40 backdrop-blur-md border border-blue-500/30 p-3 rounded-xl shadow-xl"
+          className="absolute -left-2 bottom-16 bg-slate-900/60 backdrop-blur-md border border-slate-600/50 p-3 rounded-xl shadow-xl z-30"
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 0.7 }}
         >
-          <p className="text-xs text-blue-300 font-semibold uppercase tracking-wider mb-1">Te Prestamos</p>
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-2 h-2 rounded-full bg-slate-400" />
+            <p className="text-xs text-slate-300 font-semibold uppercase tracking-wider">Capital a Financiar</p>
+          </div>
           <p className="text-xl font-bold text-white">
             ${financedAmount.toLocaleString()}
-            <span className="text-sm font-normal text-white/70 ml-1">({Math.round(financedPct * 100)}%)</span>
+            <span className="text-sm font-normal text-slate-400 ml-1">({Math.round(financedPct * 100)}%)</span>
           </p>
         </motion.div>
+
       </div>
 
-      {/* Texto Inferior Dinámico */}
-      <div className="mt-12 text-center max-w-xs">
-        <motion.h3 
-          key={loan.termMonths}
-          initial={{ opacity: 0, y: 10 }}
+      {/* Texto Inferior */}
+      <div className="mt-8 text-center max-w-xs relative z-30">
+        <motion.div
+          key={connectionStrength} // Re-animar si cambia la fuerza
+          initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-2xl font-bold text-white mb-2"
+          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 mb-3"
         >
-          {loan.termMonths} Meses Plazo
-        </motion.h3>
-        <p className="text-slate-300 text-sm">
-          Ajusta los valores para encontrar tu cuota ideal. El gráfico se actualiza en tiempo real.
+          <div className={`w-2 h-2 rounded-full ${connectionStrength > 0.6 ? 'bg-green-400' : 'bg-yellow-400'} animate-pulse`} />
+          <span className="text-xs font-medium text-teal-200">
+            {connectionStrength > 0.7 ? "Perfil de alta conectividad" : "Buscando aliados..."}
+          </span>
+        </motion.div>
+        
+        <h3 className="text-xl font-bold text-white mb-1">
+          Red de Aliados Activa
+        </h3>
+        <p className="text-slate-400 text-xs leading-relaxed">
+          Nuestro algoritmo está conectando tu perfil con las mejores instituciones financieras para {loan.termMonths} meses.
         </p>
       </div>
     </div>
