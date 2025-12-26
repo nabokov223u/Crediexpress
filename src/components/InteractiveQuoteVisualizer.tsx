@@ -2,199 +2,202 @@ import { useMemo, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFormData } from "../context/FormContext";
 
-// Icono de "Usuario/Nodo" simplificado
-const NodeIcon = ({ x, y, size, color, delay }: { x: number; y: number; size: number; color: string; delay: number }) => (
-  <motion.g
-    transform={`translate(${x}, ${y})`}
-    initial={{ opacity: 0, scale: 0 }}
-    animate={{ opacity: 1, scale: 1 }}
-    transition={{ duration: 0.5, delay }}
-  >
-    {/* Glow effect */}
-    <motion.circle
-      r={size * 1.5}
-      fill={color}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: [0, 0.3, 0] }}
-      transition={{ duration: 2, repeat: Infinity, delay: delay + 1 }}
-    />
-    
-    {/* Outer Box */}
-    <rect
-      x={-size}
-      y={-size}
-      width={size * 2}
-      height={size * 2}
-      rx={4}
-      fill="#0f172a" // slate-900
-      stroke={color}
-      strokeWidth={1.5}
-    />
-    
-    {/* Inner "Person" shape */}
-    <circle cx={0} cy={-size * 0.2} r={size * 0.25} fill={color} />
-    <path
-      d={`M ${-size * 0.5} ${size * 0.6} Q 0 ${size * 0.1} ${size * 0.5} ${size * 0.6} v ${size * 0.2} h ${-size} v ${-size * 0.2} z`}
-      fill={color}
-    />
-  </motion.g>
-);
+// --- PLEXUS BACKGROUND COMPONENT ---
+const PlexusBackground = ({ intensity }: { intensity: number }) => {
+  // Generar nodos aleatorios
+  const nodes = useMemo(() => {
+    return Array.from({ length: 60 }).map((_, i) => ({
+      id: i,
+      x: Math.random() * 100, // Porcentaje
+      y: Math.random() * 100, // Porcentaje
+      size: Math.random() * 2 + 1,
+    }));
+  }, []);
 
-// Paquete de datos viajando
-const DataPacket = ({ path, color, duration, delay }: { path: string; color: string; duration: number; delay: number }) => (
-  <motion.circle
-    r={3}
-    fill={color}
-    filter="drop-shadow(0 0 4px currentColor)"
-  >
-    <animateMotion
-      dur={`${duration}s`}
-      repeatCount="indefinite"
-      path={path}
-      begin={`${delay}s`}
-      keyPoints="0;1"
-      keyTimes="0;1"
-      calcMode="linear"
-    />
-  </motion.circle>
-);
+  // Calcular conexiones (esto es costoso O(N^2), pero con 60 nodos es despreciable)
+  const connections = useMemo(() => {
+    const lines = [];
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const dx = nodes[i].x - nodes[j].x;
+        const dy = nodes[i].y - nodes[j].y;
+        // Distancia euclidiana aproximada (considerando aspecto cuadrado para simplificar)
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        
+        if (dist < 15) { // Umbral de conexión
+          lines.push({
+            id: `${i}-${j}`,
+            x1: nodes[i].x,
+            y1: nodes[i].y,
+            x2: nodes[j].x,
+            y2: nodes[j].y,
+            opacity: 1 - (dist / 15) // Más opaco si están cerca
+          });
+        }
+      }
+    }
+    return lines;
+  }, [nodes]);
 
+  return (
+    <div className="absolute inset-0 overflow-hidden bg-[#0d234a]">
+      <svg className="w-full h-full" preserveAspectRatio="none">
+        {/* Líneas de conexión */}
+        {connections.map((line) => (
+          <motion.line
+            key={line.id}
+            x1={`${line.x1}%`}
+            y1={`${line.y1}%`}
+            x2={`${line.x2}%`}
+            y2={`${line.y2}%`}
+            stroke="#2dd4bf"
+            strokeWidth="0.5"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: line.opacity * 0.3 }}
+            transition={{ duration: 2 }}
+          />
+        ))}
+
+        {/* Nodos (Luces) */}
+        {nodes.map((node) => (
+          <motion.circle
+            key={node.id}
+            cx={`${node.x}%`}
+            cy={`${node.y}%`}
+            r={node.size}
+            fill="#ccfbf1"
+            initial={{ opacity: 0.1, scale: 0.8 }}
+            animate={{ 
+              opacity: [0.1, 0.8, 0.1], 
+              scale: [0.8, 1.2, 0.8] 
+            }}
+            transition={{ 
+              duration: 2 + Math.random() * 3, // Duración aleatoria para efecto orgánico
+              repeat: Infinity,
+              delay: Math.random() * 2,
+              ease: "easeInOut"
+            }}
+          />
+        ))}
+        
+        {/* Destellos aleatorios más intensos (Active Sparks) */}
+        {Array.from({ length: 8 }).map((_, i) => (
+           <motion.circle
+             key={`spark-${i}`}
+             cx={`${Math.random() * 100}%`}
+             cy={`${Math.random() * 100}%`}
+             r={3}
+             fill="#fff"
+             initial={{ opacity: 0, scale: 0 }}
+             animate={{ opacity: [0, 1, 0], scale: [0, 2, 0] }}
+             transition={{
+               duration: 0.5,
+               repeat: Infinity,
+               repeatDelay: Math.random() * 3,
+               delay: Math.random() * 5
+             }}
+           />
+        ))}
+      </svg>
+      
+      {/* Gradiente sutil para profundidad */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0d234a] via-transparent to-[#0d234a]/50" />
+    </div>
+  );
+};
+
+// --- MAIN COMPONENT ---
 export default function InteractiveQuoteVisualizer() {
   const { data } = useFormData();
   const { loan } = data;
-  const downPaymentPct = loan.downPaymentPct;
   
-  // Intensidad basada en el pago inicial
-  const intensity = 1 + (downPaymentPct * 2); 
-
-  // Definición de la Red (Posiciones fijas para estética controlada)
-  // Coordenadas relativas a un viewBox de 600x400
-  const nodes = [
-    { id: 0, x: 300, y: 200, type: 'hub' }, // Centro
-    { id: 1, x: 150, y: 100, type: 'node' },
-    { id: 2, x: 450, y: 100, type: 'node' },
-    { id: 3, x: 150, y: 300, type: 'node' },
-    { id: 4, x: 450, y: 300, type: 'node' },
-    { id: 5, x: 50, y: 200, type: 'leaf' },
-    { id: 6, x: 550, y: 200, type: 'leaf' },
-    { id: 7, x: 300, y: 50, type: 'leaf' },
-    { id: 8, x: 300, y: 350, type: 'leaf' },
-    { id: 9, x: 100, y: 50, type: 'leaf' },
-    { id: 10, x: 500, y: 50, type: 'leaf' },
-    { id: 11, x: 100, y: 350, type: 'leaf' },
-    { id: 12, x: 500, y: 350, type: 'leaf' },
+  // Estados de texto simulando proceso
+  const [statusIndex, setStatusIndex] = useState(0);
+  const statuses = [
+    { title: "Buscando Aliados", subtitle: "Conectando con red financiera..." },
+    { title: "Analizando Perfil", subtitle: "Verificando historial crediticio..." },
+    { title: "Calculando Capacidad", subtitle: "Optimizando tu cuota mensual..." },
+    { title: "Sincronizando Datos", subtitle: "Preparando tu pre-aprobación..." }
   ];
-
-  // Conexiones (Edges)
-  const edges = [
-    { from: 0, to: 1 }, { from: 0, to: 2 }, { from: 0, to: 3 }, { from: 0, to: 4 }, // Hub a Nodos
-    { from: 1, to: 5 }, { from: 1, to: 9 }, { from: 1, to: 7 }, // Nodo 1 a hojas
-    { from: 2, to: 6 }, { from: 2, to: 10 }, { from: 2, to: 7 }, // Nodo 2 a hojas
-    { from: 3, to: 5 }, { from: 3, to: 11 }, { from: 3, to: 8 }, // Nodo 3 a hojas
-    { from: 4, to: 6 }, { from: 4, to: 12 }, { from: 4, to: 8 }, // Nodo 4 a hojas
-    { from: 1, to: 2 }, { from: 3, to: 4 }, { from: 1, to: 3 }, { from: 2, to: 4 } // Interconexiones
-  ];
-
-  // Estado para reiniciar animación de "encendido"
-  const [key, setKey] = useState(0);
 
   useEffect(() => {
-    // Reiniciar animación si cambia drásticamente la entrada (opcional)
-    // setKey(k => k + 1);
+    const interval = setInterval(() => {
+      setStatusIndex((prev) => (prev + 1) % statuses.length);
+    }, 3500);
+    return () => clearInterval(interval);
   }, []);
 
+  const currentStatus = statuses[statusIndex];
+
   return (
-    <div className="flex flex-col items-center justify-center h-full w-full relative z-10 overflow-hidden bg-[#0d234a]/50 backdrop-blur-sm rounded-xl border border-white/5">
+    <div className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden rounded-xl border border-white/10 shadow-2xl">
       
-      {/* Grid de fondo estilo "Blueprint" */}
-      <div 
-        className="absolute inset-0 opacity-20 pointer-events-none"
-        style={{ 
-            backgroundImage: 'linear-gradient(#2dd4bf 1px, transparent 1px), linear-gradient(90deg, #2dd4bf 1px, transparent 1px)',
-            backgroundSize: '40px 40px'
-        }}
-      />
+      {/* 1. FONDO ACTIVO (La Red) */}
+      <PlexusBackground intensity={loan.downPaymentPct} />
 
-      <div className="relative w-full h-full flex items-center justify-center p-4">
-        <svg className="w-full h-full max-w-[600px]" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid meet">
-          <defs>
-            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="2" result="blur" />
-              <feComposite in="SourceGraphic" in2="blur" operator="over" />
-            </filter>
-          </defs>
-
-          {/* Conexiones (Líneas) */}
-          {edges.map((edge, i) => {
-            const start = nodes[edge.from];
-            const end = nodes[edge.to];
-            const pathD = `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
-            
-            return (
-              <g key={`edge-${i}`}>
-                {/* Línea base */}
-                <motion.path
-                  d={pathD}
-                  stroke="#1e293b" // slate-800
-                  strokeWidth={1}
-                  fill="none"
-                />
-                
-                {/* Línea de "Encendido" */}
-                <motion.path
-                  d={pathD}
-                  stroke="#2dd4bf"
-                  strokeWidth={1.5}
-                  fill="none"
-                  initial={{ pathLength: 0, opacity: 0 }}
-                  animate={{ pathLength: 1, opacity: 0.6 }}
-                  transition={{ 
-                    duration: 1.5, 
-                    delay: i * 0.05, // Efecto cascada
-                    ease: "easeOut" 
-                  }}
-                />
-
-                {/* Paquetes de datos (Tráfico) */}
-                <DataPacket 
-                    path={pathD} 
-                    color="#ccfbf1" 
-                    duration={3 / intensity} 
-                    delay={Math.random() * 2} 
-                />
-                {/* Paquete reverso ocasional */}
-                {i % 2 === 0 && (
-                    <DataPacket 
-                        path={`M ${end.x} ${end.y} L ${start.x} ${start.y}`} 
-                        color="#2dd4bf" 
-                        duration={4 / intensity} 
-                        delay={Math.random() * 2 + 1} 
-                    />
-                )}
-              </g>
-            );
-          })}
-
-          {/* Nodos */}
-          {nodes.map((node, i) => (
-            <NodeIcon
-              key={`node-${i}`}
-              x={node.x}
-              y={node.y}
-              size={node.type === 'hub' ? 20 : (node.type === 'node' ? 16 : 12)}
-              color={node.type === 'hub' ? '#f0fdfa' : '#2dd4bf'}
-              delay={0.5 + (i * 0.1)}
+      {/* 2. CONTENIDO SUPERPUESTO (Textos) */}
+      <div className="relative z-10 flex flex-col items-center justify-center text-center p-8 bg-[#0d234a]/30 backdrop-blur-[2px] rounded-2xl border border-white/5">
+        
+        {/* Icono animado central (Radar/Scan) */}
+        <div className="relative mb-6 w-24 h-24 flex items-center justify-center">
+            {/* Anillos de radar */}
+            <motion.div 
+                className="absolute inset-0 border-2 border-teal-500/30 rounded-full"
+                animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
             />
-          ))}
+            <motion.div 
+                className="absolute inset-0 border border-teal-400/20 rounded-full"
+                animate={{ scale: [1, 2], opacity: [0.3, 0] }}
+                transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+            />
+            {/* Icono central */}
+            <div className="w-12 h-12 bg-teal-500/20 rounded-full flex items-center justify-center backdrop-blur-md border border-teal-500/50">
+                <svg className="w-6 h-6 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+            </div>
+        </div>
 
-        </svg>
-      </div>
-      
-      {/* Overlay de texto sutil (Opcional, para dar contexto tecnológico) */}
-      <div className="absolute bottom-4 right-4 text-teal-400/40 text-xs font-mono">
-        NETWORK_STATUS: ACTIVE<br/>
-        NODES: {nodes.length}<br/>
-        THROUGHPUT: {(intensity * 100).toFixed(0)} MBPS
+        {/* Textos cambiantes */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={statusIndex}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col items-center"
+          >
+            <h3 className="text-2xl font-bold text-white mb-2 tracking-wide">
+              {currentStatus.title}
+            </h3>
+            <p className="text-teal-200/80 text-sm font-light">
+              {currentStatus.subtitle}
+            </p>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Indicadores de datos (Decorativos) */}
+        <div className="mt-8 grid grid-cols-3 gap-4 w-full max-w-xs">
+            {[1, 2, 3].map((i) => (
+                <div key={i} className="flex flex-col items-center">
+                    <motion.div 
+                        className="w-full h-1 bg-teal-900/50 rounded-full overflow-hidden"
+                    >
+                        <motion.div 
+                            className="h-full bg-teal-400"
+                            animate={{ width: ["0%", "100%"] }}
+                            transition={{ 
+                                duration: 1 + Math.random(), 
+                                repeat: Infinity, 
+                                repeatType: "reverse" 
+                            }}
+                        />
+                    </motion.div>
+                </div>
+            ))}
+        </div>
       </div>
     </div>
   );
