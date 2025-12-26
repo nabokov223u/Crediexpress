@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { motion } from "framer-motion";
 import AnimatedCheckIcon from "../components/AnimatedCheckIcon";
 import { useState, useEffect } from "react";
+import InteractiveQuoteVisualizer from "../components/InteractiveQuoteVisualizer";
 
 interface MinimalLoginLayoutProps {
   children: ReactNode;
@@ -155,6 +156,10 @@ export default function MinimalLoginLayout({
           >            <div className="grid grid-cols-1 lg:grid-cols-[40%_60%] min-h-[650px]">
               {/* Columna izquierda - Logo y contenido informativo */}
               <div className="relative bg-[#0d234a] p-10 md:p-12 flex flex-col justify-between overflow-hidden">
+                {currentStep === 2 ? (
+                  <InteractiveQuoteVisualizer />
+                ) : (
+                  <>
                 {/* Contenido superior */}
                 <div className="flex-1 flex flex-col items-center justify-center">
                   {/* Logo animado grande */}
@@ -334,6 +339,8 @@ export default function MinimalLoginLayout({
                     )}
                   </motion.div>
                 </div>
+                </>
+                )}
               </div>
 
               {/* Columna derecha - Formulario */}
