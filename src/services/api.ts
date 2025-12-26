@@ -5,8 +5,10 @@ import { monthlyPayment } from "./calculator";
 // Constante fija del sistema
 const CODIGO_COTIZADOR = "COD_COT_001";
 
-// Endpoint del calificador
-const API_ENDPOINT = "https://api-pre.originarsa.com/api/Creditos/ObtenerCalificacionCreditoRapido";
+// Endpoint del calificador (Usando Proxy para evitar CORS)
+// En local: vite.config.ts redirige /api -> https://api-pre.originarsa.com/api
+// En prod: vercel.json redirige /api -> https://api-pre.originarsa.com/api
+const API_ENDPOINT = "/api/Creditos/ObtenerCalificacionCreditoRapido";
 
 // Tipos para la integración con el calificador
 interface CalificadorRequest {
@@ -14,10 +16,11 @@ interface CalificadorRequest {
   identificacion: string;
   montoVehiculo: number;
   porcentajeEntrada: number;
-  plazo: number;
+  plazo: string;
   valorEntrada: number;
   valorCuotaMensual: number;
   montoAFinanciar: number;
+  Ip: string;
 }
 
 interface CalificadorResponse {
@@ -34,7 +37,7 @@ interface CalificadorResponse {
 }
 
 // Mapear FormData al formato que espera el calificador
-function mapFormDataToRequest(formData: FormData): CalificadorRequest {
+function mapFormDataToRequest(formData: FormData, ip: string): CalificadorRequest {
   const { loan } = formData;
   const valorEntrada = Math.round(loan.vehicleAmount * loan.downPaymentPct);
   const montoAFinanciar = loan.vehicleAmount - valorEntrada;
@@ -45,11 +48,24 @@ function mapFormDataToRequest(formData: FormData): CalificadorRequest {
     identificacion: formData.applicant.idNumber,
     montoVehiculo: loan.vehicleAmount,
     porcentajeEntrada: Math.round(loan.downPaymentPct * 100), // Convertir 0.30 → 30
-    plazo: loan.termMonths,
+    plazo: loan.termMonths.toString(),
     valorEntrada,
     valorCuotaMensual,
     montoAFinanciar,
+    Ip: ip
   };
+}
+
+// Obtener IP del cliente
+async function getClientIp(): Promise<string> {
+  try {
+    const res = await fetch('https://api.ipify.org?format=json');
+    const data = await res.json();
+    return data.ip;
+  } catch (e) {
+    console.warn('No se pudo obtener la IP, usando fallback');
+    return '127.0.0.1';
+  }
 }
 
 // Mapear respuesta del calificador a nuestros estados
@@ -58,7 +74,7 @@ function mapResponseToStatus(calificacion: string): 'approved' | 'review' | 'den
   
   if (upperCalificacion.includes('APROBADO')) return 'approved';
   if (upperCalificacion.includes('REVISION')) return 'review';
-  if (upperCalificacion.includes('NEGADO')) return 'denied';
+  if (upperCalificacion.includes('NEGADO') || upperCalificacion.includes('NOCALIFICA')) return 'denied';
   
   // Default a review si no reconocemos el estado
   console.warn('Estado de calificación no reconocido:', calificacion);
@@ -67,8 +83,11 @@ function mapResponseToStatus(calificacion: string): 'approved' | 'review' | 'den
 
 export async function submitPrequalification(payload: FormData): Promise<PrequalificationResult & { id?: string }> {
   try {
+    // Obtener IP
+    const ip = await getClientIp();
+
     // Preparar el request
-    const requestBody = mapFormDataToRequest(payload);
+    const requestBody = mapFormDataToRequest(payload, ip);
     
     console.log('📤 Enviando solicitud al calificador:');
     console.log('URL:', API_ENDPOINT);
@@ -77,7 +96,6 @@ export async function submitPrequalification(payload: FormData): Promise<Prequal
     // Llamar al API del calificador
     const response = await fetch(API_ENDPOINT, {
       method: 'POST',
-      mode: 'cors',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
