@@ -152,7 +152,7 @@ export default function MinimalLoginLayout({
             }}
           >            <div className="grid grid-cols-1 lg:grid-cols-[40%_60%] min-h-[650px]">
               {/* Columna izquierda - Logo y contenido informativo */}
-              <div className="relative bg-gradient-to-br from-slate-50 to-slate-100 p-10 md:p-12 flex flex-col justify-between overflow-hidden">
+              <div className="relative bg-[#0d234a] p-10 md:p-12 flex flex-col justify-between overflow-hidden">
                 {/* Contenido superior */}
                 <div className="flex-1 flex flex-col items-center justify-center">
                   {/* Logo animado grande */}
@@ -166,7 +166,7 @@ export default function MinimalLoginLayout({
                     whileTap={{ scale: 0.95 }}
                   >
                     <motion.img
-                      src="/logo_3d.png"
+                      src="/logo_menta_3d.png"
                       alt="Originarsa"
                       className="w-48 h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 object-contain drop-shadow-2xl"
                       animate={{
@@ -204,7 +204,7 @@ export default function MinimalLoginLayout({
                     
                     {/* Glow effect */}
                     <motion.div
-                      className="absolute inset-0 -z-10 rounded-full bg-brand/20 blur-3xl"
+                      className="absolute inset-0 -z-10 rounded-full bg-teal-400/20 blur-3xl"
                       animate={{
                         scale: [1, 1.2, 1],
                         opacity: [0.3, 0.5, 0.3],
@@ -236,11 +236,11 @@ export default function MinimalLoginLayout({
                     transition={{ duration: 0.6, delay: 0.4 }}
                     className="text-center hidden lg:block mb-8"
                   >
-                    <h3 className="text-2xl font-bold text-slate-900 mb-3">
-                      CrediExpress
+                    <h3 className="text-2xl font-bold text-white mb-3">
+                      Tu auto nuevo en 3 pasos
                     </h3>
-                    <p className="text-base text-slate-700 mb-6">
-                      Tu crédito automotriz en minutos
+                    <p className="text-base text-slate-300 mb-6">
+                      Tu auto soñado en minutos, solo:
                     </p>
                   </motion.div>
 
@@ -249,40 +249,40 @@ export default function MinimalLoginLayout({
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.6 }}
-                    className="hidden lg:block w-full max-w-xs space-y-3"
+                    className="hidden lg:block w-full max-w-xs space-y-4"
                   >
                     <div className="flex items-start gap-3">
-                      <div className="w-5 h-5 rounded-full bg-brand/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <svg className="w-3 h-3 text-brand" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
+                      <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="text-teal-400 font-bold text-sm">1</span>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-slate-800">Proceso 100% digital</p>
-                        <p className="text-xs text-slate-600">Sin papeleo ni visitas</p>
+                        <p className="text-sm font-medium text-white">Identifícate</p>
+                        <p className="text-xs text-slate-400">Ingresa tus datos básicos.</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <div className="w-5 h-5 rounded-full bg-brand/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <svg className="w-3 h-3 text-brand" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
+                      <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="text-teal-400 font-bold text-sm">2</span>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-slate-800">Respuesta inmediata</p>
-                        <p className="text-xs text-slate-600">Conoce tu precalificación al instante</p>
+                        <p className="text-sm font-medium text-white">Simula</p>
+                        <p className="text-xs text-slate-400">Ajusta la cuota a tu presupuesto.</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <div className="w-5 h-5 rounded-full bg-brand/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <svg className="w-3 h-3 text-brand" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
+                      <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="text-teal-400 font-bold text-sm">3</span>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-slate-800">Datos seguros</p>
-                        <p className="text-xs text-slate-600">Encriptación de nivel bancario</p>
+                        <p className="text-sm font-medium text-white">Estrena</p>
+                        <p className="text-xs text-slate-400">Recibe tu precalificación al instante.</p>
                       </div>
+                    </div>
+                    
+                    <div className="pt-4 text-center">
+                      <p className="text-sm text-teal-400 font-medium">
+                        Comienza ingresando tu cédula a la derecha.
+                      </p>
                     </div>
                   </motion.div>
                 </div>
