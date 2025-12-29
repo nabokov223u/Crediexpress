@@ -58,14 +58,8 @@ function mapFormDataToRequest(formData: FormData, ip: string): CalificadorReques
 
 // Obtener IP del cliente
 async function getClientIp(): Promise<string> {
-  try {
-    const res = await fetch('https://api.ipify.org?format=json');
-    const data = await res.json();
-    return data.ip;
-  } catch (e) {
-    console.warn('No se pudo obtener la IP, usando fallback');
-    return '127.0.0.1';
-  }
+  // Retornamos IP estática para evitar problemas de bloqueo o timeout en Vercel
+  return '127.0.0.1';
 }
 
 // Mapear respuesta del calificador a nuestros estados
