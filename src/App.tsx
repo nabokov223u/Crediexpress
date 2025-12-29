@@ -42,7 +42,7 @@ export default function App() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1.5, ease: "easeOut" }}
-              className="h-32 w-32 md:h-40 md:w-40"
+              className="h-32 w-auto md:h-40 object-contain"
             />
           </motion.div>
         )}

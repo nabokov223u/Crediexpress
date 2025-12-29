@@ -204,6 +204,34 @@ export default function ResultMinimal({ status, onRestart }: ResultMinimalProps)
         </motion.div>
       )}
 
+      {/* Sugerencias Comerciales para NO Aprobados (Venta Consultiva) */}
+      {status === "denied" && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9 }}
+          className="w-full max-w-lg mb-8 bg-orange-50 border border-orange-100 rounded-xl p-5"
+        >
+          <h4 className="text-orange-800 font-bold text-sm mb-3 flex items-center gap-2">
+            💡 ¿Cómo mejorar tus posibilidades?
+          </h4>
+          <ul className="space-y-2 text-sm text-orange-900/80">
+            <li className="flex items-start gap-2">
+              <span className="text-orange-500 mt-0.5">•</span>
+              <span>Intenta aumentar el valor de la <strong>entrada inicial</strong>.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-orange-500 mt-0.5">•</span>
+              <span>Agrega un <strong>garante solidario</strong> (cónyuge o familiar).</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-orange-500 mt-0.5">•</span>
+              <span>Contacta a un asesor para evaluar <strong>otros modelos</strong>.</span>
+            </li>
+          </ul>
+        </motion.div>
+      )}
+
       {/* Botones */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
