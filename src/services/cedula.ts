@@ -8,13 +8,18 @@ export interface CedulaResponse {
   [key: string]: any;
 }
 
-// Credenciales del servicio (Hardcoded por solicitud explícita)
-const API_USER = "IVRClaro";
-const API_PASS = "1vRcl@r0r1G2024";
+// Credenciales del servicio (Desde variables de entorno)
+const API_USER = import.meta.env.VITE_CEDULA_API_USER;
+const API_PASS = import.meta.env.VITE_CEDULA_API_PASSWORD;
 
 export async function getDatosPorCedula(cedula: string): Promise<CedulaResponse> {
   // Validación básica de cédula
   if (!/^\d{10}$/.test(cedula)) throw new Error("Número de cédula inválido");
+
+  if (!API_USER || !API_PASS) {
+    console.error("Faltan credenciales de API Cédula en .env");
+    throw new Error("Error de configuración del servicio");
+  }
 
   // Usamos el proxy existente /api que apunta a https://api-pre.originarsa.com/api
   // Endpoint final: /api/Personas/ObtenerInformacionConsolidada/{cedula}
