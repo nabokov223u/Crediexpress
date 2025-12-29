@@ -156,7 +156,29 @@ export default function MinimalLoginLayout({
           >            <div className="grid grid-cols-1 lg:grid-cols-[40%_60%] min-h-[650px]">
               {/* Columna izquierda - Logo y contenido informativo */}
               <div className="relative bg-[#0d234a] p-10 md:p-12 flex flex-col justify-between overflow-hidden">
-                {currentStep === 2 ? (
+                
+                {/* Imagen de fondo: Step 1 (Expandido) y Step 3 (Resultado) */}
+                <AnimatePresence>
+                  {((identityExpanded && currentStep === 1) || currentStep === 3) && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 0.4 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 1 }}
+                      className="absolute inset-0 z-0"
+                    >
+                      <img 
+                        src="/young-woman-sitting.jpg" 
+                        alt="Background" 
+                        className="w-full h-full object-cover mix-blend-overlay filter grayscale contrast-125"
+                      />
+                      <div className="absolute inset-0 bg-[#0d234a]/50 mix-blend-multiply" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div className="relative z-10 w-full h-full flex flex-col">
+                  {currentStep === 2 ? (
                   <InteractiveQuoteVisualizer />
                 ) : (
                   <>
@@ -339,8 +361,9 @@ export default function MinimalLoginLayout({
                     )}
                   </motion.div>
                 </div>
-                </>
-                )}
+                    </>
+                  )}
+                </div>
               </div>
 
               {/* Columna derecha - Formulario */}
