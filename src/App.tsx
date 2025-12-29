@@ -6,7 +6,6 @@ import Step1IdentityMinimal from "./pages/Step1IdentityMinimal";
 import Step2Vehicle from "./pages/Step2Vehicle";
 import Step2VehicleMinimal from "./pages/Step2VehicleMinimal";
 import Result from "./pages/Result";
-import ResultMinimal from "./pages/ResultMinimal";
 import HeroLayout from "./layouts/HeroLayout";
 import MinimalLoginLayout from "./layouts/MinimalLoginLayout";
 import Step2HeroOverlay from "./pages/Step2HeroOverlay";
@@ -94,7 +93,7 @@ export default function App() {
                 transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
               >
                 <MinimalLoginLayout currentStep={3} totalSteps={3}>
-                  <ResultMinimal
+                  <Result
                     status={result}
                     onRestart={() => {
                       setResult(null);
