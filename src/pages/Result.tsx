@@ -46,7 +46,7 @@ export default function Result({ status, onRestart }: { status: "approved" | "re
   };
 
   const current = config[status];
-  const whatsappLink = `https://wa.me/50588888888?text=Hola, acabo de precalificar en CrediExpress. Mi nombre es ${data.applicant.fullName} y mi estado es: ${status.toUpperCase()}`;
+  const whatsappLink = `https://wa.me/593997424404?text=Hola, acabo de precalificar en CrediExpress. Mi nombre es ${data.applicant.fullName} y mi estado es: ${status.toUpperCase()}`;
 
   return (
     <div className="w-full flex items-center justify-center">
@@ -95,17 +95,19 @@ export default function Result({ status, onRestart }: { status: "approved" | "re
           )}
 
           {/* Primary CTA - WhatsApp */}
-          <motion.a
-            href={whatsappLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className={`flex items-center justify-center gap-3 w-full py-4 px-6 rounded-xl text-white font-bold text-lg shadow-lg shadow-${current.color}-500/30 ${current.ctaColor} transition-all`}
-          >
-            <FaWhatsapp className="text-2xl" />
-            {current.cta}
-          </motion.a>
+          {status !== 'denied' && (
+            <motion.a
+              href={whatsappLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className={`flex items-center justify-center gap-3 w-full py-4 px-6 rounded-xl text-white font-bold text-lg shadow-lg shadow-${current.color}-500/30 ${current.ctaColor} transition-all`}
+            >
+              <FaWhatsapp className="text-2xl" />
+              {current.cta}
+            </motion.a>
+          )}
 
           {/* Secondary Actions */}
           <div className="flex justify-center gap-4 pt-2">

@@ -247,14 +247,18 @@ export default function ResultMinimal({ status, onRestart }: ResultMinimalProps)
         >
           Volver al inicio
         </motion.button>
-        <motion.a
-          href="#"
-          className="flex-1 h-14 bg-gradient-to-r from-brand to-modern text-white rounded-xl font-bold text-lg shadow-lg shadow-brand/20 hover:shadow-xl hover:shadow-brand/30 transition-all duration-300 flex items-center justify-center"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          Contactar con asesor
-        </motion.a>
+        {status !== 'denied' && (
+          <motion.a
+            href="https://wa.me/593997424404?text=Hola,%20necesito%20ayuda%20con%20mi%20precalificación"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 h-14 bg-gradient-to-r from-brand to-modern text-white rounded-xl font-bold text-lg shadow-lg shadow-brand/20 hover:shadow-xl hover:shadow-brand/30 transition-all duration-300 flex items-center justify-center"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            Contactar con asesor
+          </motion.a>
+        )}
       </motion.div>
     </motion.div>
   );

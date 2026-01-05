@@ -442,7 +442,7 @@ export default function MinimalLoginLayout({
       >
         ¿Necesitas ayuda?{" "}
         <a 
-          href="https://wa.me/593999999999?text=Hola,%20necesito%20ayuda%20con%20mi%20precalificación"
+          href="https://wa.me/593997424404?text=Hola,%20necesito%20ayuda%20con%20mi%20precalificación"
           target="_blank"
           rel="noopener noreferrer"
           className="text-modern font-semibold hover:text-white transition-colors duration-300 hover:underline"
