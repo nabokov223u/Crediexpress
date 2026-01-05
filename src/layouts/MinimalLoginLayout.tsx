@@ -24,7 +24,16 @@ export default function MinimalLoginLayout({
   const [showSecret, setShowSecret] = useState(false);
   const [konamiIndex, setKonamiIndex] = useState(0);
   const [logoParallax, setLogoParallax] = useState({ x: 0, y: 0 });
+  const [isMobile, setIsMobile] = useState(false);
   const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+
+  // Detectar móvil para optimización
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Konami code detector
   useEffect(() => {
@@ -57,6 +66,8 @@ export default function MinimalLoginLayout({
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isMobile) return; // Optimización: No calcular parallax en móvil
+
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -71,67 +82,69 @@ export default function MinimalLoginLayout({
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Fondo con imagen difuminada */}
-      <div className="absolute inset-0">
-        <img
-          src={backgroundImage}
-          alt="Background"
-          className="w-full h-full object-cover"
-        />
-        {/* Overlay de blur y oscurecimiento */}
-        <div className="absolute inset-0 backdrop-blur-2xl bg-slate-900/40" />
-        
-        {/* Patrón animado más evidente pero más lento */}
-        <motion.div
-          className="absolute inset-0 opacity-[0.15]"
-          animate={{
-            backgroundPosition: ['0% 0%', '100% 100%'],
-          }}
-          transition={{
-            duration: 40, // Aumentado de 15 a 40 segundos
-            repeat: Infinity,
-            repeatType: 'reverse',
-            ease: 'linear',
-          }}
-          style={{
-            backgroundImage: `
-              radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.9) 3px, transparent 3px),
-              radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.7) 2px, transparent 2px),
-              radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.5) 1.5px, transparent 1.5px)
-            `,
-            backgroundSize: '70px 70px, 50px 50px, 35px 35px',
-          }}
-        />
-        
-        {/* Elementos decorativos adicionales */}
-        <motion.div
-          className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand/5 rounded-full blur-3xl"
-          animate={{
-            scale: [1, 1.2, 1],
-            x: [0, 50, 0],
-            y: [0, -30, 0],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        />
-        <motion.div
-          className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-modern/5 rounded-full blur-3xl"
-          animate={{
-            scale: [1, 1.3, 1],
-            x: [0, -40, 0],
-            y: [0, 40, 0],
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        />
-      </div>
+    <div className="min-h-screen relative overflow-hidden bg-slate-50">
+      {/* Fondo con imagen difuminada - Solo Desktop */}
+      {!isMobile && (
+        <div className="absolute inset-0">
+          <img
+            src={backgroundImage}
+            alt="Background"
+            className="w-full h-full object-cover"
+          />
+          {/* Overlay de blur y oscurecimiento */}
+          <div className="absolute inset-0 backdrop-blur-2xl bg-slate-900/40" />
+          
+          {/* Patrón animado más evidente pero más lento */}
+          <motion.div
+            className="absolute inset-0 opacity-[0.15]"
+            animate={{
+              backgroundPosition: ['0% 0%', '100% 100%'],
+            }}
+            transition={{
+              duration: 40, // Aumentado de 15 a 40 segundos
+              repeat: Infinity,
+              repeatType: 'reverse',
+              ease: 'linear',
+            }}
+            style={{
+              backgroundImage: `
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.9) 3px, transparent 3px),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.7) 2px, transparent 2px),
+                radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.5) 1.5px, transparent 1.5px)
+              `,
+              backgroundSize: '70px 70px, 50px 50px, 35px 35px',
+            }}
+          />
+          
+          {/* Elementos decorativos adicionales */}
+          <motion.div
+            className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand/5 rounded-full blur-3xl"
+            animate={{
+              scale: [1, 1.2, 1],
+              x: [0, 50, 0],
+              y: [0, -30, 0],
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+          />
+          <motion.div
+            className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-modern/5 rounded-full blur-3xl"
+            animate={{
+              scale: [1, 1.3, 1],
+              x: [0, -40, 0],
+              y: [0, 40, 0],
+            }}
+            transition={{
+              duration: 12,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+          />
+        </div>
+      )}
 
       {/* Contenedor principal centrado */}
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center p-4 md:p-6">
@@ -147,7 +160,7 @@ export default function MinimalLoginLayout({
             className="bg-white rounded-3xl shadow-2xl overflow-hidden transition-shadow duration-200"
             onMouseMove={handleMouseMove}
             style={{
-              boxShadow: `
+              boxShadow: isMobile ? '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)' : `
                 0 20px 60px rgba(0, 0, 0, 0.15),
                 ${mousePosition.x * 0.05}px ${mousePosition.y * 0.05}px 80px -40px rgba(26, 15, 80, 0.12),
                 ${mousePosition.x * 0.03}px ${mousePosition.y * 0.03}px 50px -20px rgba(7, 99, 253, 0.08)
