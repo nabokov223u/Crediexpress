@@ -61,15 +61,16 @@ export async function getDatosPorCedula(cedula: string): Promise<CedulaResponse>
     }
 
     // Mapear a nuestra estructura interna
+    // BLINDAJE: Usamos || "" para asegurar que NUNCA retornemos null o undefined
     return {
-        nombres: info.nombres,
+        nombres: info.nombres || "",
         apellidos: `${info.apellidoPaterno || ''} ${info.apellidoMaterno || ''}`.trim(),
-        nombreCompleto: info.nombreCompleto,
+        nombreCompleto: info.nombreCompleto || `${info.nombres || ''} ${info.apellidoPaterno || ''} ${info.apellidoMaterno || ''}`.trim(),
         // Guardamos datos extra por si acaso
-        genero: info.genero,
-        fechaNacimiento: info.fechaNacimiento,
-        nacionalidad: info.nacionalidad,
-        estadoCivil: info.estadoCivil
+        genero: info.genero || "",
+        fechaNacimiento: info.fechaNacimiento || "",
+        nacionalidad: info.nacionalidad || "",
+        estadoCivil: info.estadoCivil || ""
     };
 
   } catch (error) {
