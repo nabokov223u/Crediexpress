@@ -15,6 +15,7 @@ export default function Step1IdentityMinimal({ onNext, onExpanded }: { onNext: (
   const [dataReady, setDataReady] = useState<boolean>(Boolean(data.applicant.fullName));
   const [acceptedPolicy, setAcceptedPolicy] = useState<boolean>(false);
   const [policyOpen, setPolicyOpen] = useState<boolean>(false);
+  const [manualEntry, setManualEntry] = useState<boolean>(false);
 
   const {
     register,
@@ -43,6 +44,7 @@ export default function Step1IdentityMinimal({ onNext, onExpanded }: { onNext: (
       onExpanded?.(false);
       setDataReady(false);
       setAcceptedPolicy(false);
+      setManualEntry(false);
       return;
     }
     if (idNumberValue !== lastIdRef.current) {
@@ -51,8 +53,17 @@ export default function Step1IdentityMinimal({ onNext, onExpanded }: { onNext: (
       onExpanded?.(false);
       setDataReady(false);
       setAcceptedPolicy(false);
+      setManualEntry(false);
     }
   }, [idNumberValue, onExpanded]);
+
+  const enableManualEntry = () => {
+    setDataReady(true);
+    setShowDetails(true);
+    onExpanded?.(true);
+    setManualEntry(true);
+    setValue("fullName", "");
+  };
 
   const fetchAndReveal = async () => {
     if (!idNumberValue || !/^\d{10}$/.test(idNumberValue)) {
@@ -72,17 +83,12 @@ export default function Step1IdentityMinimal({ onNext, onExpanded }: { onNext: (
         setDataReady(true);
         setShowDetails(true);
         onExpanded?.(true);
+        setManualEntry(false);
       } else {
-        setDataReady(false);
-        setShowDetails(false);
-        onExpanded?.(false);
-        alert("No se pudieron obtener los datos de la cédula. Intenta nuevamente más tarde.");
+        enableManualEntry();
       }
     } catch (e: any) {
-      setDataReady(false);
-      setShowDetails(false);
-      onExpanded?.(false);
-      alert("Hubo un problema al consultar el servicio. Por favor, inténtalo nuevamente más tarde.");
+      enableManualEntry();
     } finally {
       setLoading(false);
     }
@@ -217,13 +223,24 @@ export default function Step1IdentityMinimal({ onNext, onExpanded }: { onNext: (
               transition={{ duration: 0.3 }}
               className="space-y-5 overflow-hidden"
             >
+              {manualEntry && (
+                <motion.div 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-amber-50 border border-amber-100 text-amber-800 p-3 rounded-xl text-sm flex items-start gap-2"
+                >
+                  <span className="text-lg">📝</span>
+                  <span>No pudimos obtener tus datos automáticamente. Por favor ingresa tu nombre completo.</span>
+                </motion.div>
+              )}
+
               <Input
                 label="Nombre completo"
                 placeholder="Tu nombre completo"
                 register={register("fullName")}
                 error={errors.fullName}
                 className="h-13 rounded-xl text-base"
-                readOnly
+                readOnly={!manualEntry}
               />
 
               {/* Estado civil con diseño pill */}
