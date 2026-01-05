@@ -161,20 +161,10 @@ export async function submitPrequalification(payload: FormData): Promise<Prequal
       console.error('❌ Error en la calificación de crédito:', errorMessage);
     }
     
-    // En caso de error, usar lógica fallback (la original)
-    console.warn('🔄 Usando lógica de calificación local como fallback');
-    console.info('ℹ️ La aplicación sigue funcionando normalmente con calificación local');
+    // En caso de error, forzamos el estado a "review" para que un asesor lo gestione manualmente
+    console.warn('🔄 Fallback activado: Redirigiendo a revisión manual por error en servicio.');
     
-    const financed = payload.loan.vehicleAmount * (1 - payload.loan.downPaymentPct);
-    let status: 'approved' | 'review' | 'denied';
-    
-    if (financed <= 16000 && payload.loan.termMonths <= 60) {
-      status = "approved";
-    } else if (financed <= 25000) {
-      status = "review";
-    } else {
-      status = "denied";
-    }
+    const status: 'approved' | 'review' | 'denied' = 'review';
     
     const result: PrequalificationResult = { status };
     
