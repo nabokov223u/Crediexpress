@@ -66,7 +66,7 @@ async function getClientIp(): Promise<string> {
 function mapResponseToStatus(calificacion: string): 'approved' | 'review' | 'denied' {
   const upperCalificacion = calificacion.toUpperCase();
   
-  if (upperCalificacion.includes('APROBADO')) return 'approved';
+  if (upperCalificacion.includes('APROBADO') || upperCalificacion.includes('CLIENTEPRECALIFICADO_OK')) return 'approved';
   if (upperCalificacion.includes('REVISION')) return 'review';
   if (upperCalificacion.includes('NEGADO') || upperCalificacion.includes('NOCALIFICA')) return 'denied';
   
