@@ -64,6 +64,8 @@ async function getClientIp(): Promise<string> {
 
 // Mapear respuesta del calificador a nuestros estados
 function mapResponseToStatus(calificacion: string): 'approved' | 'review' | 'denied' {
+  if (!calificacion) return 'review'; // Protección contra nulos/vacíos
+
   const upperCalificacion = calificacion.toUpperCase();
   
   if (upperCalificacion.includes('APROBADO') || upperCalificacion.includes('CLIENTEPRECALIFICADO_OK')) return 'approved';
@@ -100,9 +102,15 @@ export async function submitPrequalification(payload: FormData): Promise<Prequal
     console.log('📡 Status:', response.status, response.statusText);
     
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('❌ Error del servidor:', errorText);
-      throw new Error(`Error HTTP: ${response.status} ${response.statusText}`);
+      // Intentar leer error estructurado del servidor para no llenar la consola de rojo innecesariamente
+      try {
+        const errorData = await response.json();
+        console.warn('⚠️ El servidor retornó un error controlado:', errorData);
+        throw new Error(errorData.mensaje?.mensajeRespuesta || `Error del servidor (${response.status})`);
+      } catch (e) {
+        // Si no es JSON válido, lanzar error genérico
+        throw new Error(`Error HTTP: ${response.status} ${response.statusText}`);
+      }
     }
     
     const data: CalificadorResponse = await response.json();
@@ -113,9 +121,15 @@ export async function submitPrequalification(payload: FormData): Promise<Prequal
     if (data.mensaje?.[0]?.huboError) {
       throw new Error(data.mensaje[0].mensajeRespuesta || 'Error en la calificación');
     }
+
+    // Validación de seguridad contra data null (El problema reportado)
+    if (!data.data) {
+        console.warn('⚠️ La API respondió OK pero sin datos de calificación (data is null). Activando fallback.');
+        throw new Error('Respuesta de API incompleta: data is null');
+    }
     
     // Mapear el estado
-    const status = mapResponseToStatus(data.data.calificacionCrediExpress);
+    const status = mapResponseToStatus(data.data.calificacionCrediExpress || '');
     
     const result: PrequalificationResult = { status };
     
