@@ -208,8 +208,8 @@ export default function MinimalLoginLayout({
                     whileTap={{ scale: 0.95 }}
                   >
                     <motion.img
-                      key={identityExpanded ? "expanded" : "default"}
-                      src={identityExpanded ? "/step2_data.png" : "/logo_menta_3d.png"}
+                      key="default"
+                      src="/logo_menta_3d.png"
                       alt="Originarsa"
                       className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 object-contain drop-shadow-2xl"
                       initial={{ opacity: 0, scale: 0.8 }}
@@ -445,24 +445,6 @@ export default function MinimalLoginLayout({
           </motion.div>
         </motion.div>
       </div>
-
-      {/* Texto de soporte */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1 }}
-        className="fixed bottom-6 right-6 z-50 text-sm text-white/90"
-      >
-        ¿Necesitas ayuda?{" "}
-        <a 
-          href="https://wa.me/593997424404?text=Hola,%20necesito%20ayuda%20con%20mi%20precalificación"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-modern font-semibold hover:text-white transition-colors duration-300 hover:underline"
-        >
-          Contacta a un asesor
-        </a>
-      </motion.div>
     </div>
   );
 }
