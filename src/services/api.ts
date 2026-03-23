@@ -23,17 +23,25 @@ interface CalificadorRequest {
   Ip: string;
 }
 
+interface MensajeItem {
+  id: string;
+  huboError: boolean;
+  codigoRespuesta: number;
+  mensajeRespuesta: string;
+}
+
 interface CalificadorResponse {
   data: {
     calificacionCrediExpress: string;
     motivoCalificacionCrediExpress: string;
-  };
-  mensaje: Array<{
-    id: string;
-    huboError: boolean;
-    codigoRespuesta: number;
-    mensajeRespuesta: string;
-  }>;
+  } | null;
+  mensaje: MensajeItem | MensajeItem[];
+}
+
+// Extraer el primer mensaje sin importar si viene como objeto o array
+function extractMensaje(mensaje: MensajeItem | MensajeItem[]): MensajeItem | undefined {
+  if (Array.isArray(mensaje)) return mensaje[0];
+  return mensaje;
 }
 
 // Mapear FormData al formato que espera el calificador
@@ -102,27 +110,36 @@ export async function submitPrequalification(payload: FormData): Promise<Prequal
     console.log('📡 Status:', response.status, response.statusText);
     
     if (!response.ok) {
-      // Intentar leer error estructurado del servidor para no llenar la consola de rojo innecesariamente
+      // Intentar leer error estructurado del servidor
+      let errorData: CalificadorResponse | null = null;
       try {
-        const errorData = await response.json();
-        console.warn('⚠️ El servidor retornó un error controlado:', errorData);
-        throw new Error(errorData.mensaje?.mensajeRespuesta || `Error del servidor (${response.status})`);
-      } catch (e) {
-        // Si no es JSON válido, lanzar error genérico
-        throw new Error(`Error HTTP: ${response.status} ${response.statusText}`);
+        errorData = await response.json();
+      } catch {
+        // No es JSON válido, ignorar
       }
+
+      if (errorData) {
+        console.warn('⚠️ El servidor retornó un error controlado:', errorData);
+        const msg = extractMensaje(errorData.mensaje as MensajeItem | MensajeItem[]);
+        throw new Error(msg?.mensajeRespuesta || `Error del servidor (${response.status})`);
+      }
+      throw new Error(`Error HTTP: ${response.status} ${response.statusText}`);
     }
     
     const data: CalificadorResponse = await response.json();
     
     console.log('📥 Respuesta del calificador:', data);
     
-    // Validar respuesta
-    if (data.mensaje?.[0]?.huboError) {
-      throw new Error(data.mensaje[0].mensajeRespuesta || 'Error en la calificación');
+    // Extraer mensaje unificado (objeto o array)
+    const msg = extractMensaje(data.mensaje);
+
+    // Validar si el servicio reportó error
+    if (msg?.huboError) {
+      console.warn('⚠️ El servicio reportó error:', msg.mensajeRespuesta, '| Código:', msg.codigoRespuesta);
+      throw new Error(msg.mensajeRespuesta || 'Error en la calificación');
     }
 
-    // Validación de seguridad contra data null (El problema reportado)
+    // Validación de seguridad contra data null
     if (!data.data) {
         console.warn('⚠️ La API respondió OK pero sin datos de calificación (data is null). Activando fallback.');
         throw new Error('Respuesta de API incompleta: data is null');

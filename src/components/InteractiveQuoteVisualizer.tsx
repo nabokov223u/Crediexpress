@@ -114,10 +114,10 @@ export default function InteractiveQuoteVisualizer() {
   // Estados de texto simulando proceso
   const [statusIndex, setStatusIndex] = useState(0);
   const statuses = [
-    { title: "Buscando Aliados", subtitle: "Conectando con red financiera..." },
-    { title: "Analizando Perfil", subtitle: "Verificando historial crediticio..." },
-    { title: "Calculando Capacidad", subtitle: "Optimizando tu cuota mensual..." },
-    { title: "Sincronizando Datos", subtitle: "Preparando tu pre-aprobación..." }
+    { title: "Procesando solicitud", subtitle: "Verificando información..." },
+    { title: "Analizando perfil", subtitle: "Consultando historial crediticio..." },
+    { title: "Calculando capacidad", subtitle: "Evaluando cuota mensual..." },
+    { title: "Finalizando análisis", subtitle: "Preparando resultado..." }
   ];
 
   useEffect(() => {

@@ -9,39 +9,42 @@ export default function Result({ status, onRestart }: { status: "approved" | "re
   const config = {
     approved: {
       color: "green",
-      bg: "bg-gradient-to-br from-green-50 to-emerald-100",
+      bg: "bg-emerald-50",
       border: "border-emerald-200",
       icon: <FaCheckCircle className="text-6xl text-emerald-500" />,
-      title: "¡FELICIDADES! PRE-APROBADO",
-      subtitle: "Tu Ticket Dorado para tu nuevo auto",
-      message: "Tienes un cupo pre-aprobado listo para usar. Un asesor senior ya tiene tu expediente.",
-      cta: "ACTIVAR MI CRÉDITO AHORA",
+      title: "CRÉDITO PREAPROBADO",
+      subtitle: "Tu solicitud ha sido preaprobada",
+      message: "Hemos verificado tu perfil y cuentas con un cupo preaprobado. Un asesor se comunicará contigo para completar la documentación requerida.",
+      cta: "CONTACTAR A MI ASESOR",
       ctaColor: "bg-emerald-600 hover:bg-emerald-700",
-      urgency: "⚠️ Tu pre-aprobación expira en 24 horas."
+      urgency: "Esta preaprobación tiene vigencia de 24 horas.",
+      legal: "*Sujeto a verificación documental y aprobación final. Esta preaprobación no constituye una oferta vinculante de crédito."
     },
     review: {
       color: "blue",
-      bg: "bg-gradient-to-br from-blue-50 to-indigo-100",
+      bg: "bg-blue-50",
       border: "border-blue-200",
       icon: <FaClock className="text-6xl text-blue-500" />,
-      title: "SOLICITUD EN REVISIÓN PRIORITARIA",
-      subtitle: "Estamos analizando tu perfil manualmente",
-      message: "Tu caso requiere una validación rápida de un supervisor. Te contactaremos en breve.",
-      cta: "HABLAR CON UN SUPERVISOR",
+      title: "SOLICITUD EN REVISIÓN",
+      subtitle: "Tu solicitud está siendo evaluada",
+      message: "Tu caso requiere una verificación adicional por parte de nuestro equipo. Te contactaremos con una respuesta a la brevedad.",
+      cta: "HABLAR CON UN ASESOR",
       ctaColor: "bg-blue-600 hover:bg-blue-700",
-      urgency: "🕒 Tiempo de respuesta estimado: 15 minutos."
+      urgency: "Tiempo de respuesta estimado: 24 a 48 horas.",
+      legal: ""
     },
     denied: {
       color: "gray",
-      bg: "bg-gradient-to-br from-gray-50 to-slate-100",
+      bg: "bg-gray-50",
       border: "border-gray-200",
       icon: <FaTimesCircle className="text-6xl text-gray-400" />,
-      title: "NO PUDIMOS APROBARTE POR AHORA",
-      subtitle: "Pero no te rindas, tenemos opciones",
-      message: "Aunque el sistema automático no pudo aprobarte, nuestros asesores pueden buscar alternativas.",
-      cta: "CONSULTAR OTRAS OPCIONES",
+      title: "SOLICITUD NO APROBADA",
+      subtitle: "Tu solicitud no cumple los requisitos en este momento",
+      message: "Actualmente no fue posible aprobar tu solicitud. Puedes contactar a un asesor para conocer alternativas de financiamiento.",
+      cta: "CONSULTAR ALTERNATIVAS",
       ctaColor: "bg-gray-700 hover:bg-gray-800",
-      urgency: ""
+      urgency: "",
+      legal: ""
     }
   };
 
@@ -54,14 +57,10 @@ export default function Result({ status, onRestart }: { status: "approved" | "re
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", duration: 0.8 }}
-        className={`relative w-full max-w-lg ${current.bg} rounded-3xl shadow-2xl overflow-hidden border-4 ${current.border}`}
+        className={`relative w-full max-w-lg ${current.bg} rounded-2xl shadow-lg overflow-hidden border ${current.border}`}
       >
-        {/* Decorative Circles */}
-        <div className="absolute -top-10 -right-10 w-32 h-32 bg-white opacity-20 rounded-full blur-xl"></div>
-        <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-white opacity-20 rounded-full blur-xl"></div>
-
-        {/* Header / Ticket Stub */}
-        <div className="bg-white/60 backdrop-blur-sm p-6 border-b border-dashed border-gray-300 flex flex-col items-center text-center">
+        {/* Header */}
+        <div className="bg-white/80 backdrop-blur-sm p-6 border-b border-gray-200 flex flex-col items-center text-center">
           <motion.div 
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
@@ -89,7 +88,7 @@ export default function Result({ status, onRestart }: { status: "approved" | "re
 
           {/* Urgency Banner */}
           {current.urgency && (
-            <div className="flex items-center justify-center gap-2 text-sm font-bold text-amber-700 bg-amber-100 py-2 px-4 rounded-full animate-pulse">
+            <div className="flex items-center justify-center gap-2 text-sm font-medium text-slate-600 bg-slate-100 py-2 px-4 rounded-lg">
               {current.urgency}
             </div>
           )}
@@ -120,8 +119,17 @@ export default function Result({ status, onRestart }: { status: "approved" | "re
           </div>
         </div>
 
-        {/* Footer / Ticket Stub */}
-        <div className="bg-gray-50 p-4 border-t border-dashed border-gray-300 text-center">
+        {/* Legal Disclaimer */}
+        {current.legal && (
+          <div className="px-8 pb-2">
+            <p className="text-xs text-gray-400 text-center leading-relaxed">
+              {current.legal}
+            </p>
+          </div>
+        )}
+
+        {/* Footer */}
+        <div className="bg-gray-50 p-4 border-t border-gray-200 text-center">
           <button onClick={onRestart} className="text-gray-400 hover:text-gray-600 text-sm underline">
             Iniciar nueva solicitud
           </button>
