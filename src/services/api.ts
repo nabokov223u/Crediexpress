@@ -85,6 +85,70 @@ function mapResponseToStatus(calificacion: string): 'approved' | 'review' | 'den
   return 'review';
 }
 
+// Llamar al endpoint del calificador y parsear la respuesta
+async function callCalificador(requestBody: CalificadorRequest): Promise<CalificadorResponse> {
+  const response = await fetch(API_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify(requestBody),
+  });
+
+  console.log('📡 Status:', response.status, response.statusText);
+
+  if (!response.ok) {
+    let errorData: CalificadorResponse | null = null;
+    try {
+      errorData = await response.json();
+    } catch {
+      // No es JSON válido, ignorar
+    }
+
+    if (errorData) {
+      console.warn('⚠️ El servidor retornó un error controlado:', errorData);
+      const msg = extractMensaje(errorData.mensaje as MensajeItem | MensajeItem[]);
+      throw new Error(msg?.mensajeRespuesta || `Error del servidor (${response.status})`);
+    }
+    throw new Error(`Error HTTP: ${response.status} ${response.statusText}`);
+  }
+
+  return await response.json();
+}
+
+// Reintentar la llamada al calificador ante errores de servidor
+const MAX_RETRIES = 1;
+const RETRY_DELAY_MS = 2000;
+
+async function callCalificadorWithRetry(requestBody: CalificadorRequest): Promise<CalificadorResponse> {
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      if (attempt > 0) {
+        console.log(`🔄 Reintentando calificación (intento ${attempt + 1}/${MAX_RETRIES + 1})...`);
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+      }
+      return await callCalificador(requestBody);
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error('Error desconocido');
+
+      // Solo reintentar errores de servidor genéricos, no errores de negocio
+      const isServerError = lastError.message.includes('error en el servicio')
+        || lastError.message.includes('Error HTTP')
+        || lastError.message.includes('Failed to fetch');
+
+      if (!isServerError || attempt >= MAX_RETRIES) {
+        throw lastError;
+      }
+      console.warn(`⚠️ Error en intento ${attempt + 1}: ${lastError.message}. Reintentando...`);
+    }
+  }
+
+  throw lastError!;
+}
+
 export async function submitPrequalification(payload: FormData): Promise<PrequalificationResult & { id?: string }> {
   try {
     // Obtener IP
@@ -96,37 +160,17 @@ export async function submitPrequalification(payload: FormData): Promise<Prequal
     console.log('📤 Enviando solicitud al calificador:');
     console.log('URL:', API_ENDPOINT);
     console.log('Body:', requestBody);
-    
-    // Llamar al API del calificador
-    const response = await fetch(API_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: JSON.stringify(requestBody),
+    console.table({
+      cedula: requestBody.identificacion,
+      vehiculo: `$${requestBody.montoVehiculo}`,
+      entrada: `${requestBody.porcentajeEntrada}% ($${requestBody.valorEntrada})`,
+      financiar: `$${requestBody.montoAFinanciar}`,
+      plazo: `${requestBody.plazo} meses`,
+      cuota: `$${requestBody.valorCuotaMensual}`,
     });
     
-    console.log('📡 Status:', response.status, response.statusText);
-    
-    if (!response.ok) {
-      // Intentar leer error estructurado del servidor
-      let errorData: CalificadorResponse | null = null;
-      try {
-        errorData = await response.json();
-      } catch {
-        // No es JSON válido, ignorar
-      }
-
-      if (errorData) {
-        console.warn('⚠️ El servidor retornó un error controlado:', errorData);
-        const msg = extractMensaje(errorData.mensaje as MensajeItem | MensajeItem[]);
-        throw new Error(msg?.mensajeRespuesta || `Error del servidor (${response.status})`);
-      }
-      throw new Error(`Error HTTP: ${response.status} ${response.statusText}`);
-    }
-    
-    const data: CalificadorResponse = await response.json();
+    // Llamar al API con reintentos
+    const data = await callCalificadorWithRetry(requestBody);
     
     console.log('📥 Respuesta del calificador:', data);
     
@@ -147,6 +191,7 @@ export async function submitPrequalification(payload: FormData): Promise<Prequal
     
     // Mapear el estado
     const status = mapResponseToStatus(data.data.calificacionCrediExpress || '');
+    console.log('✅ Calificación obtenida:', data.data.calificacionCrediExpress, '→', status);
     
     const result: PrequalificationResult = { status };
     
@@ -169,11 +214,6 @@ export async function submitPrequalification(payload: FormData): Promise<Prequal
     // Detectar si es error de CORS
     if (errorMessage.includes('fetch') || errorMessage.includes('CORS') || errorMessage.includes('Failed to fetch')) {
       console.error('🚫 Error de CORS detectado - El servidor no permite peticiones desde este origen');
-      console.warn('💡 Solución: El equipo de backend debe configurar CORS en api-pre.originarsa.com');
-      console.warn('   Headers necesarios:');
-      console.warn('   - Access-Control-Allow-Origin: * (o tu dominio específico)');
-      console.warn('   - Access-Control-Allow-Methods: POST, OPTIONS');
-      console.warn('   - Access-Control-Allow-Headers: Content-Type, Accept');
     } else {
       console.error('❌ Error en la calificación de crédito:', errorMessage);
     }
