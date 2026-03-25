@@ -37,6 +37,7 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
   // ⚙️ Observa cambios en el campo "Cédula"
   const idNumberValue = watch("idNumber");
   const lastIdRef = useRef<string | null>(null);
+  const nombresRef = useRef<string>("");
 
   // Reinicia visualización y aceptación cuando cambia la cédula
   useEffect(() => {
@@ -69,11 +70,13 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
       const resp = await respPromise;
       const full = resp.nombreCompleto?.trim() || [resp.nombres, resp.apellidos].filter(Boolean).join(" ").trim();
       if (full) {
+        nombresRef.current = resp.nombres?.trim() || "";
         setValue("fullName", full, { shouldValidate: false, shouldDirty: true });
         if (!watch("maritalStatus")) setValue("maritalStatus", "single", { shouldDirty: true });
         setDataReady(true);
         setShowDetails(true);
       } else {
+        nombresRef.current = "";
         setDataReady(false);
         setShowDetails(false);
         alert("No se pudieron obtener los datos de la cédula. Intenta nuevamente más tarde.");
@@ -98,6 +101,7 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
       applicant: {
         idNumber: v.idNumber,
         fullName: v.fullName,
+        nombres: nombresRef.current,
         phone: v.phone,
         email: v.email,
         maritalStatus: v.maritalStatus,

@@ -37,6 +37,7 @@ export default function Step1IdentityMinimal({ onNext, onExpanded }: { onNext: (
 
   const idNumberValue = watch("idNumber");
   const lastIdRef = useRef<string | null>(null);
+  const nombresRef = useRef<string>("");
 
   useEffect(() => {
     if (!idNumberValue || !/^\d{10}$/.test(idNumberValue)) {
@@ -78,6 +79,7 @@ export default function Step1IdentityMinimal({ onNext, onExpanded }: { onNext: (
       const resp = await respPromise;
       const full = resp.nombreCompleto?.trim() || [resp.nombres, resp.apellidos].filter(Boolean).join(" ").trim();
       if (full) {
+        nombresRef.current = resp.nombres?.trim() || "";
         setValue("fullName", full, { shouldValidate: false, shouldDirty: true });
         if (!watch("maritalStatus")) setValue("maritalStatus", "single", { shouldDirty: true });
         setDataReady(true);
@@ -85,6 +87,7 @@ export default function Step1IdentityMinimal({ onNext, onExpanded }: { onNext: (
         onExpanded?.(true);
         setManualEntry(false);
       } else {
+        nombresRef.current = "";
         enableManualEntry();
       }
     } catch (e: any) {
@@ -103,6 +106,7 @@ export default function Step1IdentityMinimal({ onNext, onExpanded }: { onNext: (
       applicant: {
         idNumber: v.idNumber,
         fullName: v.fullName,
+        nombres: nombresRef.current,
         phone: v.phone,
         email: v.email,
         maritalStatus: v.maritalStatus,

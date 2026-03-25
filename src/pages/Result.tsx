@@ -81,7 +81,7 @@ export default function Result({ status, onRestart }: { status: "approved" | "re
         <div className="p-8 text-center space-y-6">
           <div className="bg-white/50 rounded-xl p-4 shadow-inner">
             <p className="text-gray-700 text-lg leading-relaxed">
-              Hola <strong>{data.applicant.fullName.split(' ')[0]}</strong>, <br/>
+              Hola <strong>{(data.applicant.nombres ? data.applicant.nombres.split(' ')[0] : data.applicant.fullName.split(' ')[0])}</strong>, <br/>
               {current.message}
             </p>
           </div>

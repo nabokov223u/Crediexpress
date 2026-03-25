@@ -1,11 +1,11 @@
 import { createContext, useContext, useState } from "react";
 
-export type Applicant = { idNumber: string; fullName: string; phone: string; email: string; maritalStatus: "single"|"married"; spouseId?: string; };
+export type Applicant = { idNumber: string; fullName: string; nombres: string; phone: string; email: string; maritalStatus: "single"|"married"; spouseId?: string; };
 export type Loan = { vehicleAmount: number; downPaymentPct: number; termMonths: number; };
 export type FormData = { applicant: Applicant; loan: Loan; };
 
 const defaultData: FormData = {
-  applicant: { idNumber: "", fullName: "", phone: "", email: "", maritalStatus: "single", spouseId: "" },
+  applicant: { idNumber: "", fullName: "", nombres: "", phone: "", email: "", maritalStatus: "single", spouseId: "" },
   loan: { vehicleAmount: 15000, downPaymentPct: 0.2, termMonths: 48 }
 };
 
@@ -21,6 +21,7 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
         applicant: {
           idNumber: raw?.applicant?.idNumber ?? "",
           fullName: raw?.applicant?.fullName ?? "",
+          nombres: raw?.applicant?.nombres ?? "",
           phone: raw?.applicant?.phone ?? "",
           email: raw?.applicant?.email ?? "",
           maritalStatus: raw?.applicant?.maritalStatus ?? "single",
