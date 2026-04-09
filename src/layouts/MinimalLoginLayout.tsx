@@ -285,10 +285,10 @@ export default function MinimalLoginLayout({
                     transition={{ duration: 0.6, delay: 0.4 }}
                     className="text-center hidden lg:block mb-8"
                   >
-                    <h3 className="text-2xl font-bold text-white mb-3">
+                    <h3 className="text-3xl font-bold text-white mb-3">
                       {identityExpanded ? "Queremos conocerte" : "Tu auto nuevo está cerca"}
                     </h3>
-                    <p className="text-base text-slate-300 mb-6">
+                    <p className="text-lg text-slate-300 mb-6">
                       {identityExpanded 
                         ? "Para brindarte la mejor oferta crediticia, necesitamos validar quién eres."
                         : "Precalifica en minutos siguiendo estos pasos:"
@@ -313,8 +313,8 @@ export default function MinimalLoginLayout({
                             </svg>
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-white">Tu seguridad es primero</p>
-                            <p className="text-xs text-slate-400">Utilizamos encriptación de alto nivel para proteger tu información.</p>
+                            <p className="text-base font-medium text-white">Tu seguridad es primero</p>
+                            <p className="text-sm text-slate-400">Utilizamos encriptación de alto nivel para proteger tu información.</p>
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
@@ -324,13 +324,13 @@ export default function MinimalLoginLayout({
                             </svg>
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-white">Validación precisa</p>
-                            <p className="text-xs text-slate-400">Estos datos solo servirán para calcular tu capacidad de pago real.</p>
+                            <p className="text-base font-medium text-white">Validación precisa</p>
+                            <p className="text-sm text-slate-400">Estos datos solo servirán para calcular tu capacidad de pago real.</p>
                           </div>
                         </div>
                         
                         <div className="pt-4 text-center">
-                          <p className="text-sm text-teal-400 font-medium">
+                          <p className="text-base text-teal-400 font-medium">
                             ¡Ya falta poco!
                           </p>
                         </div>
@@ -342,8 +342,8 @@ export default function MinimalLoginLayout({
                             <span className="text-teal-400 font-bold text-sm">1</span>
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-white">Datos</p>
-                            <p className="text-xs text-slate-400">Ingresa tu información básica.</p>
+                            <p className="text-base font-medium text-white">Datos</p>
+                            <p className="text-sm text-slate-400">Ingresa tu información básica.</p>
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
@@ -351,8 +351,8 @@ export default function MinimalLoginLayout({
                             <span className="text-teal-400 font-bold text-sm">2</span>
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-white">Cotización</p>
-                            <p className="text-xs text-slate-400">Ajusta tu plan de pagos.</p>
+                            <p className="text-base font-medium text-white">Cotización</p>
+                            <p className="text-sm text-slate-400">Ajusta tu plan de pagos.</p>
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
@@ -360,13 +360,13 @@ export default function MinimalLoginLayout({
                             <span className="text-teal-400 font-bold text-sm">3</span>
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-white">Resultado</p>
-                            <p className="text-xs text-slate-400">Recibe respuesta inmediata.</p>
+                            <p className="text-base font-medium text-white">Resultado</p>
+                            <p className="text-sm text-slate-400">Recibe respuesta inmediata.</p>
                           </div>
                         </div>
                         
                         <div className="pt-4 text-center">
-                          <p className="text-sm text-teal-400 font-medium">
+                          <p className="text-base text-teal-400 font-medium">
                             Ingresa tu cédula para comenzar.
                           </p>
                         </div>

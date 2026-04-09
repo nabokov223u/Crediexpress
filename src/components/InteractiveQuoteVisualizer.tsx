@@ -169,10 +169,10 @@ export default function InteractiveQuoteVisualizer() {
             transition={{ duration: 0.5 }}
             className="flex flex-col items-center"
           >
-            <h3 className="text-2xl font-bold text-white mb-2 tracking-wide">
+            <h3 className="text-3xl font-bold text-white mb-2 tracking-wide">
               {currentStatus.title}
             </h3>
-            <p className="text-teal-200/80 text-sm font-light">
+            <p className="text-teal-200/80 text-base font-light">
               {currentStatus.subtitle}
             </p>
           </motion.div>
