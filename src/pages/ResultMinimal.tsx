@@ -249,7 +249,7 @@ export default function ResultMinimal({ status, onRestart }: ResultMinimalProps)
         </motion.button>
         {status !== 'denied' && (
           <motion.a
-            href="https://wa.me/593997424404?text=Hola,%20necesito%20ayuda%20con%20mi%20precalificación"
+            href="https://wa.me/593993954865?text=%C2%A1Hola!%20Acabo%20de%20hacer%20mi%20precalificaci%C3%B3n%20en%20CrediExpress%20y%20me%20gustar%C3%ADa%20recibir%20m%C3%A1s%20informaci%C3%B3n%20%F0%9F%98%8A"
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 h-14 bg-gradient-to-r from-brand to-modern text-white rounded-xl font-bold text-lg shadow-lg shadow-brand/20 hover:shadow-xl hover:shadow-brand/30 transition-all duration-300 flex items-center justify-center"

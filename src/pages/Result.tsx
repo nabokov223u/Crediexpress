@@ -49,7 +49,7 @@ export default function Result({ status, onRestart }: { status: "approved" | "re
   };
 
   const current = config[status];
-  const whatsappLink = `https://wa.me/593997424404?text=Hola, acabo de precalificar en CrediExpress. Mi nombre es ${data.applicant.fullName} y mi estado es: ${status.toUpperCase()}`;
+  const whatsappLink = `https://wa.me/593993954865?text=¡Hola! Soy ${data.applicant.fullName}, acabo de hacer mi precalificación en CrediExpress y me gustaría recibir más información 😊`;
 
   return (
     <div className="w-full flex items-center justify-center">
