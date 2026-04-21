@@ -12,7 +12,10 @@ module.exports = async function handler(req, res) {
   // Construir query string si hay parámetros adicionales
   const { path: _ignored, ...queryParams } = req.query;
   const queryString = new URLSearchParams(queryParams).toString();
+  // El path ya viene sin /api/ (ej: 'Creditos/ObtenerCalificacionCreditoRapido')
+  // El backend espera: https://api-pre.originarsa.com/api/<path>
   const targetUrl = `${TARGET_BASE}/api/${targetPath}${queryString ? `?${queryString}` : ''}`;
+  console.log(`[proxy] URL final: ${targetUrl}`);
 
   console.log(`[proxy] ${req.method} ${req.url} → ${targetUrl}`);
 
