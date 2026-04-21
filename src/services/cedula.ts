@@ -8,35 +8,38 @@ export interface CedulaResponse {
   [key: string]: any;
 }
 
-// Credenciales del servicio (Desde variables de entorno)
-const API_USER = import.meta.env.VITE_CEDULA_API_USER;
-const API_PASS = import.meta.env.VITE_CEDULA_API_PASSWORD;
+// En desarrollo local seguimos usando el proxy de Vite hacia Originarsa.
+// En produccion la autenticacion la agrega la funcion serverless.
+const DEV_API_USER = import.meta.env.DEV ? import.meta.env.VITE_CEDULA_API_USER : undefined;
+const DEV_API_PASS = import.meta.env.DEV ? import.meta.env.VITE_CEDULA_API_PASSWORD : undefined;
 
 export async function getDatosPorCedula(cedula: string): Promise<CedulaResponse> {
   // Validación básica de cédula
   if (!/^\d{10}$/.test(cedula)) throw new Error("Número de cédula inválido");
 
-  if (!API_USER || !API_PASS) {
+  if (import.meta.env.DEV && (!DEV_API_USER || !DEV_API_PASS)) {
     console.error("Faltan credenciales de API Cédula en .env");
     throw new Error("Error de configuración del servicio");
   }
 
-  // Usamos el proxy existente /api que apunta a https://api-pre.originarsa.com/api
+  // En desarrollo: Vite proxya /api al upstream.
+  // En produccion: Vercel resuelve /api con funciones serverless del proyecto.
   // Endpoint final: /api/Personas/ObtenerInformacionConsolidada/{cedula}
   const url = `/api/Personas/ObtenerInformacionConsolidada/${cedula}`;
+  const headers: Record<string, string> = {
+    "Accept": "application/json"
+  };
 
-  // Generar header de autenticación Basic
-  const auth = btoa(`${API_USER}:${API_PASS}`);
+  if (import.meta.env.DEV && DEV_API_USER && DEV_API_PASS) {
+    headers.Authorization = `Basic ${btoa(`${DEV_API_USER}:${DEV_API_PASS}`)}`;
+  }
 
   try {
     console.log(`🔍 Consultando datos para cédula: ${cedula}`);
     
     const res = await fetch(url, {
       method: "GET",
-      headers: {
-        "Authorization": `Basic ${auth}`,
-        "Accept": "application/json"
-      }
+      headers,
     });
 
     if (!res.ok) {
