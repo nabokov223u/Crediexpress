@@ -1,6 +1,7 @@
 import type { FormData } from "../context/FormContext";
 import { savePrequalificationToFirebase, type PrequalificationResult } from "./firebase";
 import { monthlyPayment } from "./calculator";
+import { trackCrediexpressAprobado } from "../utils/analytics";
 
 // Constante fija del sistema
 const CODIGO_COTIZADOR = "COD_COT_001";
@@ -198,7 +199,11 @@ export async function submitPrequalification(payload: FormData): Promise<Prequal
     try {
       // Guardar en Firebase
       const applicationId = await savePrequalificationToFirebase(payload, result);
-      
+
+      if (status === 'approved') {
+        trackCrediexpressAprobado();
+      }
+
       return {
         ...result,
         id: applicationId
