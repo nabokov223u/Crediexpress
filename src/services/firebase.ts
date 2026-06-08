@@ -31,10 +31,8 @@ export async function savePrequalificationToFirebase(
 
     const docRef = await addDoc(collection(db, 'applications'), applicationData);
     
-    console.log('Aplicación guardada con ID:', docRef.id);
     return docRef.id;
   } catch (error) {
-    console.error('Error guardando aplicación en Firebase:', error);
     throw new Error('No se pudo guardar la aplicación en la base de datos');
   }
 }
@@ -52,10 +50,7 @@ export async function updateApplicationStatus(
       status,
       updatedAt: Timestamp.now()
     });
-    
-    console.log('Estado de aplicación actualizado:', applicationId);
   } catch (error) {
-    console.error('Error actualizando estado de aplicación:', error);
     throw new Error('No se pudo actualizar el estado de la aplicación');
   }
 }

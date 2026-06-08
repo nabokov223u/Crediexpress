@@ -1,6 +1,6 @@
 # Fórmula de cálculo de cuotas y tabla de amortización (sistema francés)
 
-Este documento describe la formulación matemática y las fórmulas de Excel usadas para calcular **cuotas constantes** y generar una **tabla de amortización** (sistema francés) a partir de:
+Este documento describe la formulación matemática y las fórmulas de Excel usadas para calcular **cuotas constantes** y generar una **tabla de amortiaación** (sistema francés) a partir de:
 
 - Valor del préstamo (principal)
 - Tasa nominal anual (TNA, base 30/360)
@@ -14,17 +14,14 @@ Este documento describe la formulación matemática y las fórmulas de Excel usa
 En el archivo:
 
 - **C3**: `Valor del préstamo`  
-  - Notación: \( P \)  
+  - Notación:  P   
   - Ejemplo: 20 000
-
 - **C4**: `TNA (30/360)`  
-  - Notación: \( j \) (tasa nominal anual)  
+  - Notación:  j  (tasa nominal anual)  
   - Ejemplo: 0.156 (15.6%)
-
 - **C5**: `Años`  
-  - Notación: \( A \) (años de plazo)  
+  - Notación:  A  (años de plazo)  
   - Ejemplo: 6
-
 - **C6**: `Frecuencia de Pago` (texto)  
   - Posibles valores: `Mensual`, `Bimensual`, `Trimestral`, `Cuatrimestral`, `Semestral`, `Anual`  
   - Este valor determina cuántos pagos hay por año.
@@ -33,7 +30,7 @@ En el archivo:
 
 ## 2. Cálculo de la frecuencia de pago (número de pagos por año)
 
-En **C8** se calcula el **número de pagos por año**, que denotamos como \( m \):
+En **C8** se calcula el **número de pagos por año**, que denotamos como  m :
 
 ```excel
 C8 =IF(
@@ -752,3 +749,5 @@ excel
 Copiar código
 =IF(B14>$C$9,"",F13-E14)
 Estas fórmulas se copian hacia abajo para construir toda la tabla de amortización.
+```
+

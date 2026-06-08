@@ -52,9 +52,10 @@ const firebaseConfig = {
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Permitir lectura/escritura en la colección applications
+    // Permitir creación de solicitudes, pero bloquear lectura, actualización y eliminación pública
     match /applications/{document} {
-      allow read, write: if true; // Cambiar por reglas más estrictas en producción
+      allow create: if true;
+      allow read, update, delete: if false;
     }
   }
 }

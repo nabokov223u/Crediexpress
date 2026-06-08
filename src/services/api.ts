@@ -97,8 +97,6 @@ async function callCalificador(requestBody: CalificadorRequest): Promise<Calific
     body: JSON.stringify(requestBody),
   });
 
-  console.log('📡 Status:', response.status, response.statusText);
-
   if (!response.ok) {
     let errorData: CalificadorResponse | null = null;
     try {
@@ -108,7 +106,6 @@ async function callCalificador(requestBody: CalificadorRequest): Promise<Calific
     }
 
     if (errorData) {
-      console.warn('⚠️ El servidor retornó un error controlado:', errorData);
       const msg = extractMensaje(errorData.mensaje as MensajeItem | MensajeItem[]);
       throw new Error(msg?.mensajeRespuesta || `Error del servidor (${response.status})`);
     }
@@ -158,41 +155,24 @@ export async function submitPrequalification(payload: FormData): Promise<Prequal
     // Preparar el request
     const requestBody = mapFormDataToRequest(payload, ip);
     
-    console.log('📤 Enviando solicitud al calificador:');
-    console.log('URL:', API_ENDPOINT);
-    console.log('Body:', requestBody);
-    console.table({
-      cedula: requestBody.identificacion,
-      vehiculo: `$${requestBody.montoVehiculo}`,
-      entrada: `${requestBody.porcentajeEntrada}% ($${requestBody.valorEntrada})`,
-      financiar: `$${requestBody.montoAFinanciar}`,
-      plazo: `${requestBody.plazo} meses`,
-      cuota: `$${requestBody.valorCuotaMensual}`,
-    });
-    
     // Llamar al API con reintentos
     const data = await callCalificadorWithRetry(requestBody);
-    
-    console.log('📥 Respuesta del calificador:', data);
     
     // Extraer mensaje unificado (objeto o array)
     const msg = extractMensaje(data.mensaje);
 
     // Validar si el servicio reportó error
     if (msg?.huboError) {
-      console.warn('⚠️ El servicio reportó error:', msg.mensajeRespuesta, '| Código:', msg.codigoRespuesta);
       throw new Error(msg.mensajeRespuesta || 'Error en la calificación');
     }
 
     // Validación de seguridad contra data null
     if (!data.data) {
-        console.warn('⚠️ La API respondió OK pero sin datos de calificación (data is null). Activando fallback.');
         throw new Error('Respuesta de API incompleta: data is null');
     }
     
     // Mapear el estado
     const status = mapResponseToStatus(data.data.calificacionCrediExpress || '');
-    console.log('✅ Calificación obtenida:', data.data.calificacionCrediExpress, '→', status);
     
     const result: PrequalificationResult = { status };
     

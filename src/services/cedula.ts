@@ -24,8 +24,6 @@ export async function getDatosPorCedula(cedula: string): Promise<CedulaResponse>
     });
 
     if (!res.ok) {
-      const errorText = await res.text();
-      console.error("Error API Cédula:", errorText);
       throw new Error(`Error ${res.status}: No se pudo obtener información`);
     }
 
@@ -53,7 +51,6 @@ export async function getDatosPorCedula(cedula: string): Promise<CedulaResponse>
       estadoCivil: info.estadoCivil || "",
     };
   } catch (error) {
-    console.error("Error fetching cedula:", error);
     throw error;
   }
 }

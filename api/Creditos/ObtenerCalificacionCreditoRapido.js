@@ -27,7 +27,27 @@ module.exports = async (req, res) => {
       }
     );
 
-    return sendUpstreamResponse(res, upstreamResponse);
+    if (!upstreamResponse.ok) {
+      const errorText = await upstreamResponse.text();
+      return res.status(upstreamResponse.status).send(errorText);
+    }
+
+    const rawData = await upstreamResponse.json();
+
+    // Filtrar payload para evitar fugas de información
+    const filteredData = {
+      mensaje: rawData.mensaje || {
+        huboError: false,
+        codigoRespuesta: upstreamResponse.status,
+        mensajeRespuesta: "OK"
+      },
+      data: rawData.data ? {
+        calificacionCrediExpress: rawData.data.calificacionCrediExpress || "",
+        motivoCalificacionCrediExpress: rawData.data.motivoCalificacionCrediExpress || ""
+      } : null
+    };
+
+    return sendJson(res, 200, filteredData);
   } catch (error) {
     console.error("Proxy de calificacion fallo:", error);
     return sendJson(res, 502, {

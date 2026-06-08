@@ -50,7 +50,38 @@ module.exports = async (req, res) => {
       }
     );
 
-    return sendUpstreamResponse(res, upstreamResponse);
+    if (!upstreamResponse.ok) {
+      const errorText = await upstreamResponse.text();
+      return res.status(upstreamResponse.status).send(errorText);
+    }
+
+    const rawData = await upstreamResponse.json();
+    
+    // Filtrar payload para evitar fugas de información
+    const info = rawData.data?.persona?.informacionPersonal;
+    const filteredData = {
+      mensaje: rawData.mensaje || {
+        huboError: false,
+        codigoRespuesta: upstreamResponse.status,
+        mensajeRespuesta: "OK"
+      },
+      data: info ? {
+        persona: {
+          informacionPersonal: {
+            nombres: info.nombres || "",
+            apellidoPaterno: info.apellidoPaterno || "",
+            apellidoMaterno: info.apellidoMaterno || "",
+            nombreCompleto: info.nombreCompleto || "",
+            genero: info.genero || "",
+            fechaNacimiento: info.fechaNacimiento || "",
+            nacionalidad: info.nacionalidad || "",
+            estadoCivil: info.estadoCivil || ""
+          }
+        }
+      } : null
+    };
+
+    return sendJson(res, 200, filteredData);
   } catch (error) {
     console.error("Proxy de cedula fallo:", error);
     return sendJson(res, 502, {
