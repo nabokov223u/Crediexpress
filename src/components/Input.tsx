@@ -4,7 +4,31 @@ import { useState } from "react";
 
 type FieldErrorLike = FieldError | Merge<FieldError, FieldErrorsImpl<any>>;
 
-export default function Input({ label, type = "text", placeholder, register, error, className, labelHidden, readOnly, disabled, required }:{ label:string; type?:string; placeholder?:string; register:any; error?:FieldErrorLike; className?: string; labelHidden?: boolean; readOnly?: boolean; disabled?: boolean; required?: boolean; }){
+export default function Input({ 
+  label, 
+  type = "text", 
+  placeholder, 
+  register, 
+  error, 
+  className, 
+  labelHidden, 
+  readOnly, 
+  disabled, 
+  required,
+  ...rest
+}:{ 
+  label:string; 
+  type?:string; 
+  placeholder?:string; 
+  register:any; 
+  error?:FieldErrorLike; 
+  className?: string; 
+  labelHidden?: boolean; 
+  readOnly?: boolean; 
+  disabled?: boolean; 
+  required?: boolean; 
+  [key: string]: any;
+}){
   const message = (error as any)?.message as string | undefined;
   const [isFocused, setIsFocused] = useState(false);
   const [hasValue, setHasValue] = useState(false);
@@ -39,6 +63,7 @@ export default function Input({ label, type = "text", placeholder, register, err
             setIsFocused(false);
             setHasValue(!!e.target.value);
           }}
+          {...rest}
           animate={{
             boxShadow: isFocused 
               ? "0 8px 24px rgba(26, 15, 80, 0.15)" 
