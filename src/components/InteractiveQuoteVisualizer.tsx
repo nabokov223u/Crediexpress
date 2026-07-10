@@ -1,110 +1,6 @@
-import { useMemo, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFormData } from "../context/FormContext";
-
-// --- PLEXUS BACKGROUND COMPONENT ---
-const PlexusBackground = ({ intensity }: { intensity: number }) => {
-  // Generar nodos aleatorios
-  const nodes = useMemo(() => {
-    return Array.from({ length: 60 }).map((_, i) => ({
-      id: i,
-      x: Math.random() * 100, // Porcentaje
-      y: Math.random() * 100, // Porcentaje
-      size: Math.random() * 2 + 1,
-    }));
-  }, []);
-
-  // Calcular conexiones (esto es costoso O(N^2), pero con 60 nodos es despreciable)
-  const connections = useMemo(() => {
-    const lines = [];
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i + 1; j < nodes.length; j++) {
-        const dx = nodes[i].x - nodes[j].x;
-        const dy = nodes[i].y - nodes[j].y;
-        // Distancia euclidiana aproximada (considerando aspecto cuadrado para simplificar)
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        
-        if (dist < 15) { // Umbral de conexión
-          lines.push({
-            id: `${i}-${j}`,
-            x1: nodes[i].x,
-            y1: nodes[i].y,
-            x2: nodes[j].x,
-            y2: nodes[j].y,
-            opacity: 1 - (dist / 15) // Más opaco si están cerca
-          });
-        }
-      }
-    }
-    return lines;
-  }, [nodes]);
-
-  return (
-    <div className="absolute inset-0 overflow-hidden bg-[#0d234a]">
-      <svg className="w-full h-full" preserveAspectRatio="none">
-        {/* Líneas de conexión */}
-        {connections.map((line) => (
-          <motion.line
-            key={line.id}
-            x1={`${line.x1}%`}
-            y1={`${line.y1}%`}
-            x2={`${line.x2}%`}
-            y2={`${line.y2}%`}
-            stroke="#2dd4bf"
-            strokeWidth="0.5"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: line.opacity * 0.3 }}
-            transition={{ duration: 2 }}
-          />
-        ))}
-
-        {/* Nodos (Luces) */}
-        {nodes.map((node) => (
-          <motion.circle
-            key={node.id}
-            cx={`${node.x}%`}
-            cy={`${node.y}%`}
-            r={node.size}
-            fill="#ccfbf1"
-            initial={{ opacity: 0.1, scale: 0.8 }}
-            animate={{ 
-              opacity: [0.1, 0.8, 0.1], 
-              scale: [0.8, 1.2, 0.8] 
-            }}
-            transition={{ 
-              duration: 2 + Math.random() * 3, // Duración aleatoria para efecto orgánico
-              repeat: Infinity,
-              delay: Math.random() * 2,
-              ease: "easeInOut"
-            }}
-          />
-        ))}
-        
-        {/* Destellos aleatorios más intensos (Active Sparks) */}
-        {Array.from({ length: 8 }).map((_, i) => (
-           <motion.circle
-             key={`spark-${i}`}
-             cx={`${Math.random() * 100}%`}
-             cy={`${Math.random() * 100}%`}
-             r={3}
-             fill="#fff"
-             initial={{ opacity: 0, scale: 0 }}
-             animate={{ opacity: [0, 1, 0], scale: [0, 2, 0] }}
-             transition={{
-               duration: 0.5,
-               repeat: Infinity,
-               repeatDelay: Math.random() * 3,
-               delay: Math.random() * 5
-             }}
-           />
-        ))}
-      </svg>
-      
-      {/* Gradiente sutil para profundidad */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0d234a] via-transparent to-[#0d234a]/50" />
-    </div>
-  );
-};
 
 // --- MAIN COMPONENT ---
 export default function InteractiveQuoteVisualizer() {
@@ -132,8 +28,8 @@ export default function InteractiveQuoteVisualizer() {
   return (
     <div className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden rounded-xl border border-white/10 shadow-2xl">
       
-      {/* 1. FONDO ACTIVO (La Red) */}
-      <PlexusBackground intensity={loan.downPaymentPct} />
+      {/* 1. FONDO DE GRADIENTE ESTÁTICO (Optimizado para tablets, sin partículas pesadas) */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-[#0d234a] via-[#101f3e] to-[#1a0f50]" />
 
       {/* 2. CONTENIDO SUPERPUESTO (Textos) */}
       <div className="relative z-10 flex flex-col items-center justify-center text-center p-8 bg-[#0d234a]/30 backdrop-blur-[2px] rounded-2xl border border-white/5">

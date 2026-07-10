@@ -85,64 +85,14 @@ export default function MinimalLoginLayout({
     <div className="min-h-screen relative overflow-hidden bg-slate-50">
       {/* Fondo con imagen difuminada - Solo Desktop */}
       {!isMobile && (
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 overflow-hidden">
           <img
             src={backgroundImage}
             alt="Background"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover blur-[20px] scale-105"
           />
-          {/* Overlay de blur y oscurecimiento */}
-          <div className="absolute inset-0 backdrop-blur-2xl bg-slate-900/40" />
-          
-          {/* Patrón animado más evidente pero más lento */}
-          <motion.div
-            className="absolute inset-0 opacity-[0.15]"
-            animate={{
-              backgroundPosition: ['0% 0%', '100% 100%'],
-            }}
-            transition={{
-              duration: 40, // Aumentado de 15 a 40 segundos
-              repeat: Infinity,
-              repeatType: 'reverse',
-              ease: 'linear',
-            }}
-            style={{
-              backgroundImage: `
-                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.9) 3px, transparent 3px),
-                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.7) 2px, transparent 2px),
-                radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.5) 1.5px, transparent 1.5px)
-              `,
-              backgroundSize: '70px 70px, 50px 50px, 35px 35px',
-            }}
-          />
-          
-          {/* Elementos decorativos adicionales */}
-          <motion.div
-            className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand/5 rounded-full blur-3xl"
-            animate={{
-              scale: [1, 1.2, 1],
-              x: [0, 50, 0],
-              y: [0, -30, 0],
-            }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-          />
-          <motion.div
-            className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-modern/5 rounded-full blur-3xl"
-            animate={{
-              scale: [1, 1.3, 1],
-              x: [0, -40, 0],
-              y: [0, 40, 0],
-            }}
-            transition={{
-              duration: 12,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-          />
+          {/* Overlay de oscurecimiento sin backdrop-blur pesado para optimizar rendimiento */}
+          <div className="absolute inset-0 bg-slate-900/60" />
         </div>
       )}
 
@@ -216,28 +166,28 @@ export default function MinimalLoginLayout({
                       animate={{
                         opacity: 1,
                         scale: 1,
-                        y: [-10 + logoParallax.y, 10 + logoParallax.y, -10 + logoParallax.y],
                         x: logoParallax.x,
-                        rotateY: [logoParallax.x * 2, 5 + logoParallax.x * 2, logoParallax.x * 2, -5 + logoParallax.x * 2, logoParallax.x * 2],
+                        y: logoParallax.y,
+                        rotateY: logoParallax.x * 2,
                         rotateX: -logoParallax.y * 2,
                       }}
                       transition={{
                         opacity: { duration: 0.5 },
                         scale: { duration: 0.5 },
-                        y: {
-                          duration: 6,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        },
                         x: {
                           type: "spring",
                           stiffness: 150,
                           damping: 15,
                         },
+                        y: {
+                          type: "spring",
+                          stiffness: 150,
+                          damping: 15,
+                        },
                         rotateY: {
-                          duration: 6,
-                          repeat: Infinity,
-                          ease: "easeInOut",
+                          type: "spring",
+                          stiffness: 150,
+                          damping: 15,
                         },
                         rotateX: {
                           type: "spring",
