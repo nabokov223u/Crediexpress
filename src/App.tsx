@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { FormProvider } from "./context/FormContext";
+import { useFormData } from "./context/FormContext";
 import Step1Identity from "./pages/Step1Identity";
 import Step1IdentityMinimal from "./pages/Step1IdentityMinimal";
 import Step2Vehicle from "./pages/Step2Vehicle";
@@ -13,6 +13,7 @@ import Step2HeroOverlay from "./pages/Step2HeroOverlay";
 export type ResultStatus = "approved" | "review" | "denied" | null;
 
 export default function App() {
+  const { resetData } = useFormData();
   const [step, setStep] = useState(1);
   const [loadingIntro, setLoadingIntro] = useState(true);
   const [result, setResult] = useState<ResultStatus>(null);
@@ -24,7 +25,7 @@ export default function App() {
   }, []);
 
   return (
-    <FormProvider>
+    <>
       {/* Splash */}
       <AnimatePresence>
         {loadingIntro && (
@@ -96,6 +97,7 @@ export default function App() {
                   <Result
                     status={result}
                     onRestart={() => {
+                      resetData();
                       setResult(null);
                       setStep(1);
                     }}
@@ -106,6 +108,6 @@ export default function App() {
           </AnimatePresence>
         </>
       )}
-    </FormProvider>
+    </>
   );
 }
