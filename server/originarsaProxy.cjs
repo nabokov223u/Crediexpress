@@ -1,6 +1,6 @@
 const DEFAULT_BASE_URL = "https://api-pre.originarsa.com/api";
 const DEFAULT_USER = "crediexpress";
-const DEFAULT_PASSWORD = "CCbnNIIUsuvyZM9dtiVWz494c2U8owTvEk9SRliW+UU/fR+d+mpy8lHHUuQWFg09nevS17oNwvUvBzMMZ2gZXLWpFDF35OFw6Y1aXJy9UH/UhLvsL1psO4R2K4ofY+RSf/Uh4Q2fmSZE+Ox9W0f+Bj9I0H48HSn33aDVDs4fRN8nidMO08mXOhUubI4Zdfswpl7itUcnpqkQCPtaQR/WUc4W0dC9kxVJeyWEU1HO97dh5oda2162XHENTkJk5Afo3KTNE1HFlpnkVNpnJevlfHBemsXs855Il7gpel/Ala4Iw6yfRj5aRvuXBv9K89QljA5dW7DWfl+nlrt0J7FyQ==";
+const DEFAULT_PASSWORD = "yHti1+G6TTWT9cKC97LHHXaKKXf3rdKT7Tb78/KWFZHIL15netvunhmkfwelVig7UHeERVahrKhMCXfwulgu4Cfqx7aGLhIrtMd6I76mhMFgm3SpuJAYgFBw3gNTbmAlhYKIAh9CIx5vhbE4K+DOZRXTJ12udj2EhoqM5GHFOsIPKS280z2R1bS25tlsw3E4FrnOVjwc54p6GEMAZrBHr5OK58f8swyjkG2Nnbl/E1cfLvFCDJ3NyCqB9dIPUZrhRu8mKdf/am7hZlUhaExKqiDDh2DKnWAxdFJFXrdhKTLflufrZlvlVuBdcnneEgpmowoNAyVUsOt/HnUxNIZUGQ==";
 
 let cachedToken = null;
 let tokenExpirationMs = 0;
@@ -17,6 +17,12 @@ function buildUpstreamUrl(pathname) {
 }
 
 async function getAuthToken(forceRefresh = false) {
+  // Si se configuró un token fijo en las variables de entorno de Vercel (ORIGINARSA_API_TOKEN), usarlo directamente
+  const envToken = process.env.ORIGINARSA_API_TOKEN;
+  if (envToken && envToken.trim()) {
+    return envToken.trim();
+  }
+
   const now = Date.now();
   // Si tenemos token en caché y aún le queda al menos 1 minuto de validez
   if (!forceRefresh && cachedToken && tokenExpirationMs > now + 60000) {
