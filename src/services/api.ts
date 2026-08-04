@@ -6,12 +6,15 @@ import { trackCrediexpressAprobado } from "../utils/analytics";
 // Constante fija del sistema
 const CODIGO_COTIZADOR = "COD_COT_001";
 
-// Endpoint del calificador (Usando Proxy para evitar CORS)
-// En local: vite.config.ts redirige /api -> https://api-pre.originarsa.com/api
-// En prod (Vercel): /api -> Serverless Functions
-// En prod (Firebase u otros): VITE_API_BASE_URL permite apuntar al backend de Vercel
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
-const API_ENDPOINT = `${API_BASE_URL}/api/Creditos/ObtenerCalificacionCreditoRapido`;
+// Endpoint del calificador (Usando Proxy de Vercel para evitar CORS y enviar token JWT)
+function resolveApiBaseUrl(): string {
+  const envUrl = (import.meta.env.VITE_API_BASE_URL || "").trim();
+  // Ignorar URLs legadas que causen problemas de CORS fuera del proxy
+  if (!envUrl || envUrl.includes("webservices.ec")) return "";
+  return envUrl.replace(/\/+$/, "");
+}
+
+const API_ENDPOINT = `${resolveApiBaseUrl()}/api/Creditos/ObtenerCalificacionCreditoRapido`;
 
 // Tipos para la integración con el calificador
 interface CalificadorRequest {

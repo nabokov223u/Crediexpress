@@ -11,10 +11,10 @@ export interface CedulaResponse {
 export async function getDatosPorCedula(cedula: string): Promise<CedulaResponse> {
   if (!/^\d{10}$/.test(cedula)) throw new Error("Número de cédula inválido");
 
-  // En desarrollo local: Vite proxya /api al upstream (auth en vite.config.ts).
+  // En desarrollo local: Vite proxya /api al upstream.
   // En produccion Vercel: /api se resuelve con Serverless Functions.
-  // En produccion Firebase u otros: VITE_API_BASE_URL apunta al backend de Vercel.
-  const apiBase = import.meta.env.VITE_API_BASE_URL || "";
+  const envUrl = (import.meta.env.VITE_API_BASE_URL || "").trim();
+  const apiBase = (!envUrl || envUrl.includes("webservices.ec")) ? "" : envUrl.replace(/\/+$/, "");
   const url = `${apiBase}/api/Personas/ObtenerInformacionConsolidada/${cedula}`;
 
   try {
