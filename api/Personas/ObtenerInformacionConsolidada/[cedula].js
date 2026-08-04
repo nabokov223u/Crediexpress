@@ -24,15 +24,25 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const upstreamResponse = await fetchWithAuth(
-      `Personas/ObtenerInformacionConsolidada/${cedula}`,
-      {
-        method: "GET",
-        headers: {
-          "Accept": "application/json",
-        },
-      }
-    );
+    let upstreamResponse;
+    try {
+      upstreamResponse = await fetchWithAuth(
+        `Personas/ObtenerInformacionConsolidada/${cedula}`,
+        {
+          method: "GET",
+          headers: { "Accept": "application/json" },
+        }
+      );
+    } catch {
+      // Fallback a fetch directo sin token (el endpoint de cédula es público en PRE)
+      upstreamResponse = await fetch(
+        buildUpstreamUrl(`Personas/ObtenerInformacionConsolidada/${cedula}`),
+        {
+          method: "GET",
+          headers: { "Accept": "application/json" },
+        }
+      );
+    }
 
     let rawData = null;
     try {

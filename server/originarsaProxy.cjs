@@ -71,11 +71,20 @@ async function getAuthToken(forceRefresh = false) {
 }
 
 async function fetchWithAuth(pathname, options = {}) {
-  const token = await getAuthToken();
+  let token = null;
+  try {
+    token = await getAuthToken();
+  } catch (err) {
+    console.warn("No se pudo obtener token de autenticacion:", err.message);
+  }
+
   const headers = {
     ...(options.headers || {}),
-    "Authorization": `Bearer ${token}`,
   };
+
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
 
   const targetUrl = buildUpstreamUrl(pathname);
   let response = await fetch(targetUrl, {
@@ -83,15 +92,21 @@ async function fetchWithAuth(pathname, options = {}) {
     headers,
   });
 
-  // Si recibimos 401 Unauthorized, forzamos refresco del token e intentamos una vez más
-  if (response.status === 401) {
+  // Si recibimos 401 Unauthorized, intentamos forzar re-autenticación una vez si no usábamos token estático
+  if (response.status === 401 && !process.env.ORIGINARSA_API_TOKEN) {
     console.warn("Token invalido o expirado upstream. Forzando re-autenticacion...");
-    const freshToken = await getAuthToken(true);
-    headers["Authorization"] = `Bearer ${freshToken}`;
-    response = await fetch(targetUrl, {
-      ...options,
-      headers,
-    });
+    try {
+      const freshToken = await getAuthToken(true);
+      if (freshToken) {
+        headers["Authorization"] = `Bearer ${freshToken}`;
+        response = await fetch(targetUrl, {
+          ...options,
+          headers,
+        });
+      }
+    } catch {
+      // Ignorar fallo de re-autenticación
+    }
   }
 
   return response;
