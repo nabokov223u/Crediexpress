@@ -11,10 +11,26 @@ module.exports = async (req, res) => {
     return sendJson(res, 405, { error: "Method Not Allowed" });
   }
 
-  try {
-    const requestBody = typeof req.body === "string"
-      ? req.body
-      : JSON.stringify(req.body ?? {});
+    let bodyObj = req.body;
+    if (typeof bodyObj === "string") {
+      try { bodyObj = JSON.parse(bodyObj); } catch { bodyObj = {}; }
+    }
+    bodyObj = bodyObj ?? {};
+
+    // Mapear a PascalCase exacto esperado por el DTO de .NET (C#)
+    const upstreamPayload = {
+      CodigoTipoCotizador: bodyObj.codigoTipoCotizador || bodyObj.CodigoTipoCotizador || "COD_COT_001",
+      Identificacion: bodyObj.identificacion || bodyObj.Identificacion || "",
+      MontoVehiculo: Number(bodyObj.montoVehiculo ?? bodyObj.MontoVehiculo ?? 0),
+      PorcentajeEntrada: Number(bodyObj.porcentajeEntrada ?? bodyObj.PorcentajeEntrada ?? 0),
+      Plazo: String(bodyObj.plazo ?? bodyObj.Plazo ?? "48"),
+      ValorEntrada: Number(bodyObj.valorEntrada ?? bodyObj.ValorEntrada ?? 0),
+      ValorCuotaMensual: Number(bodyObj.valorCuotaMensual ?? bodyObj.ValorCuotaMensual ?? 0),
+      MontoAFinanciar: Number(bodyObj.montoAFinanciar ?? bodyObj.MontoAFinanciar ?? 0),
+      Ip: String(bodyObj.Ip || bodyObj.ip || "127.0.0.1")
+    };
+
+    const requestBody = JSON.stringify(upstreamPayload);
 
     const upstreamResponse = await fetchWithAuth(
       "Creditos/ObtenerCalificacionCreditoRapido",
