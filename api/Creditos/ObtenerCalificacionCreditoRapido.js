@@ -28,12 +28,30 @@ module.exports = async (req, res) => {
       }
     );
 
-    if (!upstreamResponse.ok) {
-      const errorText = await upstreamResponse.text();
-      return res.status(upstreamResponse.status).send(errorText);
+    let rawData = null;
+    try {
+      rawData = await upstreamResponse.json();
+    } catch {
+      // No es JSON
     }
 
-    const rawData = await upstreamResponse.json();
+    if (!upstreamResponse.ok) {
+      if (rawData && rawData.mensaje) {
+        const msg = Array.isArray(rawData.mensaje) ? rawData.mensaje[0] : rawData.mensaje;
+        return sendJson(res, 200, {
+          data: null,
+          mensaje: msg,
+        });
+      }
+      return sendJson(res, upstreamResponse.status, {
+        data: null,
+        mensaje: {
+          huboError: true,
+          codigoRespuesta: upstreamResponse.status,
+          mensajeRespuesta: "Error en el servicio de calificacion",
+        },
+      });
+    }
 
     // Filtrar payload para evitar fugas de información
     const filteredData = {
