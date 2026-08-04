@@ -14,6 +14,18 @@ export interface FirestoreApplication extends FormData {
   id?: string;
 }
 
+export interface DataConsentRecord {
+  idNumber?: string;
+  fullName?: string;
+  phone?: string;
+  email?: string;
+  acceptedAt: Timestamp;
+  policyUrl: string;
+  status: 'approved';
+  source?: string;
+  userAgent?: string;
+}
+
 /**
  * Guarda una nueva aplicación de prequalificación en Firestore
  */
@@ -22,9 +34,16 @@ export async function savePrequalificationToFirebase(
   result: PrequalificationResult
 ): Promise<string> {
   try {
-    const applicationData: Omit<FirestoreApplication, 'id'> = {
+    const applicationData: Omit<FirestoreApplication, 'id'> & {
+      dataConsentApproved: boolean;
+      dataConsentAcceptedAt: Timestamp;
+      policyUrl: string;
+    } = {
       ...formData,
       status: result.status,
+      dataConsentApproved: true,
+      dataConsentAcceptedAt: Timestamp.now(),
+      policyUrl: 'https://www.originarsa.com/politicas',
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now()
     };
@@ -34,6 +53,38 @@ export async function savePrequalificationToFirebase(
     return docRef.id;
   } catch (error) {
     throw new Error('No se pudo guardar la aplicación en la base de datos');
+  }
+}
+
+/**
+ * Guarda el registro de aprobación de uso de datos en Firestore (colección 'data_consents')
+ */
+export async function saveDataConsentToFirebase(data: {
+  idNumber?: string;
+  fullName?: string;
+  phone?: string;
+  email?: string;
+  source?: string;
+}): Promise<string | null> {
+  try {
+    const consentRecord: DataConsentRecord = {
+      idNumber: data.idNumber || '',
+      fullName: data.fullName || '',
+      phone: data.phone || '',
+      email: data.email || '',
+      acceptedAt: Timestamp.now(),
+      policyUrl: 'https://www.originarsa.com/politicas',
+      status: 'approved',
+      source: data.source || 'Step1Identity',
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : ''
+    };
+
+    const docRef = await addDoc(collection(db, 'data_consents'), consentRecord);
+    console.log('✅ Aprobación de uso de datos guardada en Firebase:', docRef.id);
+    return docRef.id;
+  } catch (error) {
+    console.error('⚠️ Error guardando la aprobación de uso de datos en Firebase:', error);
+    return null;
   }
 }
 
@@ -59,21 +110,5 @@ export async function updateApplicationStatus(
  * Estructura de datos que se guarda en Firestore:
  * 
  * Collection: 'applications'
- * Document structure:
- * {
- *   applicant: {
- *     idNumber: string,
- *     fullName: string,
- *     maritalStatus: "single" | "married",
- *     spouseId?: string
- *   },
- *   loan: {
- *     vehicleAmount: number,
- *     downPaymentPct: number (0-1),
- *     termMonths: number
- *   },
- *   status: "approved" | "review" | "denied",
- *   createdAt: Timestamp,
- *   updatedAt: Timestamp
- * }
+ * Collection: 'data_consents'
  */

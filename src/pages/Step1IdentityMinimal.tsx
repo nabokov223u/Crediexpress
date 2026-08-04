@@ -7,6 +7,7 @@ import { identitySchema } from "../utils/validators";
 import Input from "../components/Input";
 import { getDatosPorCedula } from "../services/cedula";
 import { useFormData } from "../context/FormContext";
+import { saveDataConsentToFirebase } from "../services/firebase";
 
 export default function Step1IdentityMinimal({ onNext, onExpanded }: { onNext: () => void; onExpanded?: (expanded: boolean) => void }) {
   const { data, setData } = useFormData();
@@ -385,7 +386,7 @@ export default function Step1IdentityMinimal({ onNext, onExpanded }: { onNext: (
                   para validar identidad y prevenir fraude.
                 </p>
                 <p>
-                  Para más detalles, consulta nuestra Política de Privacidad completa.
+                  Para más detalles, consulta nuestra <a href="https://www.originarsa.com/politicas" target="_blank" rel="noopener noreferrer" className="text-brand underline font-medium">Política de Privacidad completa</a>.
                 </p>
               </div>
               <div className="flex gap-3 mt-5">
@@ -408,6 +409,10 @@ export default function Step1IdentityMinimal({ onNext, onExpanded }: { onNext: (
                   onClick={() => {
                     setAcceptedPolicy(true);
                     setPolicyOpen(false);
+                    saveDataConsentToFirebase({
+                      idNumber: idNumberValue,
+                      source: 'Step1IdentityMinimal'
+                    });
                     fetchAndReveal();
                   }}
                 >

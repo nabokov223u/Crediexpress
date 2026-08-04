@@ -1,5 +1,6 @@
 const {
   buildUpstreamUrl,
+  fetchWithAuth,
   sendJson,
   sendUpstreamResponse,
 } = require("../../server/originarsaProxy.cjs");
@@ -15,8 +16,8 @@ module.exports = async (req, res) => {
       ? req.body
       : JSON.stringify(req.body ?? {});
 
-    const upstreamResponse = await fetch(
-      buildUpstreamUrl("Creditos/ObtenerCalificacionCreditoRapido"),
+    const upstreamResponse = await fetchWithAuth(
+      "Creditos/ObtenerCalificacionCreditoRapido",
       {
         method: "POST",
         headers: {

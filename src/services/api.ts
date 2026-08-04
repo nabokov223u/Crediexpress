@@ -8,8 +8,10 @@ const CODIGO_COTIZADOR = "COD_COT_001";
 
 // Endpoint del calificador (Usando Proxy para evitar CORS)
 // En local: vite.config.ts redirige /api -> https://api-pre.originarsa.com/api
-// En prod: vercel.json redirige /api -> https://api-pre.originarsa.com/api
-const API_ENDPOINT = "/api/Creditos/ObtenerCalificacionCreditoRapido";
+// En prod (Vercel): /api -> Serverless Functions
+// En prod (Firebase u otros): VITE_API_BASE_URL permite apuntar al backend de Vercel
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+const API_ENDPOINT = `${API_BASE_URL}/api/Creditos/ObtenerCalificacionCreditoRapido`;
 
 // Tipos para la integración con el calificador
 interface CalificadorRequest {

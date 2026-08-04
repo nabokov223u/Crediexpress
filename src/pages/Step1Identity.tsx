@@ -7,6 +7,7 @@ import { identitySchema } from "../utils/validators";
 import Input from "../components/Input";
 import { getDatosPorCedula } from "../services/cedula";
 import { useFormData } from "../context/FormContext";
+import { saveDataConsentToFirebase } from "../services/firebase";
 
 export default function Step1Identity({ onNext }: { onNext: () => void }) {
   const { data, setData } = useFormData();
@@ -250,7 +251,7 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
             <div className="text-sm text-slate-600 max-h-56 overflow-auto space-y-2">
               <p>Autorizo a CrediExpress a tratar mis datos personales para la gestión de la precalificación crediticia, validación de identidad y análisis de riesgo, de acuerdo con la normativa aplicable.</p>
               <p>La información podrá ser verificada con proveedores externos para validar identidad y prevenir fraude. Podré solicitar la rectificación o eliminación de mis datos según corresponda.</p>
-              <p>Para más detalles, consulta nuestra Política de Privacidad completa.</p>
+              <p>Para más detalles, consulta nuestra <a href="https://www.originarsa.com/politicas" target="_blank" rel="noopener noreferrer" className="text-modern underline font-medium">Política de Privacidad completa</a>.</p>
             </div>
             <div className="flex justify-end gap-3 mt-4">
               <button
@@ -263,7 +264,15 @@ export default function Step1Identity({ onNext }: { onNext: () => void }) {
               <button
                 type="button"
                 className="btn-primary"
-                onClick={() => { setAcceptedPolicy(true); setPolicyOpen(false); fetchAndReveal(); }}
+                onClick={() => {
+                  setAcceptedPolicy(true);
+                  setPolicyOpen(false);
+                  saveDataConsentToFirebase({
+                    idNumber: idNumberValue,
+                    source: 'Step1Identity'
+                  });
+                  fetchAndReveal();
+                }}
               >
                 Aceptar y continuar
               </button>

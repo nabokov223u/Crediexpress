@@ -349,7 +349,7 @@ export default function MinimalLoginLayout({
                         <span className="font-semibold text-slate-700">✨ Tu seguridad es prioridad:</span> Garantizamos la confidencialidad de tus datos para brindarte la mejor oferta.
                       </p>
                       <p>
-                        Al iniciar, aceptas nuestros <a href="#" className="text-brand hover:underline font-medium">términos y condiciones</a>.
+                        Al iniciar, aceptas nuestras <a href="https://www.originarsa.com/politicas" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline font-medium">políticas de privacidad</a> y <a href="https://www.originarsa.com/politicas" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline font-medium">términos y condiciones</a>.
                       </p>
                     </div>
                   )}

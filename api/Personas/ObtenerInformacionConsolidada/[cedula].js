@@ -1,5 +1,6 @@
 const {
   buildUpstreamUrl,
+  fetchWithAuth,
   sendJson,
   sendUpstreamResponse,
 } = require("../../../server/originarsaProxy.cjs");
@@ -22,30 +23,13 @@ module.exports = async (req, res) => {
     });
   }
 
-  const apiUser = process.env.CEDULA_API_USER;
-  const apiPassword = process.env.CEDULA_API_PASSWORD;
-
-  if (!apiUser || !apiPassword) {
-    console.error("Faltan CEDULA_API_USER o CEDULA_API_PASSWORD en el entorno del servidor");
-    return sendJson(res, 500, {
-      mensaje: {
-        huboError: true,
-        codigoRespuesta: 500,
-        mensajeRespuesta: "Credenciales del servicio no configuradas",
-      },
-    });
-  }
-
-  const authorization = `Basic ${Buffer.from(`${apiUser}:${apiPassword}`).toString("base64")}`;
-
   try {
-    const upstreamResponse = await fetch(
-      buildUpstreamUrl(`Personas/ObtenerInformacionConsolidada/${cedula}`),
+    const upstreamResponse = await fetchWithAuth(
+      `Personas/ObtenerInformacionConsolidada/${cedula}`,
       {
         method: "GET",
         headers: {
           "Accept": "application/json",
-          "Authorization": authorization,
         },
       }
     );

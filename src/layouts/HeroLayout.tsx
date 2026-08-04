@@ -22,11 +22,11 @@ export default function HeroLayout({ children, imageSide = "right", imageSrc = "
 
         {/* Bottom disclaimer */}
         <div className="absolute inset-x-0 bottom-4 px-6 text-center text-xs text-slate-500">
-          Protegido por servicios de seguridad y sujeto a nuestras
+          Protegido por servicios de seguridad y sujeto a nuestra
           {" "}
-          <a href="#" className="underline hover:text-slate-700">Política de Privacidad</a>
+          <a href="https://www.originarsa.com/politicas" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-700">Política de Privacidad</a>
           {" "}y{ " "}
-          <a href="#" className="underline hover:text-slate-700">Términos de Servicio</a>.
+          <a href="https://www.originarsa.com/politicas" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-700">Términos de Servicio</a>.
         </div>
 
         {/* Sombra sutil en el borde del formulario para unir con la foto */}
