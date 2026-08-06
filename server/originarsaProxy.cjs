@@ -4,6 +4,7 @@ const DEFAULT_BASE_URL = "https://api-pre.originarsa.com/api";
 const DEFAULT_USER = "crediexpress";
 
 let cachedToken = null;
+let cachedRefreshToken = null;
 let tokenExpirationMs = 0;
 
 function resolveOriginarsaApiBaseUrl() {
@@ -67,11 +68,48 @@ async function loginWithCiphertext(usuario, contrasenaEncriptada) {
     throw new Error(msg);
   }
 
-  return { tokenAcceso, fechaExpiracion: loginData?.data?.fechaExpiracion };
+  return {
+    tokenAcceso,
+    tokenRefresco: loginData?.data?.tokenRefresco,
+    fechaExpiracion: loginData?.data?.fechaExpiracion,
+  };
 }
 
-function cacheToken(tokenAcceso, fechaExpiracion, now) {
+// Renueva el token de acceso usando el token de refresco (flujo recomendado por
+// tecnología). Es más liviano que un login completo. Devuelve el nuevo token o
+// lanza si el refresco no es válido/expiró (en ese caso el llamador hace login).
+async function refreshAccessToken(now) {
+  if (!cachedRefreshToken) {
+    throw new Error("Sin token de refresco disponible");
+  }
+
+  const url = buildUpstreamUrl("Autenticacion/token/refresh/aplicacion");
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ refreshToken: cachedRefreshToken }),
+  });
+
+  const data = await res.json().catch(() => null);
+  const tokenAcceso = data?.data?.tokenAcceso;
+
+  // El endpoint responde HTTP 200 incluso ante refresco inválido, por eso
+  // validamos la presencia del tokenAcceso, no solo el status.
+  if (!res.ok || !tokenAcceso) {
+    throw new Error(data?.mensaje?.mensajeRespuesta || `HTTP ${res.status}`);
+  }
+
+  return cacheToken(tokenAcceso, data?.data?.fechaExpiracion, now, data?.data?.tokenRefresco);
+}
+
+function cacheToken(tokenAcceso, fechaExpiracion, now, tokenRefresco) {
   cachedToken = tokenAcceso;
+  if (tokenRefresco) {
+    cachedRefreshToken = tokenRefresco;
+  }
   // Si no viene fechaExpiracion, asumir validez de 1 hora
   tokenExpirationMs = fechaExpiracion ? new Date(fechaExpiracion).getTime() : now + 3600000;
   return cachedToken;
@@ -88,6 +126,18 @@ async function getAuthToken(forceRefresh = false) {
   // Si tenemos token en caché y aún le queda al menos 1 minuto de validez
   if (!forceRefresh && cachedToken && tokenExpirationMs > now + 60000) {
     return cachedToken;
+  }
+
+  // Necesitamos un token nuevo. Primero intentamos renovar con el token de
+  // refresco (más liviano que un login completo). Si no hay refresco o falla,
+  // caemos al login completo con credenciales.
+  if (cachedRefreshToken) {
+    try {
+      return await refreshAccessToken(now);
+    } catch (err) {
+      console.warn("Refresco de token falló, se hará login completo:", err.message);
+      cachedRefreshToken = null;
+    }
   }
 
   const usuario = process.env.ORIGINARSA_API_USER || DEFAULT_USER;
@@ -113,8 +163,8 @@ async function getAuthToken(forceRefresh = false) {
   if (plainPassword) {
     try {
       const contrasenaEncriptada = await encryptPassword(plainPassword);
-      const { tokenAcceso, fechaExpiracion } = await loginWithCiphertext(usuario, contrasenaEncriptada);
-      return cacheToken(tokenAcceso, fechaExpiracion, now);
+      const { tokenAcceso, tokenRefresco, fechaExpiracion } = await loginWithCiphertext(usuario, contrasenaEncriptada);
+      return cacheToken(tokenAcceso, fechaExpiracion, now, tokenRefresco);
     } catch (err) {
       errors.push(`texto-plano: ${err.message}`);
       console.warn("Login con contraseña en texto plano falló:", err.message);
@@ -124,8 +174,8 @@ async function getAuthToken(forceRefresh = false) {
   // 2) Respaldo: ciphertext pre-generado almacenado en la variable de entorno
   if (storedCiphertext) {
     try {
-      const { tokenAcceso, fechaExpiracion } = await loginWithCiphertext(usuario, storedCiphertext);
-      return cacheToken(tokenAcceso, fechaExpiracion, now);
+      const { tokenAcceso, tokenRefresco, fechaExpiracion } = await loginWithCiphertext(usuario, storedCiphertext);
+      return cacheToken(tokenAcceso, fechaExpiracion, now, tokenRefresco);
     } catch (err) {
       errors.push(`ciphertext: ${err.message}`);
       console.warn("Login con ciphertext almacenado falló:", err.message);
