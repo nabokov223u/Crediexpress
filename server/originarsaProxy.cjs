@@ -43,6 +43,40 @@ async function encryptPassword(plainPassword) {
   return encrypted.toString("base64");
 }
 
+// Ejecuta el paso 3 del proceso: POST /Autenticacion/login/aplicacion con un
+// contrasenaEncriptada dado. Devuelve { tokenAcceso, fechaExpiracion } o lanza.
+async function loginWithCiphertext(usuario, contrasenaEncriptada) {
+  const loginUrl = buildUpstreamUrl("Autenticacion/login/aplicacion");
+  const loginRes = await fetch(loginUrl, {
+    method: "POST",
+    headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      usuario,
+      contrasenaEncriptada: contrasenaEncriptada.trim(),
+    }),
+  });
+
+  const loginData = await loginRes.json().catch(() => null);
+  const tokenAcceso = loginData?.data?.tokenAcceso;
+
+  if (!loginRes.ok || !tokenAcceso) {
+    const msg = loginData?.mensaje?.mensajeRespuesta || `HTTP ${loginRes.status}`;
+    throw new Error(msg);
+  }
+
+  return { tokenAcceso, fechaExpiracion: loginData?.data?.fechaExpiracion };
+}
+
+function cacheToken(tokenAcceso, fechaExpiracion, now) {
+  cachedToken = tokenAcceso;
+  // Si no viene fechaExpiracion, asumir validez de 1 hora
+  tokenExpirationMs = fechaExpiracion ? new Date(fechaExpiracion).getTime() : now + 3600000;
+  return cachedToken;
+}
+
 async function getAuthToken(forceRefresh = false) {
   // Si se configuró un token fijo en las variables de entorno de Vercel (ORIGINARSA_API_TOKEN), usarlo directamente
   const envToken = process.env.ORIGINARSA_API_TOKEN;
@@ -58,100 +92,79 @@ async function getAuthToken(forceRefresh = false) {
 
   const usuario = process.env.ORIGINARSA_API_USER || DEFAULT_USER;
 
-  // Dos formas de entregar la credencial:
-  //  - ORIGINARSA_API_PASSWORD_PLAIN: contraseña en texto plano (se cifra aquí en
-  //    cada login). Es lo más robusto: nunca se corrompe al copiar/pegar.
-  //  - ORIGINARSA_API_PASSWORD: la contraseña ya cifrada (contrasenaEncriptada).
-  //    Debe llegar intacta byte a byte; un solo carácter cambiado la invalida.
-  const plainPassword = process.env.ORIGINARSA_API_PASSWORD_PLAIN;
-  let contrasenaEncriptada = process.env.ORIGINARSA_API_PASSWORD;
+  // Dos formas de entregar la credencial, en orden de preferencia:
+  //  1) ORIGINARSA_API_PASSWORD_PLAIN: contraseña en texto plano. En cada login
+  //     se hace el proceso completo (traer llave pública vigente + cifrar + login).
+  //     Es auto-reparable: si rotan la llave, el siguiente login la trae fresca.
+  //  2) ORIGINARSA_API_PASSWORD: la contraseña ya cifrada (contrasenaEncriptada),
+  //     como respaldo. Funciona mientras no roten la llave y llegue intacta.
+  const plainPassword = (process.env.ORIGINARSA_API_PASSWORD_PLAIN || "").trim();
+  const storedCiphertext = (process.env.ORIGINARSA_API_PASSWORD || "").trim();
 
-  if (plainPassword && plainPassword.trim()) {
-    contrasenaEncriptada = await encryptPassword(plainPassword.trim());
-  }
-
-  if (!contrasenaEncriptada || !contrasenaEncriptada.trim()) {
+  if (!plainPassword && !storedCiphertext) {
     throw new Error(
       "Falta credencial: configure ORIGINARSA_API_PASSWORD_PLAIN o ORIGINARSA_API_PASSWORD"
     );
   }
 
-  // Endpoint oficial para autenticación de aplicación (usuario crediexpress)
-  const loginUrl = buildUpstreamUrl("Autenticacion/login/aplicacion");
-  const loginRes = await fetch(loginUrl, {
-    method: "POST",
-    headers: {
-      "Accept": "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      usuario,
-      contrasenaEncriptada: contrasenaEncriptada.trim(),
-    }),
-  });
+  const errors = [];
 
-  if (!loginRes.ok) {
-    const errorText = await loginRes.text();
-    throw new Error(`Fallo en autenticacion Originarsa API (${loginRes.status}): ${errorText}`);
+  // 1) Texto plano -> ciframos contra la llave pública vigente y hacemos login
+  if (plainPassword) {
+    try {
+      const contrasenaEncriptada = await encryptPassword(plainPassword);
+      const { tokenAcceso, fechaExpiracion } = await loginWithCiphertext(usuario, contrasenaEncriptada);
+      return cacheToken(tokenAcceso, fechaExpiracion, now);
+    } catch (err) {
+      errors.push(`texto-plano: ${err.message}`);
+      console.warn("Login con contraseña en texto plano falló:", err.message);
+    }
   }
 
-  const loginData = await loginRes.json();
-  const tokenAcceso = loginData?.data?.tokenAcceso;
-  const fechaExpiracion = loginData?.data?.fechaExpiracion;
-
-  if (!tokenAcceso) {
-    const msg = loginData?.mensaje?.mensajeRespuesta || "No se recibio tokenAcceso";
-    throw new Error(`Respuesta de login invalida: ${msg}`);
+  // 2) Respaldo: ciphertext pre-generado almacenado en la variable de entorno
+  if (storedCiphertext) {
+    try {
+      const { tokenAcceso, fechaExpiracion } = await loginWithCiphertext(usuario, storedCiphertext);
+      return cacheToken(tokenAcceso, fechaExpiracion, now);
+    } catch (err) {
+      errors.push(`ciphertext: ${err.message}`);
+      console.warn("Login con ciphertext almacenado falló:", err.message);
+    }
   }
 
-  cachedToken = tokenAcceso;
-  if (fechaExpiracion) {
-    tokenExpirationMs = new Date(fechaExpiracion).getTime();
-  } else {
-    // Si no viene fechaExpiracion, asumir validez de 1 hora
-    tokenExpirationMs = now + 3600000;
-  }
-
-  return cachedToken;
+  throw new Error(`Fallo en autenticacion Originarsa API (${errors.join(" | ")})`);
 }
 
 async function fetchWithAuth(pathname, options = {}) {
-  let token = null;
-  try {
-    token = await getAuthToken();
-  } catch (err) {
-    console.warn("No se pudo obtener token de autenticacion:", err.message);
-  }
-
-  const headers = {
-    ...(options.headers || {}),
-  };
-
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-
+  const usingStaticToken = !!(process.env.ORIGINARSA_API_TOKEN && process.env.ORIGINARSA_API_TOKEN.trim());
   const targetUrl = buildUpstreamUrl(pathname);
-  let response = await fetch(targetUrl, {
-    ...options,
-    headers,
-  });
 
-  // Si recibimos 401 Unauthorized, intentamos forzar re-autenticación una vez si no usábamos token estático
-  if (response.status === 401 && !process.env.ORIGINARSA_API_TOKEN) {
-    console.warn("Token invalido o expirado upstream. Forzando re-autenticacion...");
+  async function attempt(forceRefresh) {
+    let token = null;
     try {
-      const freshToken = await getAuthToken(true);
-      if (freshToken) {
-        headers["Authorization"] = `Bearer ${freshToken}`;
-        response = await fetch(targetUrl, {
-          ...options,
-          headers,
-        });
-      }
-    } catch {
-      // Ignorar fallo de re-autenticación
+      token = await getAuthToken(forceRefresh);
+    } catch (err) {
+      console.warn("No se pudo obtener token de autenticacion:", err.message);
     }
+
+    const headers = { ...(options.headers || {}) };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(targetUrl, { ...options, headers });
+    return { response, hadToken: !!token };
+  }
+
+  let { response, hadToken } = await attempt(false);
+
+  // Auto-reparación: si la autenticación falló (no obtuvimos token, o el upstream
+  // rechazó con 401/403), forzamos el proceso completo de re-login (traer llave +
+  // cifrar + login) y reintentamos la petición una sola vez.
+  const authFailed = !hadToken || response.status === 401 || response.status === 403;
+  if (authFailed && !usingStaticToken) {
+    console.warn("Fallo de autenticación detectado. Re-autenticando y reintentando...");
+    ({ response } = await attempt(true));
   }
 
   return response;
