@@ -1,6 +1,6 @@
 const DEFAULT_BASE_URL = "https://api-pre.originarsa.com/api";
-const DEFAULT_USER = "crediexpress";
-const DEFAULT_PASSWORD = "yHti1+G6TTWT9cKC97LHHXaKKXf3rdKT7Tb78/KWFZHIL15netvunhmkfwelVig7UHeERVahrKhMCXfwulgu4Cfqx7aGLhIrtMd6I76mhMFgm3SpuJAYgFBw3gNTbmAlhYKIAh9CIx5vhbE4K+DOZRXTJ12udj2EhoqM5GHFOsIPKS280z2R1bS25tlsw3E4FrnOVjwc54p6GEMAZrBHr5OK58f8swyjkG2Nnbl/E1cfLvFCDJ3NyCqB9dIPUZrhRu8mKdf/am7hZlUhaExKqiDDh2DKnWAxdFJFXrdhKTLflufrZlvlVuBdcnneEgpmowoNAyVUsOt/HnUxNIZUGQ==";
+const DEFAULT_USER = "mpaspuel";
+const DEFAULT_PASSWORD = "Originarsa2026";
 
 let cachedToken = null;
 let tokenExpirationMs = 0;
