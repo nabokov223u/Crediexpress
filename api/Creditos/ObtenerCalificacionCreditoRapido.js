@@ -11,6 +11,7 @@ module.exports = async (req, res) => {
     return sendJson(res, 405, { error: "Method Not Allowed" });
   }
 
+  try {
     let bodyObj = req.body;
     if (typeof bodyObj === "string") {
       try { bodyObj = JSON.parse(bodyObj); } catch { bodyObj = {}; }
