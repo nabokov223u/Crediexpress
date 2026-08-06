@@ -1,6 +1,7 @@
+const crypto = require("crypto");
+
 const DEFAULT_BASE_URL = "https://api-pre.originarsa.com/api";
-const DEFAULT_USER = "mpaspuel";
-const DEFAULT_PASSWORD = "Originarsa2026";
+const DEFAULT_USER = "crediexpress";
 
 let cachedToken = null;
 let tokenExpirationMs = 0;
@@ -14,6 +15,32 @@ function buildUpstreamUrl(pathname) {
   const baseUrl = resolveOriginarsaApiBaseUrl().replace(/\/+$/, "");
   const normalizedPath = String(pathname || "").replace(/^\/+/, "");
   return `${baseUrl}/${normalizedPath}`;
+}
+
+// Cifra una contraseña en texto plano con la llave pública RSA de Originarsa
+// (RSA-OAEP + SHA-256), replicando el <script> que entregó tecnología pero en
+// Node. La llave pública se obtiene en vivo para tolerar rotaciones.
+async function encryptPassword(plainPassword) {
+  const pkRes = await fetch(buildUpstreamUrl("Autenticacion/public-key"), {
+    headers: { Accept: "application/json" },
+  });
+  if (!pkRes.ok) {
+    throw new Error(`No se pudo obtener la llave pública (${pkRes.status})`);
+  }
+  const { publicKey } = await pkRes.json();
+  if (!publicKey) {
+    throw new Error("La respuesta de public-key no incluye 'publicKey'");
+  }
+
+  const encrypted = crypto.publicEncrypt(
+    {
+      key: publicKey,
+      padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+      oaepHash: "sha256",
+    },
+    Buffer.from(plainPassword, "utf8")
+  );
+  return encrypted.toString("base64");
 }
 
 async function getAuthToken(forceRefresh = false) {
@@ -30,14 +57,28 @@ async function getAuthToken(forceRefresh = false) {
   }
 
   const usuario = process.env.ORIGINARSA_API_USER || DEFAULT_USER;
-  const contrasena = process.env.ORIGINARSA_API_PASSWORD || "Originarsa2026";
-  const empresa = process.env.ORIGINARSA_API_EMPRESA || "ORIGINARSA";
-  const aplicativo = process.env.ORIGINARSA_API_APLICATIVO || "ATLAS";
 
-  // Intentar primero endpoint oficial Bruno: POST /Autenticacion/login
-  const loginUrl = buildUpstreamUrl("Autenticacion/login");
-  
-  let loginRes = await fetch(loginUrl, {
+  // Dos formas de entregar la credencial:
+  //  - ORIGINARSA_API_PASSWORD_PLAIN: contraseña en texto plano (se cifra aquí en
+  //    cada login). Es lo más robusto: nunca se corrompe al copiar/pegar.
+  //  - ORIGINARSA_API_PASSWORD: la contraseña ya cifrada (contrasenaEncriptada).
+  //    Debe llegar intacta byte a byte; un solo carácter cambiado la invalida.
+  const plainPassword = process.env.ORIGINARSA_API_PASSWORD_PLAIN;
+  let contrasenaEncriptada = process.env.ORIGINARSA_API_PASSWORD;
+
+  if (plainPassword && plainPassword.trim()) {
+    contrasenaEncriptada = await encryptPassword(plainPassword.trim());
+  }
+
+  if (!contrasenaEncriptada || !contrasenaEncriptada.trim()) {
+    throw new Error(
+      "Falta credencial: configure ORIGINARSA_API_PASSWORD_PLAIN o ORIGINARSA_API_PASSWORD"
+    );
+  }
+
+  // Endpoint oficial para autenticación de aplicación (usuario crediexpress)
+  const loginUrl = buildUpstreamUrl("Autenticacion/login/aplicacion");
+  const loginRes = await fetch(loginUrl, {
     method: "POST",
     headers: {
       "Accept": "application/json",
@@ -45,30 +86,9 @@ async function getAuthToken(forceRefresh = false) {
     },
     body: JSON.stringify({
       usuario,
-      contrasena,
-      empresa,
-      aplicativo,
-      ipPublica: "127.0.0.1",
-      navegador: "Chrome 127",
-      sistemaOperativo: "Windows 11"
+      contrasenaEncriptada: contrasenaEncriptada.trim(),
     }),
   });
-
-  // Si /Autenticacion/login falla, fallback a /Autenticacion/login/aplicacion
-  if (!loginRes.ok) {
-    const altLoginUrl = buildUpstreamUrl("Autenticacion/login/aplicacion");
-    loginRes = await fetch(altLoginUrl, {
-      method: "POST",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        usuario,
-        contrasenaEncriptada: contrasena,
-      }),
-    });
-  }
 
   if (!loginRes.ok) {
     const errorText = await loginRes.text();
