@@ -30,11 +30,14 @@ async function getAuthToken(forceRefresh = false) {
   }
 
   const usuario = process.env.ORIGINARSA_API_USER || DEFAULT_USER;
-  const contrasenaEncriptada = process.env.ORIGINARSA_API_PASSWORD || DEFAULT_PASSWORD;
+  const contrasena = process.env.ORIGINARSA_API_PASSWORD || "Originarsa2026";
+  const empresa = process.env.ORIGINARSA_API_EMPRESA || "ORIGINARSA";
+  const aplicativo = process.env.ORIGINARSA_API_APLICATIVO || "ATLAS";
 
-  const loginUrl = buildUpstreamUrl("Autenticacion/login/aplicacion");
+  // Intentar primero endpoint oficial Bruno: POST /Autenticacion/login
+  const loginUrl = buildUpstreamUrl("Autenticacion/login");
   
-  const loginRes = await fetch(loginUrl, {
+  let loginRes = await fetch(loginUrl, {
     method: "POST",
     headers: {
       "Accept": "application/json",
@@ -42,9 +45,30 @@ async function getAuthToken(forceRefresh = false) {
     },
     body: JSON.stringify({
       usuario,
-      contrasenaEncriptada,
+      contrasena,
+      empresa,
+      aplicativo,
+      ipPublica: "127.0.0.1",
+      navegador: "Chrome 127",
+      sistemaOperativo: "Windows 11"
     }),
   });
+
+  // Si /Autenticacion/login falla, fallback a /Autenticacion/login/aplicacion
+  if (!loginRes.ok) {
+    const altLoginUrl = buildUpstreamUrl("Autenticacion/login/aplicacion");
+    loginRes = await fetch(altLoginUrl, {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        usuario,
+        contrasenaEncriptada: contrasena,
+      }),
+    });
+  }
 
   if (!loginRes.ok) {
     const errorText = await loginRes.text();
@@ -56,7 +80,8 @@ async function getAuthToken(forceRefresh = false) {
   const fechaExpiracion = loginData?.data?.fechaExpiracion;
 
   if (!tokenAcceso) {
-    throw new Error("Respuesta de login invalida: no se recibio tokenAcceso");
+    const msg = loginData?.mensaje?.mensajeRespuesta || "No se recibio tokenAcceso";
+    throw new Error(`Respuesta de login invalida: ${msg}`);
   }
 
   cachedToken = tokenAcceso;
