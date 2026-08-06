@@ -27,6 +27,10 @@ coverage/
 .env
 .env*.local
 
+# archivos con credenciales sueltas
+plain_text_key.txt
+*_key.txt
+
 # editor / sistema
 .vscode/*
 !.vscode/settings.json
